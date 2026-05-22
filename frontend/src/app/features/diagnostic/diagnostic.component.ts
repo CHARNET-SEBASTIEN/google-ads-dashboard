@@ -365,13 +365,14 @@ export class DiagnosticComponent implements OnInit {
   }
 
   getUrgencyLabel(severity: string): string {
-    const labels: { [key: string]: string } = {
-      'critical': 'URGENT',
-      'high': 'Prioritaire',
-      'medium': 'Normal',
-      'low': 'À prévoir'
+    const keys: { [key: string]: string } = {
+      'critical': 'diagnostic.urgency_urgent',
+      'high': 'diagnostic.urgency_priority',
+      'medium': 'diagnostic.urgency_normal',
+      'low': 'diagnostic.urgency_scheduled'
     };
-    return labels[severity.toLowerCase()] || 'Normal';
+    const key = keys[severity.toLowerCase()] || 'diagnostic.urgency_normal';
+    return this.translocoService.translate(key);
   }
 
   toggleTaskComplete(index: number) {

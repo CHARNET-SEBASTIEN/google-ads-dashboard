@@ -1,6 +1,6 @@
 # 📊 Dashboard Google Ads - Application Full Stack
 
-Application moderne de gestion et d'analyse de campagnes Google Ads, migrée depuis Streamlit vers une architecture full stack avec **FastAPI** (backend) et **Angular 17** (frontend).
+Application moderne de gestion et d'analyse de campagnes Google Ads avec architecture full stack **FastAPI** (backend) et **Angular 17** (frontend).
 
 ## 🎯 Vue d'ensemble
 
@@ -26,7 +26,7 @@ Cette application permet de :
 - 6 pages principales (Home, Config, Campaigns, Detail, Search Terms, Diagnostic)
 - Composants réutilisables (metric-card, chart, alert, etc.)
 - Internationalisation (FR/EN/DE)
-- Thème RAFO adaptatif
+- Thème moderne adaptatif avec mode sombre/clair
 - Charts Plotly.js
 
 ## 📦 Installation
@@ -141,22 +141,29 @@ npm run build
 ### Backend (.env)
 
 ```bash
-# Database
-DATABASE_URL=sqlite:///./google_ads.db
+# Application
+APP_NAME="Google Ads Dashboard"
+DEBUG=True
+
+# API
+API_PREFIX=/api
+
+# CORS (comma-separated)
+CORS_ORIGINS=http://localhost:4200,http://localhost:3000
 
 # JWT
-SECRET_KEY=your-secret-key-change-me
+SECRET_KEY=your-secret-key-change-in-production-use-openssl-rand-hex-32
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=1440
 
 # Google Ads API
-GOOGLE_ADS_DEVELOPER_TOKEN=your-developer-token
-GOOGLE_ADS_CLIENT_ID=your-client-id.apps.googleusercontent.com
-GOOGLE_ADS_CLIENT_SECRET=your-client-secret
-GOOGLE_ADS_REDIRECT_URI=http://localhost:8000/api/auth/callback
+GOOGLE_ADS_API_VERSION=v16
 
-# CORS
-CORS_ORIGINS=["http://localhost:4200"]
+# Cache
+CACHE_TTL=3600
+
+# AI / LLM (pour le diagnostic IA)
+ANTHROPIC_API_KEY=your-anthropic-api-key-here
 ```
 
 ### Frontend (environment.ts)
@@ -168,13 +175,14 @@ export const environment = {
 };
 ```
 
-## 🎨 Thème RAFO
+## 🎨 Interface moderne
 
-Le thème authentique RAFO est intégré avec :
-- **Couleur primaire** : Orange RAFO (#FF6B35)
+L'interface propose :
+- **Design** : Interface épurée et professionnelle
 - **Typography** : Inter, system-ui
-- **Mode sombre/clair** : Toggle automatique
-- **Composants** : Cards, buttons, badges stylisés
+- **Mode sombre/clair** : Toggle automatique avec persistance
+- **Composants** : Cards, buttons, badges, snackbar notifications
+- **Responsive** : Adapté mobile, tablette et desktop
 
 ## 📊 Fonctionnalités principales
 
@@ -195,18 +203,13 @@ Le thème authentique RAFO est intégré avec :
 - Export CSV
 - Filtres et recherche
 
-### 4. Diagnostic
-- 7 règles d'analyse automatique :
-  1. Campagne en pause
-  2. Budget limité
-  3. Aucune conversion
-  4. CTR faible
-  5. CPA élevé
-  6. Impressions faibles
-  7. Taux de conversion faible
-- Filtres par gravité (Critical, High, Medium, Low)
-- Filtres par catégorie
-- Recommandations et impacts détaillés
+### 4. Diagnostic IA
+- **Analyse intelligente** avec Claude AI (Anthropic)
+- Détection automatique des problèmes de campagnes
+- Recommandations personnalisées par campagne
+- Vue rapport (table triable ou markdown)
+- Vue échéancier avec suivi de progression
+- Export Excel des recommandations
 
 ### 5. Configuration
 - Import JSON (format Google Ads export)
@@ -250,9 +253,8 @@ GET    /api/search-terms/export  # Export CSV
 
 ### Diagnostics
 ```
-GET    /api/diagnostics          # Liste diagnostics
-POST   /api/diagnostics/run      # Lancer analyse
-GET    /api/diagnostics/export   # Export CSV
+POST   /api/diagnostics/ai-analysis        # Lancer analyse IA
+GET    /api/diagnostics/ai-analysis/cached # Récupérer analyse en cache
 ```
 
 ## 🐳 Docker
@@ -335,16 +337,13 @@ Les contributions sont les bienvenues ! Veuillez :
 
 MIT License - voir LICENSE pour plus de détails
 
-## 👤 Auteur
+## 👤 Développement
 
-Développé avec ❤️ et Claude Code
+Réalisé avec Claude Code
 
 ## 🙏 Remerciements
 
 - Google Ads API
+- Anthropic Claude AI
 - Communautés Angular et FastAPI
 - Contributeurs open source
-
----
-
-**Note** : Ce projet a été migré depuis une application Streamlit vers une architecture full stack moderne pour améliorer les performances, la scalabilité et l'expérience utilisateur.

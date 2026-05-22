@@ -91,7 +91,21 @@
     "no_issues": "Aucun problème détecté",
     "no_issues_desc": "Toutes vos campagnes sont optimales !",
     "issues": "Problèmes détectés",
-    "recommendations": "Recommandations"
+    "recommendations": "Recommandations",
+    "progress": "Progression",
+    "tasks_completed": "tâches complétées",
+    "reset": "Réinitialiser",
+    "problem": "Problème",
+    "action": "Action à entreprendre",
+    "urgency_urgent": "URGENT",
+    "urgency_priority": "Prioritaire",
+    "urgency_normal": "Normal",
+    "urgency_scheduled": "À prévoir",
+    "view_schedule": "Échéancier",
+    "view_report": "Rapport",
+    "view_table": "Table",
+    "view_markdown": "Markdown",
+    "severity": "Gravité"
   },
   "overview": {
     "title": "Vue d'ensemble",

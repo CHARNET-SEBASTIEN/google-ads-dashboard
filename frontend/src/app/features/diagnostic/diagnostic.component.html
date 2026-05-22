@@ -13,7 +13,7 @@
         <span class="material-icons" style="font-size: 1.1rem;">
           {{ mainView === 'report' ? 'event_note' : 'description' }}
         </span>
-        {{ mainView === 'report' ? 'Échéancier' : 'Rapport' }}
+        {{ (mainView === 'report' ? 'diagnostic.view_schedule' : 'diagnostic.view_report') | transloco }}
       </button>
 
       <!-- Report sub-view toggle (Table / Markdown) - visible only in report view -->
@@ -21,7 +21,7 @@
         <span class="material-icons" style="font-size: 1.1rem;">
           {{ reportView === 'table' ? 'article' : 'table_chart' }}
         </span>
-        {{ reportView === 'table' ? 'Markdown' : 'Table' }}
+        {{ (reportView === 'table' ? 'diagnostic.view_markdown' : 'diagnostic.view_table') | transloco }}
       </button>
 
       <!-- Export Excel - visible only in report table view -->
@@ -86,7 +86,7 @@
                 </span>
               </th>
               <th (click)="sortBy('severity')" class="sortable text-center">
-                Gravité
+                {{ 'diagnostic.severity' | transloco }}
                 <span class="sort-icon" *ngIf="sortField === 'severity'">
                   <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
                 </span>
@@ -134,15 +134,15 @@
     <div *ngIf="mainView === 'schedule'" class="schedule-view">
       <div class="schedule-header">
         <div class="progress-section">
-          <h3>Progression : {{ getCompletionPercentage() }}%</h3>
+          <h3>{{ 'diagnostic.progress' | transloco }} : {{ getCompletionPercentage() }}%</h3>
           <div class="progress-bar">
             <div class="progress-fill" [style.width.%]="getCompletionPercentage()"></div>
           </div>
-          <p class="progress-text">{{ completedTasks.size }} / {{ recommendations.length }} tâches complétées</p>
+          <p class="progress-text">{{ completedTasks.size }} / {{ recommendations.length }} {{ 'diagnostic.tasks_completed' | transloco }}</p>
         </div>
         <button class="btn btn-secondary" (click)="clearCompletedTasks()" *ngIf="completedTasks.size > 0">
           <span class="material-icons">restart_alt</span>
-          Réinitialiser
+          {{ 'diagnostic.reset' | transloco }}
         </button>
       </div>
 
@@ -183,15 +183,15 @@
 
             <div class="checklist-details">
               <div class="detail-section">
-                <strong>Problème :</strong>
+                <strong>{{ 'diagnostic.problem' | transloco }} :</strong>
                 <p>{{ rec.issue }}</p>
               </div>
               <div class="detail-section" *ngIf="rec.impact !== 'N/A'">
-                <strong>Impact :</strong>
+                <strong>{{ 'diagnostic.impact' | transloco }} :</strong>
                 <p>{{ rec.impact }}</p>
               </div>
               <div class="detail-section action-section" *ngIf="rec.recommendation !== 'N/A'">
-                <strong>Action à entreprendre :</strong>
+                <strong>{{ 'diagnostic.action' | transloco }} :</strong>
                 <p>{{ rec.recommendation }}</p>
               </div>
             </div>
