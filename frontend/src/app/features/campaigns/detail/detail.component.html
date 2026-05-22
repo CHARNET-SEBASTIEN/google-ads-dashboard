@@ -87,7 +87,7 @@
         <div class="overview-grid">
           <div class="info-card">
             <h3>Budget</h3>
-            <p class="value">{{ campaign.budget || 'N/A' }}</p>
+            <p class="value">{{ campaign.budget ? (campaign.budget + ' €') : 'N/A' }}</p>
           </div>
 
           <div class="info-card">
@@ -128,11 +128,15 @@
             </thead>
             <tbody>
               <tr *ngFor="let keyword of keywords">
-                <td class="font-bold">{{ keyword.text }}</td>
+                <td class="font-bold">{{ keyword.text || 'N/A' }}</td>
                 <td>
                   <span class="badge">{{ getMatchTypeLabel(keyword.match_type) }}</span>
                 </td>
-                <td>{{ keyword.status }}</td>
+                <td>
+                  <span class="status-badge" [class]="'status-' + keyword.status.toLowerCase()">
+                    {{ getStatusLabel(keyword.status) }}
+                  </span>
+                </td>
                 <td class="text-right">{{ keyword.impressions | number }}</td>
                 <td class="text-right">{{ keyword.clicks | number }}</td>
                 <td class="text-right">{{ keyword.ctr | number:'1.2-2' }}%</td>
@@ -152,17 +156,24 @@
         <div *ngIf="ads.length > 0" class="ads-list">
           <div *ngFor="let ad of ads" class="ad-card">
             <div class="ad-header">
-              <span class="ad-type">{{ ad.type }}</span>
-              <span class="ad-status">{{ ad.status }}</span>
+              <span class="ad-type">{{ getAdTypeLabel(ad.type) }}</span>
+              <span class="ad-status" [class]="'status-' + ad.status.toLowerCase()">
+                {{ getStatusLabel(ad.status) }}
+              </span>
             </div>
             <div class="ad-content">
               <p class="ad-headline" *ngIf="ad.headline1">{{ ad.headline1 }}</p>
               <p class="ad-headline" *ngIf="ad.headline2">{{ ad.headline2 }}</p>
+              <p class="ad-headline" *ngIf="ad.headline3">{{ ad.headline3 }}</p>
               <p class="ad-description" *ngIf="ad.description">{{ ad.description }}</p>
+              <p class="ad-description" *ngIf="ad.description2">{{ ad.description2 }}</p>
+              <p class="ad-empty" *ngIf="!ad.headline1 && !ad.headline2 && !ad.headline3 && !ad.description">
+                <em>Contenu de l'annonce non disponible</em>
+              </p>
             </div>
             <div class="ad-metrics">
-              <span>{{ ad.impressions | number }} impressions</span>
-              <span>{{ ad.clicks | number }} clics</span>
+              <span>{{ ad.impressions || 0 | number }} impressions</span>
+              <span>{{ ad.clicks || 0 | number }} clics</span>
             </div>
           </div>
         </div>

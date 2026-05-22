@@ -17,6 +17,7 @@ class Severity(str, Enum):
 
 class DiagnosticIssue(BaseModel):
     """Problème diagnostiqué"""
+    id: str
     title: str
     message: str
     severity: Severity
@@ -24,19 +25,24 @@ class DiagnosticIssue(BaseModel):
     campaign_id: Optional[str] = None
     campaign_name: Optional[str] = None
     details: Optional[Dict[str, Any]] = None
-    action: Optional[str] = None
+    recommendation: Optional[str] = None
+    impact: Optional[str] = None
+    created_at: str
+
+
+class DiagnosticSummary(BaseModel):
+    """Résumé des diagnostics"""
+    total: int = 0
+    by_severity: Dict[str, int] = {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+    }
+    by_category: Dict[str, int] = {}
 
 
 class DiagnosticResponse(BaseModel):
     """Response pour diagnostics"""
     issues: List[DiagnosticIssue]
-    total: int
-
-
-class DiagnosticSummary(BaseModel):
-    """Résumé des diagnostics"""
-    critical: int = 0
-    high: int = 0
-    medium: int = 0
-    low: int = 0
-    total: int = 0
+    summary: DiagnosticSummary

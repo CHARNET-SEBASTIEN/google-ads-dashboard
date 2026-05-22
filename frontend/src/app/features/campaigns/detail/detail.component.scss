@@ -239,9 +239,24 @@
       .ad-status {
         font-size: 0.75rem;
         padding: 0.25rem 0.5rem;
-        background-color: var(--hover-color);
         border-radius: 4px;
-        color: var(--text-secondary);
+        font-weight: 600;
+        text-transform: uppercase;
+
+        &.status-enabled {
+          background-color: #d1fae5;
+          color: #065f46;
+        }
+
+        &.status-paused {
+          background-color: #fed7aa;
+          color: #92400e;
+        }
+
+        &.status-removed {
+          background-color: #fee2e2;
+          color: #991b1b;
+        }
       }
     }
 
@@ -259,6 +274,12 @@
         font-size: 0.875rem;
         color: var(--text-secondary);
         margin: 0.5rem 0 0 0;
+      }
+
+      .ad-empty {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin: 0;
       }
     }
 

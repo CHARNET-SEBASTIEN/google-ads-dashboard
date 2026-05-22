@@ -15,11 +15,11 @@
   </section>
 
   <section class="features" *ngIf="!isAuthenticated">
-    <h2>{{ 'common.select' | transloco }} fonctionnalités</h2>
-    
+    <h2>Principales fonctionnalités</h2>
+
     <div class="features-grid">
       <div class="feature-card">
-        <div class="feature-icon">📊</div>
+        <span class="material-icons feature-icon">analytics</span>
         <h3>Analyse</h3>
         <ul>
           <li>Vue d'ensemble des campagnes</li>
@@ -32,7 +32,7 @@
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">💾</div>
+        <span class="material-icons feature-icon">storage</span>
         <h3>Données</h3>
         <ul>
           <li>Import JSON manuel</li>
@@ -44,7 +44,7 @@
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">🎯</div>
+        <span class="material-icons feature-icon">tune</span>
         <h3>Contrôle</h3>
         <ul>
           <li>Lecture sans OAuth complexe</li>
@@ -68,19 +68,19 @@
     
     <div class="quick-links-grid">
       <a routerLink="/campaigns" class="quick-link-card">
-        <span class="link-icon">📊</span>
+        <span class="material-icons link-icon">dashboard</span>
         <h3>{{ 'nav.overview' | transloco }}</h3>
         <p>Liste de toutes vos campagnes avec métriques</p>
       </a>
 
       <a routerLink="/search-terms" class="quick-link-card">
-        <span class="link-icon">🔍</span>
+        <span class="material-icons link-icon">search</span>
         <h3>{{ 'nav.search_terms' | transloco }}</h3>
         <p>Analyse des requêtes utilisateurs</p>
       </a>
 
       <a routerLink="/diagnostic" class="quick-link-card">
-        <span class="link-icon">⚕️</span>
+        <span class="material-icons link-icon">medical_services</span>
         <h3>{{ 'nav.diagnostic' | transloco }}</h3>
         <p>Détection automatique des problèmes</p>
       </a>

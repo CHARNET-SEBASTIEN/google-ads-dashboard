@@ -184,4 +184,14 @@ export class DetailComponent implements OnInit {
     };
     return labels[type] || type;
   }
+
+  getAdTypeLabel(type: string): string {
+    const labels: { [key: string]: string } = {
+      'RESPONSIVE_SEARCH_AD': 'Annonce adaptative',
+      'EXPANDED_TEXT_AD': 'Annonce textuelle',
+      'TEXT_AD': 'Annonce texte',
+      'UNKNOWN': 'Type inconnu'
+    };
+    return labels[type] || type;
+  }
 }

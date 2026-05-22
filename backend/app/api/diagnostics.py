@@ -54,7 +54,24 @@ async def run_diagnostics(
         category_filter=category
     )
 
-    return DiagnosticResponse(issues=issues, total=len(issues))
+    # Calculer le résumé
+    summary = DiagnosticSummary(
+        total=len(issues),
+        by_severity={
+            "critical": sum(1 for i in issues if i.severity == Severity.CRITICAL),
+            "high": sum(1 for i in issues if i.severity == Severity.HIGH),
+            "medium": sum(1 for i in issues if i.severity == Severity.MEDIUM),
+            "low": sum(1 for i in issues if i.severity == Severity.LOW),
+        },
+        by_category={}
+    )
+
+    # Compter par catégorie
+    for issue in issues:
+        category = issue.category
+        summary.by_category[category] = summary.by_category.get(category, 0) + 1
+
+    return DiagnosticResponse(issues=issues, summary=summary)
 
 
 @router.get("/summary", response_model=DiagnosticSummary)
@@ -80,20 +97,22 @@ async def diagnostics_summary(
     # Analyser
     issues = diagnostics_service.analyze_all_campaigns(campaigns=campaigns)
 
-    # Compter par sévérité
-    summary = DiagnosticSummary()
+    # Calculer le résumé
+    summary = DiagnosticSummary(
+        total=len(issues),
+        by_severity={
+            "critical": sum(1 for i in issues if i.severity == Severity.CRITICAL),
+            "high": sum(1 for i in issues if i.severity == Severity.HIGH),
+            "medium": sum(1 for i in issues if i.severity == Severity.MEDIUM),
+            "low": sum(1 for i in issues if i.severity == Severity.LOW),
+        },
+        by_category={}
+    )
 
+    # Compter par catégorie
     for issue in issues:
-        summary.total += 1
-
-        if issue.severity == Severity.CRITICAL:
-            summary.critical += 1
-        elif issue.severity == Severity.HIGH:
-            summary.high += 1
-        elif issue.severity == Severity.MEDIUM:
-            summary.medium += 1
-        elif issue.severity == Severity.LOW:
-            summary.low += 1
+        category = issue.category
+        summary.by_category[category] = summary.by_category.get(category, 0) + 1
 
     return summary
 
