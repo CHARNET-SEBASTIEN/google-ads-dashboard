@@ -22,7 +22,7 @@
           ({{ dataStatus.account_info.customerId }})
         </p>
         <p *ngIf="dataStatus.last_update" class="status-date">
-          Dernière mise à jour : {{ dataStatus.last_update }}
+          Dernière mise à jour : {{ dataStatus.last_update | date:'dd/MM/yyyy à HH:mm' }}
         </p>
       </div>
     </div>

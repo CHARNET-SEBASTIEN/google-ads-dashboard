@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import { ApiService } from '../../core/services/api.service';
@@ -35,7 +36,7 @@ interface DiagnosticResponse {
 @Component({
   selector: 'app-diagnostic',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslocoModule, MetricCardComponent],
+  imports: [CommonModule, RouterModule, FormsModule, TranslocoModule, MetricCardComponent],
   templateUrl: './diagnostic.component.html',
   styleUrl: './diagnostic.component.scss'
 })

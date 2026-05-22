@@ -7,20 +7,56 @@
     <p class="sidebar-subtitle">{{ 'app.subtitle' | transloco }}</p>
   </div>
 
-  <div class="menu-label">Menu</div>
-
   <nav class="sidebar-nav">
-    <a
-      *ngFor="let item of menuItems"
-      [routerLink]="item.route"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: item.route === '/' }"
-      class="nav-item"
-      [title]="item.translationKey | transloco"
-    >
-      <span class="material-icons nav-icon">{{ item.icon }}</span>
-      <span class="nav-label">{{ item.translationKey | transloco }}</span>
-    </a>
+    <div class="menu-section">
+      <div class="menu-section-label">Navigation</div>
+      <a
+        [routerLink]="menuItems[0].route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="nav-item"
+        [title]="menuItems[0].translationKey | transloco"
+      >
+        <span class="material-icons nav-icon">{{ menuItems[0].icon }}</span>
+        <span class="nav-label">{{ menuItems[0].translationKey | transloco }}</span>
+      </a>
+      <a
+        [routerLink]="menuItems[1].route"
+        routerLinkActive="active"
+        class="nav-item"
+        [title]="menuItems[1].translationKey | transloco"
+      >
+        <span class="material-icons nav-icon">{{ menuItems[1].icon }}</span>
+        <span class="nav-label">{{ menuItems[1].translationKey | transloco }}</span>
+      </a>
+    </div>
+
+    <div class="menu-section">
+      <div class="menu-section-label">Analyse</div>
+      <a
+        *ngFor="let item of menuItems.slice(2, 5)"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        class="nav-item"
+        [title]="item.translationKey | transloco"
+      >
+        <span class="material-icons nav-icon">{{ item.icon }}</span>
+        <span class="nav-label">{{ item.translationKey | transloco }}</span>
+      </a>
+    </div>
+
+    <div class="menu-section">
+      <div class="menu-section-label">Outils</div>
+      <a
+        [routerLink]="menuItems[5].route"
+        routerLinkActive="active"
+        class="nav-item"
+        [title]="menuItems[5].translationKey | transloco"
+      >
+        <span class="material-icons nav-icon">{{ menuItems[5].icon }}</span>
+        <span class="nav-label">{{ menuItems[5].translationKey | transloco }}</span>
+      </a>
+    </div>
   </nav>
 
   <div class="sidebar-footer">

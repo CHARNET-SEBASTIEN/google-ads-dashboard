@@ -137,13 +137,10 @@
           <p class="detail-content">{{ issue.recommendation }}</p>
         </div>
 
-        <div class="issue-actions">
-          <button class="btn-action btn-action-primary">
+        <div class="issue-actions" *ngIf="issue.campaign_id">
+          <a [routerLink]="['/campaign-detail']" [queryParams]="{id: issue.campaign_id}" class="btn-action btn-action-primary">
             {{ 'diagnostic.view_campaign' | transloco }}
-          </button>
-          <button class="btn-action btn-action-secondary">
-            {{ 'diagnostic.mark_resolved' | transloco }}
-          </button>
+          </a>
         </div>
       </div>
     </div>

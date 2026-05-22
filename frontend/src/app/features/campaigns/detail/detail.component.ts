@@ -168,12 +168,13 @@ export class DetailComponent implements OnInit {
   }
 
   getStatusLabel(status: string): string {
+    const upperStatus = status?.toUpperCase() || '';
     const labels: { [key: string]: string } = {
       'ENABLED': 'Activée',
       'PAUSED': 'En pause',
       'REMOVED': 'Supprimée'
     };
-    return labels[status] || status;
+    return labels[upperStatus] || status;
   }
 
   getMatchTypeLabel(type: string): string {

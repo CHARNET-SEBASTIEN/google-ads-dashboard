@@ -128,7 +128,10 @@
             </thead>
             <tbody>
               <tr *ngFor="let keyword of keywords">
-                <td class="font-bold">{{ keyword.text || 'N/A' }}</td>
+                <td class="font-bold">
+                  <span *ngIf="keyword.text && keyword.text.trim()">{{ keyword.text }}</span>
+                  <em *ngIf="!keyword.text || !keyword.text.trim()" style="color: var(--text-secondary);">Mot-clé sans texte</em>
+                </td>
                 <td>
                   <span class="badge">{{ getMatchTypeLabel(keyword.match_type) }}</span>
                 </td>
@@ -157,7 +160,7 @@
           <div *ngFor="let ad of ads" class="ad-card">
             <div class="ad-header">
               <span class="ad-type">{{ getAdTypeLabel(ad.type) }}</span>
-              <span class="ad-status" [class]="'status-' + ad.status.toLowerCase()">
+              <span class="ad-status" [class]="'status-' + (ad.status || 'unknown').toLowerCase()">
                 {{ getStatusLabel(ad.status) }}
               </span>
             </div>
