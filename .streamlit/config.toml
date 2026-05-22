@@ -1,17 +1,17 @@
-# Streamlit Configuration - Silao Treehouse Theme
+# Streamlit Configuration - RAFO Theme
 
 [theme]
-# Primary color (Deep blue from Silao)
-primaryColor = "#1a4d8f"  # hsl(220 80% 29%)
+# Primary color
+primaryColor = "#ca2b2b"  # Rouge RAFO
 
-# Background color (Light blue-gray)
-backgroundColor = "#fbfcfe"  # hsl(216 100% 99%)
+# Background color (Mode sombre par défaut pour éviter flash blanc)
+backgroundColor = "#161413"  # Fond sombre RAFO
 
-# Secondary background color (Muted)
-secondaryBackgroundColor = "#f0f4f8"  # hsl(210 40% 96%)
+# Secondary background color
+secondaryBackgroundColor = "#1b1a18"  # Sidebar sombre RAFO
 
-# Text color (Dark foreground)
-textColor = "#1a202c"  # hsl(222 47% 11%)
+# Text color
+textColor = "#eeece8"  # Texte clair RAFO
 
 # Font
 font = "sans serif"

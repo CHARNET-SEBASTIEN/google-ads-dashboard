@@ -4,6 +4,12 @@
  * Minimaliste et subtil
  */
 
+/* Anti-flash: applique la couleur de fond immédiatement */
+html {
+  background-color: #161413 !important;
+  transition: none !important;
+}
+
 :root {
   /* Couleurs RAFO Dark réelles */
   --rafo-bg: #161413;  /* Fond très sombre brun */

@@ -4,6 +4,12 @@
  * Palette beige/neutre, minimaliste
  */
 
+/* Anti-flash: applique la couleur de fond immédiatement */
+html {
+  background-color: #fbfaf9 !important;
+  transition: none !important;
+}
+
 :root {
   /* Couleurs RAFO réelles */
   --rafo-bg: #fbfaf9;  /* Fond beige clair */

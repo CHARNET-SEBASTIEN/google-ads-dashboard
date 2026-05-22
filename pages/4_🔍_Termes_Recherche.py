@@ -9,7 +9,7 @@ from datetime import datetime
 from config.settings import STREAMLIT_CONFIG
 from config.i18n import t, init_language
 from modules.script_data_loader import script_loader
-from utils.ui_helpers import load_custom_css, init_theme
+from utils.ui_helpers import load_custom_css, init_theme, prevent_white_flash
 from components.sidebar import render_custom_sidebar, hide_default_navigation
 from components.topbar import render_topbar, TOPBAR_CSS
 
@@ -19,6 +19,7 @@ from components.topbar import render_topbar, TOPBAR_CSS
 # ============================================================================
 
 st.set_page_config(**STREAMLIT_CONFIG)
+prevent_white_flash()
 load_custom_css()
 hide_default_navigation()
 init_language()

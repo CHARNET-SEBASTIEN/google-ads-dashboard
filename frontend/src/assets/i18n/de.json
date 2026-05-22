@@ -1,0 +1,63 @@
+{
+  "app": {
+    "title": "ADS Dashboard",
+    "subtitle": "Google Ads Steuerung"
+  },
+  "nav": {
+    "home": "Startseite",
+    "config": "Konfiguration",
+    "overview": "Übersicht",
+    "campaign_detail": "Kampagnendetail",
+    "search_terms": "Suchbegriffe",
+    "diagnostic": "Diagnose"
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "export": "Exportieren",
+    "import": "Importieren",
+    "refresh": "Aktualisieren",
+    "close": "Schließen",
+    "yes": "Ja",
+    "no": "Nein",
+    "all": "Alle",
+    "none": "Keine",
+    "select": "Auswählen"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "connected": "Verbunden",
+    "disconnected": "Getrennt",
+    "account": "Konto"
+  },
+  "campaign": {
+    "name": "Name",
+    "status": "Status",
+    "budget": "Budget",
+    "impressions": "Impressionen",
+    "clicks": "Klicks",
+    "ctr": "CTR",
+    "cpc": "CPC",
+    "cost": "Kosten",
+    "conversions": "Conversions",
+    "enabled": "Aktiviert",
+    "paused": "Pausiert",
+    "removed": "Entfernt"
+  },
+  "diagnostic": {
+    "critical": "Kritisch",
+    "high": "Hoch",
+    "medium": "Mittel",
+    "low": "Niedrig",
+    "issues": "Erkannte Probleme",
+    "recommendations": "Empfehlungen"
+  }
+}

@@ -10,7 +10,7 @@ from datetime import datetime
 from config.settings import STREAMLIT_CONFIG
 from config.i18n import t, init_language
 from modules.script_data_loader import script_loader
-from utils.ui_helpers import load_custom_css, init_theme
+from utils.ui_helpers import load_custom_css, init_theme, prevent_white_flash, format_french_datetime
 from components.sidebar import render_custom_sidebar, hide_default_navigation
 from components.topbar import render_topbar, TOPBAR_CSS
 
@@ -20,6 +20,7 @@ from components.topbar import render_topbar, TOPBAR_CSS
 # ============================================================================
 
 st.set_page_config(**STREAMLIT_CONFIG)
+prevent_white_flash()
 load_custom_css()
 hide_default_navigation()
 init_language()
@@ -246,8 +247,8 @@ def main():
     last_update = script_loader.get_last_update()
 
     if last_update:
-        update_time = datetime.fromisoformat(last_update.replace('Z', '+00:00'))
-        st.info(f"📅 Analyse basée sur les données du {update_time.strftime('%d/%m/%Y à %H:%M')}")
+        update_time_str = format_french_datetime(last_update)
+        st.info(f"📅 Analyse basée sur les données du {update_time_str}")
 
     # Lancer l'analyse
     with st.spinner("🔍 Analyse en cours..."):

@@ -1,0 +1,47 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Angular Material theme */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* Global styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-color, #fbfaf9);
+  color: var(--text-color, #292624);
+}
+
+/* RAFO CSS Variables - Light Mode (default) */
+:root {
+  --bg-color: #fbfaf9;
+  --sidebar-color: #ffffff;
+  --card-color: #ffffff;
+  --border-color: #e3e1dd;
+  --text-color: #292624;
+  --text-secondary: #85807a;
+  --hover-color: #f4f3f0;
+  --green: #629a23;
+  --red: #dc2828;
+  --blue: #3b82f6;
+  --orange: #f97316;
+  --yellow: #eab308;
+}
+
+/* RAFO CSS Variables - Dark Mode */
+.dark {
+  --bg-color: #1a1917;
+  --sidebar-color: #242220;
+  --card-color: #2d2a27;
+  --border-color: #3d3a37;
+  --text-color: #f4f3f0;
+  --text-secondary: #a8a39d;
+  --hover-color: #373430;
+}

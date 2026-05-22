@@ -11,7 +11,7 @@ from datetime import datetime
 from config.settings import STREAMLIT_CONFIG
 from config.i18n import t, init_language
 from modules.script_data_loader import script_loader
-from utils.ui_helpers import load_custom_css, init_theme
+from utils.ui_helpers import load_custom_css, init_theme, prevent_white_flash
 from components.sidebar import render_custom_sidebar, hide_default_navigation
 from components.topbar import render_topbar, TOPBAR_CSS
 
@@ -21,12 +21,70 @@ from components.topbar import render_topbar, TOPBAR_CSS
 # ============================================================================
 
 st.set_page_config(**STREAMLIT_CONFIG)
+prevent_white_flash()
 load_custom_css()
 hide_default_navigation()
 init_language()
 init_theme()
 st.markdown(TOPBAR_CSS, unsafe_allow_html=True)
 render_topbar()
+
+
+# ============================================================================
+# TRADUCTIONS
+# ============================================================================
+
+def translate_campaign_type(campaign_type: str) -> str:
+    """Traduit le type de campagne en français"""
+    translations = {
+        'SEARCH': 'Recherche',
+        'DISPLAY': 'Display',
+        'SHOPPING': 'Shopping',
+        'VIDEO': 'Vidéo',
+        'SMART': 'Intelligente',
+        'PERFORMANCE_MAX': 'Performance Max',
+        'HOTEL': 'Hôtel',
+        'LOCAL': 'Locale'
+    }
+    return translations.get(campaign_type, campaign_type)
+
+
+def translate_bidding_strategy(strategy: str) -> str:
+    """Traduit la stratégie d'enchères en français"""
+    translations = {
+        'MAXIMIZE_CONVERSIONS': 'Maximiser les conversions',
+        'MAXIMIZE_CONVERSION_VALUE': 'Maximiser la valeur de conversion',
+        'TARGET_CPA': 'CPA cible',
+        'TARGET_ROAS': 'ROAS cible',
+        'MANUAL_CPC': 'CPC manuel',
+        'ENHANCED_CPC': 'CPC optimisé',
+        'TARGET_SPEND': 'Maximiser les clics',
+        'TARGET_IMPRESSION_SHARE': 'Taux d\'impressions cible',
+        'MAXIMIZE_CLICKS': 'Maximiser les clics'
+    }
+    return translations.get(strategy, strategy)
+
+
+def translate_status(status: str) -> str:
+    """Traduit le statut en français"""
+    translations = {
+        'ENABLED': 'Activée',
+        'PAUSED': 'En pause',
+        'REMOVED': 'Supprimée',
+        'UNKNOWN': 'Inconnu'
+    }
+    return translations.get(status, status)
+
+
+def translate_match_type(match_type: str) -> str:
+    """Traduit le type de correspondance en français"""
+    translations = {
+        'EXACT': 'Exacte',
+        'PHRASE': 'Expression',
+        'BROAD': 'Large',
+        'BROAD_MATCH': 'Requête large'
+    }
+    return translations.get(match_type, match_type)
 
 
 # ============================================================================
@@ -168,7 +226,8 @@ def main():
             st.write(f"**Budget journalier** : {campaign.get('budget', 0):.2f} {currency}")
 
         with col2:
-            st.write(f"**Stratégie d'enchères** : {campaign.get('biddingStrategy', 'N/A')}")
+            strategy = translate_bidding_strategy(campaign.get('biddingStrategy', 'N/A'))
+            st.write(f"**Stratégie d'enchères** : {strategy}")
 
     # ========================================================================
     # ONGLET 2 : MOTS-CLÉS
@@ -233,14 +292,16 @@ def main():
 
             # Afficher
             for idx, kw in df_filtered.iterrows():
-                with st.expander(f"**{kw['text']}** ({kw.get('matchType', 'N/A')})"):
+                match_type_fr = translate_match_type(kw.get('matchType', 'N/A'))
+                with st.expander(f"**{kw['text']}** ({match_type_fr})"):
                     col1, col2, col3 = st.columns(3)
 
                     with col1:
                         st.write("**Informations**")
                         st.write(f"Groupe d'annonces : {kw.get('adGroupName', 'N/A')}")
-                        st.write(f"Type : {kw.get('matchType', 'N/A')}")
-                        st.write(f"Statut : {kw.get('status', 'N/A')}")
+                        st.write(f"Type : {match_type_fr}")
+                        status_fr = translate_status(kw.get('status', 'N/A'))
+                        st.write(f"Statut : {status_fr}")
 
                     with col2:
                         st.write("**Volume**")
@@ -341,8 +402,10 @@ def main():
         with col1:
             st.write("**Général**")
             st.write(f"ID : {campaign.get('id')}")
-            st.write(f"Type : {campaign.get('type', 'N/A')}")
-            st.write(f"Statut : {campaign.get('status', 'N/A')}")
+            type_fr = translate_campaign_type(campaign.get('type', 'N/A'))
+            st.write(f"Type : {type_fr}")
+            status_fr = translate_status(campaign.get('status', 'N/A'))
+            st.write(f"Statut : {status_fr}")
 
             st.markdown("---")
 
@@ -354,7 +417,8 @@ def main():
         with col2:
             st.write("**Budget**")
             st.write(f"Budget journalier : {campaign.get('budget', 0):.2f} {currency}")
-            st.write(f"Stratégie d'enchères : {campaign.get('biddingStrategy', 'N/A')}")
+            strategy_fr = translate_bidding_strategy(campaign.get('biddingStrategy', 'N/A'))
+            st.write(f"Stratégie d'enchères : {strategy_fr}")
 
             st.markdown("---")
 

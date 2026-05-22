@@ -36,28 +36,24 @@ def render_custom_sidebar(current_page: str = "home"):
         )
 
         nav_pages = [
-            ("app", "▦", t("home"), "home"),
-            ("Configuration_Simple", "⚙", t("config"), "config"),
-            ("Vue_Ensemble", "◫", t("overview"), "overview"),
-            ("Detail_Campagne", "◎", t("campaign_detail"), "campaign"),
-            ("Termes_Recherche", "⌕", t("search_terms"), "search"),
-            ("Diagnostic", "✚", t("diagnostic"), "diagnostic"),
+            ("▦", t("home"), "home", "app.py"),
+            ("⚙", t("config"), "config", "pages/0_⚙️_Configuration_Simple.py"),
+            ("◫", t("overview"), "overview", "pages/2_📊_Vue_Ensemble.py"),
+            ("◎", t("campaign_detail"), "campaign", "pages/3_🎯_Detail_Campagne.py"),
+            ("⌕", t("search_terms"), "search", "pages/4_🔍_Termes_Recherche.py"),
+            ("✚", t("diagnostic"), "diagnostic", "pages/5_⚕️_Diagnostic.py"),
         ]
 
-        nav_links = []
-        for href, icon, label, key in nav_pages:
-            active = " is-active" if key == current_page else ""
-            nav_links.append(
-                f'<a class="rafo-nav-link{active}" href="{href}" target="_self">'
-                f'<span class="rafo-nav-icon">{escape(icon)}</span>'
-                f'<span>{escape(label)}</span>'
-                f'</a>'
-            )
-
-        st.markdown(
-            f'<nav class="rafo-sidebar-nav">{"".join(nav_links)}</nav>',
-            unsafe_allow_html=True
-        )
+        # Utiliser des boutons Streamlit pour la navigation
+        for icon, label, key, page_path in nav_pages:
+            is_active = key == current_page
+            if st.button(
+                f"{icon}  {label}",
+                key=f"nav_{key}",
+                use_container_width=True,
+                type="primary" if is_active else "secondary"
+            ):
+                st.switch_page(page_path)
 
         st.markdown(
             f"""

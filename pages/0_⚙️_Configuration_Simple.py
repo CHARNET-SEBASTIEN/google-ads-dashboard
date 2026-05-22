@@ -13,7 +13,7 @@ from urllib.parse import parse_qs, urlparse
 from config.settings import STREAMLIT_CONFIG
 from config.i18n import t, init_language
 from modules.script_data_loader import script_loader
-from utils.ui_helpers import load_custom_css, init_theme
+from utils.ui_helpers import load_custom_css, init_theme, prevent_white_flash, format_french_datetime
 from components.sidebar import render_custom_sidebar, hide_default_navigation
 from components.topbar import render_topbar, TOPBAR_CSS
 
@@ -23,6 +23,7 @@ from components.topbar import render_topbar, TOPBAR_CSS
 # ============================================================================
 
 st.set_page_config(**STREAMLIT_CONFIG)
+prevent_white_flash()
 load_custom_css()
 hide_default_navigation()
 init_language()
@@ -77,8 +78,8 @@ def main():
 
         with col3:
             if last_update:
-                update_time = datetime.fromisoformat(last_update.replace('Z', '+00:00'))
-                st.metric("Dernière mise à jour", update_time.strftime("%d/%m/%Y %H:%M"))
+                update_time_str = format_french_datetime(last_update, "%d/%m/%Y %H:%M")
+                st.metric("Dernière mise à jour", update_time_str)
             else:
                 st.metric("Dernière mise à jour", "Inconnue")
 

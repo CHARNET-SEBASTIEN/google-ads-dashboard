@@ -8,7 +8,7 @@ import streamlit as st
 from config.settings import STREAMLIT_CONFIG
 from config.i18n import t, init_language
 from modules.storage import storage
-from utils.ui_helpers import load_custom_css, init_theme
+from utils.ui_helpers import load_custom_css, init_theme, prevent_white_flash
 from components.sidebar import render_custom_sidebar, hide_default_navigation
 from components.topbar import render_topbar, TOPBAR_CSS
 
@@ -18,6 +18,9 @@ from components.topbar import render_topbar, TOPBAR_CSS
 # ============================================================================
 
 st.set_page_config(**STREAMLIT_CONFIG)
+
+# Éviter le flash blanc lors de la navigation
+prevent_white_flash()
 
 # Charger le CSS personnalisé
 load_custom_css()
@@ -40,6 +43,9 @@ render_topbar()
 
 def init_session_state():
     """Initialise les variables de session"""
+    if "current_page" not in st.session_state:
+        st.session_state.current_page = "home"
+
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
 

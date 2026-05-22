@@ -9,7 +9,7 @@ from datetime import datetime
 from config.settings import STREAMLIT_CONFIG, STATUS_COLORS
 from config.i18n import t, init_language
 from modules.script_data_loader import script_loader
-from utils.ui_helpers import load_custom_css, init_theme
+from utils.ui_helpers import load_custom_css, init_theme, prevent_white_flash, format_french_datetime
 from components.sidebar import render_custom_sidebar, hide_default_navigation
 from components.topbar import render_topbar, TOPBAR_CSS
 
@@ -19,12 +19,59 @@ from components.topbar import render_topbar, TOPBAR_CSS
 # ============================================================================
 
 st.set_page_config(**STREAMLIT_CONFIG)
+prevent_white_flash()
 load_custom_css()
 hide_default_navigation()
 init_language()
 init_theme()
 st.markdown(TOPBAR_CSS, unsafe_allow_html=True)
 render_topbar()
+
+
+# ============================================================================
+# TRADUCTIONS
+# ============================================================================
+
+def translate_campaign_type(campaign_type: str) -> str:
+    """Traduit le type de campagne en français"""
+    translations = {
+        'SEARCH': 'Recherche',
+        'DISPLAY': 'Display',
+        'SHOPPING': 'Shopping',
+        'VIDEO': 'Vidéo',
+        'SMART': 'Intelligente',
+        'PERFORMANCE_MAX': 'Performance Max',
+        'HOTEL': 'Hôtel',
+        'LOCAL': 'Locale'
+    }
+    return translations.get(campaign_type, campaign_type)
+
+
+def translate_bidding_strategy(strategy: str) -> str:
+    """Traduit la stratégie d'enchères en français"""
+    translations = {
+        'MAXIMIZE_CONVERSIONS': 'Maximiser les conversions',
+        'MAXIMIZE_CONVERSION_VALUE': 'Maximiser la valeur de conversion',
+        'TARGET_CPA': 'CPA cible',
+        'TARGET_ROAS': 'ROAS cible',
+        'MANUAL_CPC': 'CPC manuel',
+        'ENHANCED_CPC': 'CPC optimisé',
+        'TARGET_SPEND': 'Maximiser les clics',
+        'TARGET_IMPRESSION_SHARE': 'Taux d\'impressions cible',
+        'MAXIMIZE_CLICKS': 'Maximiser les clics'
+    }
+    return translations.get(strategy, strategy)
+
+
+def translate_status(status: str) -> str:
+    """Traduit le statut en français"""
+    translations = {
+        'ENABLED': 'Activée',
+        'PAUSED': 'En pause',
+        'REMOVED': 'Supprimée',
+        'UNKNOWN': 'Inconnu'
+    }
+    return translations.get(status, status)
 
 
 # ============================================================================
@@ -87,8 +134,8 @@ def main():
     # Dernière mise à jour
     last_update = script_loader.get_last_update()
     if last_update:
-        update_time = datetime.fromisoformat(last_update.replace('Z', '+00:00'))
-        st.info(f"📅 Dernière mise à jour : {update_time.strftime('%d/%m/%Y à %H:%M')}")
+        update_time_str = format_french_datetime(last_update)
+        st.info(f"📅 Dernière mise à jour : {update_time_str}")
 
     # Charger les campagnes
     df_campaigns = load_campaigns()
@@ -146,14 +193,16 @@ def main():
 
     # Afficher le tableau
     for idx, campaign in df_filtered.iterrows():
-        with st.expander(f"**{campaign['name']}** ({campaign.get('status', 'N/A')})"):
+        status_fr = translate_status(campaign.get('status', 'N/A'))
+        with st.expander(f"**{campaign['name']}** ({status_fr})"):
             col1, col2, col3 = st.columns(3)
 
             with col1:
                 st.write("**Informations**")
                 st.write(f"ID : {campaign.get('id', 'N/A')}")
-                st.write(f"Type : {campaign.get('type', 'N/A')}")
-                st.write(f"Statut : {campaign.get('status', 'N/A')}")
+                type_fr = translate_campaign_type(campaign.get('type', 'N/A'))
+                st.write(f"Type : {type_fr}")
+                st.write(f"Statut : {status_fr}")
 
                 # Badge coloré selon le statut
                 if campaign.get('status') == 'ENABLED':
@@ -167,7 +216,8 @@ def main():
                 st.write("**Budget & Enchères**")
                 budget = campaign.get('budget', 0)
                 st.write(f"Budget journalier : {budget:.2f} {currency}")
-                st.write(f"Stratégie : {campaign.get('biddingStrategy', 'N/A')}")
+                strategy_fr = translate_bidding_strategy(campaign.get('biddingStrategy', 'N/A'))
+                st.write(f"Stratégie : {strategy_fr}")
 
             with col3:
                 st.write("**Performances (30j)**")

@@ -1,0 +1,63 @@
+{
+  "app": {
+    "title": "Dashboard ADS",
+    "subtitle": "Pilotage Google Ads"
+  },
+  "nav": {
+    "home": "Accueil",
+    "config": "Configuration",
+    "overview": "Vue d'ensemble",
+    "campaign_detail": "Détail campagne",
+    "search_terms": "Termes de recherche",
+    "diagnostic": "Diagnostic"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "import": "Importer",
+    "refresh": "Actualiser",
+    "close": "Fermer",
+    "yes": "Oui",
+    "no": "Non",
+    "all": "Tous",
+    "none": "Aucun",
+    "select": "Sélectionner"
+  },
+  "auth": {
+    "login": "Se connecter",
+    "logout": "Se déconnecter",
+    "connected": "Connecté",
+    "disconnected": "Déconnecté",
+    "account": "Compte"
+  },
+  "campaign": {
+    "name": "Nom",
+    "status": "Statut",
+    "budget": "Budget",
+    "impressions": "Impressions",
+    "clicks": "Clics",
+    "ctr": "CTR",
+    "cpc": "CPC",
+    "cost": "Coût",
+    "conversions": "Conversions",
+    "enabled": "Activée",
+    "paused": "En pause",
+    "removed": "Supprimée"
+  },
+  "diagnostic": {
+    "critical": "Critique",
+    "high": "Élevé",
+    "medium": "Moyen",
+    "low": "Faible",
+    "issues": "Problèmes détectés",
+    "recommendations": "Recommandations"
+  }
+}
