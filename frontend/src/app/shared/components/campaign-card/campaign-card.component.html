@@ -1,0 +1,39 @@
+<div class="campaign-card" [ngClass]="getStatusClass(campaign.status)">
+  <div class="card-header">
+    <div class="card-title">
+      <h3>{{ campaign.name }}</h3>
+      <span class="campaign-id">#{{ campaign.id }}</span>
+    </div>
+    <span class="status-badge" [ngClass]="getStatusClass(campaign.status)">
+      {{ getStatusLabel(campaign.status) }}
+    </span>
+  </div>
+
+  <div class="card-metrics">
+    <div class="metric">
+      <span class="metric-label">{{ 'campaign.impressions' | transloco }}</span>
+      <span class="metric-value">{{ campaign.impressions || 0 | number }}</span>
+    </div>
+
+    <div class="metric">
+      <span class="metric-label">{{ 'campaign.clicks' | transloco }}</span>
+      <span class="metric-value">{{ campaign.clicks || 0 | number }}</span>
+    </div>
+
+    <div class="metric">
+      <span class="metric-label">{{ 'campaign.ctr' | transloco }}</span>
+      <span class="metric-value">{{ (campaign.ctr || 0) | number:'1.2-2' }}%</span>
+    </div>
+
+    <div class="metric">
+      <span class="metric-label">{{ 'campaign.cost' | transloco }}</span>
+      <span class="metric-value">{{ (campaign.cost || 0) | number:'1.2-2' }}€</span>
+    </div>
+  </div>
+
+  <div class="card-footer">
+    <button class="btn-details" (click)="onViewDetails()">
+      Voir les détails →
+    </button>
+  </div>
+</div>

@@ -1,1 +1,101 @@
-<p>overview works!</p>
+<div class="campaigns-page">
+  <div class="page-header">
+    <div>
+      <h1>{{ 'nav.overview' | transloco }}</h1>
+      <p>Liste de toutes vos campagnes Google Ads avec métriques</p>
+    </div>
+    <button class="btn btn-primary" (click)="exportCsv()">
+      📥 Export CSV
+    </button>
+  </div>
+
+  <!-- Stats Overview -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <app-metric-card
+        label="Campagnes"
+        [value]="totalCampaigns"
+        icon="📊"
+        color="blue"
+      ></app-metric-card>
+
+      <app-metric-card
+        label="Impressions"
+        [value]="totalImpressions"
+        icon="👁️"
+        color="green"
+      ></app-metric-card>
+
+      <app-metric-card
+        label="Clics"
+        [value]="totalClicks"
+        icon="👆"
+        color="orange"
+      ></app-metric-card>
+
+      <app-metric-card
+        label="Coût total"
+        [value]="totalCost.toFixed(2) + '€'"
+        icon="💰"
+        color="red"
+      ></app-metric-card>
+    </div>
+  </section>
+
+  <!-- Filters -->
+  <section class="filters-section">
+    <div class="filter-bar">
+      <div class="search-box">
+        <input
+          type="text"
+          [(ngModel)]="searchText"
+          (keyup.enter)="onSearch()"
+          placeholder="Rechercher une campagne..."
+          class="search-input"
+        >
+        <button class="btn-search" (click)="onSearch()">
+          🔍
+        </button>
+      </div>
+
+      <div class="status-filters">
+        <label class="filter-label">Statut :</label>
+        <button
+          *ngFor="let status of statusOptions"
+          (click)="toggleStatus(status.value)"
+          [class.active]="selectedStatus.includes(status.value)"
+          class="filter-chip"
+        >
+          {{ status.label }}
+        </button>
+      </div>
+
+      <button class="btn btn-secondary" (click)="clearFilters()">
+        ✕ Réinitialiser
+      </button>
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>{{ 'common.loading' | transloco }}...</p>
+  </div>
+
+  <!-- Campaigns List -->
+  <section class="campaigns-list" *ngIf="!loading">
+    <div *ngIf="filteredCampaigns.length === 0" class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>Aucune campagne trouvée</h3>
+      <p>Essayez de modifier vos filtres ou d'importer des données</p>
+    </div>
+
+    <div class="campaigns-grid" *ngIf="filteredCampaigns.length > 0">
+      <app-campaign-card
+        *ngFor="let campaign of filteredCampaigns"
+        [campaign]="campaign"
+        (viewDetails)="onViewCampaignDetails($event)"
+      ></app-campaign-card>
+    </div>
+  </section>
+</div>
