@@ -1,0 +1,210 @@
+<div class="campaign-detail-page">
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>{{ 'common.loading' | transloco }}...</p>
+  </div>
+
+  <div *ngIf="!loading && campaign">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <h1>{{ campaign.name }}</h1>
+        <div class="campaign-meta">
+          <span class="campaign-id">#{{ campaign.id }}</span>
+          <span class="status-badge" [class]="'status-' + campaign.status.toLowerCase()">
+            {{ getStatusLabel(campaign.status) }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+      <app-metric-card
+        label="{{ 'campaign.impressions' | transloco }}"
+        [value]="campaign.impressions || 0"
+        icon="👁️"
+        color="green"
+      ></app-metric-card>
+
+      <app-metric-card
+        label="{{ 'campaign.clicks' | transloco }}"
+        [value]="campaign.clicks || 0"
+        icon="👆"
+        color="blue"
+      ></app-metric-card>
+
+      <app-metric-card
+        label="{{ 'campaign.ctr' | transloco }}"
+        [value]="(campaign.ctr || 0) | number:'1.2-2'"
+        icon="📊"
+        color="orange"
+      ></app-metric-card>
+
+      <app-metric-card
+        label="{{ 'campaign.cost' | transloco }}"
+        [value]="(campaign.cost || 0) | number:'1.2-2'"
+        icon="💰"
+        color="red"
+      ></app-metric-card>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab-buttons">
+        <button
+          (click)="setActiveTab('overview')"
+          [class.active]="activeTab === 'overview'"
+          class="tab-button"
+        >
+          📋 Vue d'ensemble
+        </button>
+        <button
+          (click)="setActiveTab('keywords')"
+          [class.active]="activeTab === 'keywords'"
+          class="tab-button"
+        >
+          🔑 Mots-clés ({{ keywords.length }})
+        </button>
+        <button
+          (click)="setActiveTab('ads')"
+          [class.active]="activeTab === 'ads'"
+          class="tab-button"
+        >
+          📢 Annonces ({{ ads.length }})
+        </button>
+        <button
+          (click)="setActiveTab('performance')"
+          [class.active]="activeTab === 'performance'"
+          class="tab-button"
+        >
+          📈 Performances
+        </button>
+      </div>
+
+      <!-- Tab: Overview -->
+      <div *ngIf="activeTab === 'overview'" class="tab-content">
+        <div class="overview-grid">
+          <div class="info-card">
+            <h3>Budget</h3>
+            <p class="value">{{ campaign.budget || 'N/A' }}</p>
+          </div>
+
+          <div class="info-card">
+            <h3>Conversions</h3>
+            <p class="value">{{ campaign.conversions || 0 }}</p>
+          </div>
+
+          <div class="info-card">
+            <h3>CPC moyen</h3>
+            <p class="value">{{ (campaign.cpc || 0) | number:'1.2-2' }}€</p>
+          </div>
+
+          <div class="info-card">
+            <h3>Statut</h3>
+            <p class="value">{{ getStatusLabel(campaign.status) }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Keywords -->
+      <div *ngIf="activeTab === 'keywords'" class="tab-content">
+        <div *ngIf="keywords.length === 0" class="empty-state">
+          <p>Aucun mot-clé trouvé</p>
+        </div>
+
+        <div *ngIf="keywords.length > 0" class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Mot-clé</th>
+                <th>Type</th>
+                <th>Statut</th>
+                <th class="text-right">Impressions</th>
+                <th class="text-right">Clics</th>
+                <th class="text-right">CTR</th>
+                <th class="text-right">Coût</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let keyword of keywords">
+                <td class="font-bold">{{ keyword.text }}</td>
+                <td>
+                  <span class="badge">{{ getMatchTypeLabel(keyword.match_type) }}</span>
+                </td>
+                <td>{{ keyword.status }}</td>
+                <td class="text-right">{{ keyword.impressions | number }}</td>
+                <td class="text-right">{{ keyword.clicks | number }}</td>
+                <td class="text-right">{{ keyword.ctr | number:'1.2-2' }}%</td>
+                <td class="text-right">{{ keyword.cost | number:'1.2-2' }}€</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab: Ads -->
+      <div *ngIf="activeTab === 'ads'" class="tab-content">
+        <div *ngIf="ads.length === 0" class="empty-state">
+          <p>Aucune annonce trouvée</p>
+        </div>
+
+        <div *ngIf="ads.length > 0" class="ads-list">
+          <div *ngFor="let ad of ads" class="ad-card">
+            <div class="ad-header">
+              <span class="ad-type">{{ ad.type }}</span>
+              <span class="ad-status">{{ ad.status }}</span>
+            </div>
+            <div class="ad-content">
+              <p class="ad-headline" *ngIf="ad.headline1">{{ ad.headline1 }}</p>
+              <p class="ad-headline" *ngIf="ad.headline2">{{ ad.headline2 }}</p>
+              <p class="ad-description" *ngIf="ad.description">{{ ad.description }}</p>
+            </div>
+            <div class="ad-metrics">
+              <span>{{ ad.impressions | number }} impressions</span>
+              <span>{{ ad.clicks | number }} clics</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Performance -->
+      <div *ngIf="activeTab === 'performance'" class="tab-content">
+        <div *ngIf="performance.length === 0" class="empty-state">
+          <p>Aucune donnée de performance disponible</p>
+        </div>
+
+        <div *ngIf="performance.length > 0">
+          <p class="info-text">Graphiques Plotly.js à venir</p>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th class="text-right">Impressions</th>
+                  <th class="text-right">Clics</th>
+                  <th class="text-right">Coût</th>
+                  <th class="text-right">Conversions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let perf of performance">
+                  <td>{{ perf.date }}</td>
+                  <td class="text-right">{{ perf.impressions | number }}</td>
+                  <td class="text-right">{{ perf.clicks | number }}</td>
+                  <td class="text-right">{{ perf.cost | number:'1.2-2' }}€</td>
+                  <td class="text-right">{{ perf.conversions | number:'1.1-1' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !campaign" class="empty-state">
+    <h2>Campagne introuvable</h2>
+    <p>Sélectionnez une campagne depuis la liste</p>
+  </div>
+</div>

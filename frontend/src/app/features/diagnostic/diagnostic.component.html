@@ -1,0 +1,158 @@
+<div class="diagnostic-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">{{ 'diagnostic.title' | transloco }}</h1>
+      <p class="page-subtitle">{{ 'diagnostic.subtitle' | transloco }}</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="runDiagnostics()" [disabled]="loading">
+        <span>🔄</span>
+        {{ 'diagnostic.run' | transloco }}
+      </button>
+      <button class="btn btn-primary" (click)="exportCsv()">
+        <span>📥</span>
+        {{ 'diagnostic.export' | transloco }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-section">
+    <app-metric-card
+      [label]="'diagnostic.total' | transloco"
+      [value]="totalIssues"
+      icon="📋"
+    ></app-metric-card>
+
+    <app-metric-card
+      [label]="'diagnostic.critical' | transloco"
+      [value]="criticalCount"
+      icon="🔴"
+      color="red"
+    ></app-metric-card>
+
+    <app-metric-card
+      [label]="'diagnostic.high' | transloco"
+      [value]="highCount"
+      icon="🟠"
+      color="orange"
+    ></app-metric-card>
+
+    <app-metric-card
+      [label]="'diagnostic.medium' | transloco"
+      [value]="mediumCount"
+      icon="🟡"
+      color="orange"
+    ></app-metric-card>
+
+    <app-metric-card
+      [label]="'diagnostic.low' | transloco"
+      [value]="lowCount"
+      icon="🔵"
+      color="blue"
+    ></app-metric-card>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <label class="filter-label">{{ 'diagnostic.filter_severity' | transloco }}</label>
+      <div class="filter-chips">
+        <button
+          *ngFor="let severity of severityOptions"
+          class="filter-chip"
+          [class.active]="selectedSeverities.includes(severity.value)"
+          (click)="toggleSeverity(severity.value)"
+        >
+          {{ severity.label }}
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-group" *ngIf="categoryOptions.length > 0">
+      <label class="filter-label">{{ 'diagnostic.filter_category' | transloco }}</label>
+      <div class="filter-chips">
+        <button
+          *ngFor="let category of categoryOptions"
+          class="filter-chip"
+          [class.active]="selectedCategories.includes(category.value)"
+          (click)="toggleCategory(category.value)"
+        >
+          {{ category.label }}
+        </button>
+      </div>
+    </div>
+
+    <button
+      *ngIf="selectedSeverities.length > 0 || selectedCategories.length > 0"
+      class="btn-clear-filters"
+      (click)="clearFilters()"
+    >
+      {{ 'diagnostic.clear_filters' | transloco }}
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>{{ 'diagnostic.loading' | transloco }}</p>
+  </div>
+
+  <!-- Issues List -->
+  <div *ngIf="!loading && issues.length > 0" class="issues-list">
+    <div
+      *ngFor="let issue of issues"
+      class="issue-card"
+      [ngClass]="getSeverityClass(issue.severity)"
+    >
+      <div class="issue-header" (click)="toggleIssue(issue.id)">
+        <div class="issue-header-left">
+          <span class="severity-badge" [ngClass]="getSeverityClass(issue.severity)">
+            {{ getSeverityLabel(issue.severity) }}
+          </span>
+          <span class="category-badge">
+            {{ getCategoryLabel(issue.category) }}
+          </span>
+        </div>
+        <div class="issue-header-right">
+          <span class="expand-icon">{{ isExpanded(issue.id) ? '▼' : '▶' }}</span>
+        </div>
+      </div>
+
+      <div class="issue-body">
+        <h3 class="issue-title">{{ issue.title }}</h3>
+        <p class="issue-campaign">{{ issue.campaign_name }}</p>
+        <p class="issue-message">{{ issue.message }}</p>
+      </div>
+
+      <div *ngIf="isExpanded(issue.id)" class="issue-details">
+        <div *ngIf="issue.impact" class="issue-detail-section">
+          <h4 class="detail-label">{{ 'diagnostic.impact' | transloco }}</h4>
+          <p class="detail-content">{{ issue.impact }}</p>
+        </div>
+
+        <div *ngIf="issue.recommendation" class="issue-detail-section">
+          <h4 class="detail-label">{{ 'diagnostic.recommendation' | transloco }}</h4>
+          <p class="detail-content">{{ issue.recommendation }}</p>
+        </div>
+
+        <div class="issue-actions">
+          <button class="btn-action btn-action-primary">
+            {{ 'diagnostic.view_campaign' | transloco }}
+          </button>
+          <button class="btn-action btn-action-secondary">
+            {{ 'diagnostic.mark_resolved' | transloco }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && issues.length === 0" class="empty-state">
+    <div class="empty-icon">✅</div>
+    <h3>{{ 'diagnostic.no_issues' | transloco }}</h3>
+    <p>{{ 'diagnostic.no_issues_desc' | transloco }}</p>
+  </div>
+</div>

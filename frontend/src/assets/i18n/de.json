@@ -1,18 +1,18 @@
 {
   "app": {
     "title": "ADS Dashboard",
-    "subtitle": "Google Ads Steuerung"
+    "subtitle": "Google Ads Verwaltung"
   },
   "nav": {
     "home": "Startseite",
     "config": "Konfiguration",
     "overview": "Übersicht",
-    "campaign_detail": "Kampagnendetail",
+    "campaign_detail": "Kampagnendetails",
     "search_terms": "Suchbegriffe",
     "diagnostic": "Diagnose"
   },
   "common": {
-    "loading": "Laden...",
+    "loading": "Wird geladen...",
     "error": "Fehler",
     "success": "Erfolg",
     "cancel": "Abbrechen",
@@ -53,10 +53,25 @@
     "removed": "Entfernt"
   },
   "diagnostic": {
+    "title": "Diagnose",
+    "subtitle": "Automatische Analyse Ihrer Kampagnen",
+    "run": "Diagnose starten",
+    "export": "Exportieren",
+    "total": "Gesamt",
     "critical": "Kritisch",
     "high": "Hoch",
     "medium": "Mittel",
     "low": "Niedrig",
+    "filter_severity": "Nach Schweregrad filtern",
+    "filter_category": "Nach Kategorie filtern",
+    "clear_filters": "Filter löschen",
+    "loading": "Analysiere...",
+    "impact": "Auswirkung",
+    "recommendation": "Empfehlung",
+    "view_campaign": "Kampagne ansehen",
+    "mark_resolved": "Als gelöst markieren",
+    "no_issues": "Keine Probleme gefunden",
+    "no_issues_desc": "Alle Ihre Kampagnen sind optimal!",
     "issues": "Erkannte Probleme",
     "recommendations": "Empfehlungen"
   }
