@@ -1,0 +1,40 @@
+- generic [ref=e4]:
+  - generic [ref=e13]:
+    - generic [ref=e17]:
+      - generic [ref=e18]: Dashboard ADS
+      - generic [ref=e19]: G
+      - generic [ref=e20]: Pilotage Google Ads
+    - generic [ref=e24]: Navigation
+    - navigation [ref=e28]:
+      - link "▦ Accueil" [ref=e29] [cursor=pointer]:
+        - /url: app
+        - generic [ref=e30]: ▦
+        - generic [ref=e31]: Accueil
+      - link "⚙ Configuration" [ref=e32] [cursor=pointer]:
+        - /url: Configuration_Simple
+        - generic [ref=e33]: ⚙
+        - generic [ref=e34]: Configuration
+      - link "◫ Vue d'ensemble" [ref=e35] [cursor=pointer]:
+        - /url: Vue_Ensemble
+        - generic [ref=e36]: ◫
+        - generic [ref=e37]: Vue d'ensemble
+      - link "◎ Détail campagne" [ref=e38] [cursor=pointer]:
+        - /url: Detail_Campagne
+        - generic [ref=e39]: ◎
+        - generic [ref=e40]: Détail campagne
+      - link "⌕ Termes de recherche" [ref=e41] [cursor=pointer]:
+        - /url: Termes_Recherche
+        - generic [ref=e42]: ⌕
+        - generic [ref=e43]: Termes de recherche
+      - link "✚ Diagnostic" [ref=e44] [cursor=pointer]:
+        - /url: Diagnostic
+        - generic [ref=e45]: ✚
+        - generic [ref=e46]: Diagnostic
+    - generic [ref=e51]: Version 2.0
+  - generic [ref=e57]:
+    - button "☀" [ref=e69] [cursor=pointer]:
+      - paragraph [ref=e71]: ☀
+    - alert [ref=e74]:
+      - paragraph [ref=e79]: ❌ Aucune donnée disponible
+    - button "⚙️ Aller à la configuration" [ref=e82] [cursor=pointer]:
+      - paragraph [ref=e84]: ⚙️ Aller à la configuration

@@ -1,0 +1,101 @@
+- generic [ref=e4]:
+  - generic [ref=e8]:
+    - button [ref=e10] [cursor=pointer]:
+      - img [ref=e11]
+    - generic [ref=e18]:
+      - generic [ref=e22]:
+        - generic [ref=e23]: Dashboard ADS
+        - generic [ref=e24]: G
+        - generic [ref=e25]: Pilotage Google Ads
+      - alert [ref=e28]:
+        - generic [ref=e31]:
+          - generic [ref=e32]: ℹ️
+          - paragraph [ref=e34]: ℹ️ Non connecté
+      - generic [ref=e38]: Navigation
+      - navigation [ref=e42]:
+        - link "▦ Accueil" [ref=e43] [cursor=pointer]:
+          - /url: app
+          - generic [ref=e44]: ▦
+          - generic [ref=e45]: Accueil
+        - link "⚙ Configuration" [ref=e46] [cursor=pointer]:
+          - /url: Configuration_Simple
+          - generic [ref=e47]: ⚙
+          - generic [ref=e48]: Configuration
+        - link "◫ Vue d'ensemble" [ref=e49] [cursor=pointer]:
+          - /url: Vue_Ensemble
+          - generic [ref=e50]: ◫
+          - generic [ref=e51]: Vue d'ensemble
+        - link "◎ Détail campagne" [ref=e52] [cursor=pointer]:
+          - /url: Detail_Campagne
+          - generic [ref=e53]: ◎
+          - generic [ref=e54]: Détail campagne
+        - link "⌕ Termes de recherche" [ref=e55] [cursor=pointer]:
+          - /url: Termes_Recherche
+          - generic [ref=e56]: ⌕
+          - generic [ref=e57]: Termes de recherche
+        - link "✚ Diagnostic" [ref=e58] [cursor=pointer]:
+          - /url: Diagnostic
+          - generic [ref=e59]: ✚
+          - generic [ref=e60]: Diagnostic
+      - group [ref=e62]:
+        - generic "💾 Cache" [ref=e63] [cursor=pointer]:
+          - paragraph [ref=e66]: 💾 Cache
+          - img [ref=e67]
+      - generic [ref=e74]: Version 2.0
+  - generic [ref=e79]:
+    - button "☀" [ref=e91] [cursor=pointer]:
+      - paragraph [ref=e93]: ☀
+    - heading "Configuration des données" [level=1] [ref=e99]:
+      - generic [ref=e100]:
+        - link:
+          - /url: "#93b38726"
+          - img
+        - generic [ref=e101]: Configuration des données
+    - alert [ref=e104]:
+      - paragraph [ref=e109]: ⚠️ Aucune donnée disponible
+    - alert [ref=e112]:
+      - paragraph [ref=e117]: Pour utiliser l'application, vous devez d'abord exporter vos données depuis Google Ads avec le script fourni.
+    - separator [ref=e121]
+    - generic [ref=e123]:
+      - tablist [ref=e125]:
+        - tab "Import manuel" [selected] [ref=e126] [cursor=pointer]:
+          - paragraph [ref=e128]: Import manuel
+        - tab "Google Drive" [ref=e129] [cursor=pointer]:
+          - paragraph [ref=e131]: Google Drive
+        - tab "Guide" [ref=e132] [cursor=pointer]:
+          - paragraph [ref=e134]: Guide
+      - tabpanel "Import manuel" [ref=e136]:
+        - generic [ref=e139]:
+          - heading "Import manuel du fichier JSON" [level=3] [ref=e145]:
+            - generic [ref=e146]:
+              - link:
+                - /url: "#import-manuel-du-fichier-json"
+                - img
+              - generic [ref=e147]: Import manuel du fichier JSON
+          - generic [ref=e150]:
+            - paragraph [ref=e151]: Si vous avez téléchargé le fichier JSON depuis Google Drive, vous pouvez l'importer ici.
+            - paragraph [ref=e152]:
+              - strong [ref=e153]: "Étapes :"
+            - list [ref=e154]:
+              - listitem [ref=e155]:
+                - text: Allez sur
+                - link "Google Drive" [ref=e156] [cursor=pointer]:
+                  - /url: https://drive.google.com
+              - listitem [ref=e157]:
+                - text: Ouvrez le dossier
+                - strong [ref=e158]: "\"Dashboard ADS\""
+              - listitem [ref=e159]:
+                - text: Téléchargez le fichier
+                - strong [ref=e160]: latest_data.json
+              - listitem [ref=e161]: Importez-le ci-dessous
+          - generic [ref=e163]:
+            - generic [ref=e164]:
+              - paragraph [ref=e166]: Choisissez le fichier JSON
+              - img [ref=e170]
+            - button "Choisissez le fichier JSON" [ref=e173] [cursor=pointer]:
+              - generic [ref=e174]:
+                - img [ref=e176]
+                - generic [ref=e179]:
+                  - generic [ref=e180]: Drag and drop file here
+                  - generic [ref=e181]: Limit 200MB per file • JSON
+              - button "Browse files" [ref=e182]

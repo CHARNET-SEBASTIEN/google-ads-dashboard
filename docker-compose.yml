@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  google-ads-dashboard:
+    build: .
+    container_name: google-ads-dashboard
+    ports:
+      - "8501:8501"
+    volumes:
+      # Persister les credentials et le cache
+      - ./.credentials:/app/.credentials
+      - ./.cache:/app/.cache
+      - ./exports:/app/exports
+      # Monter client_secret.json s'il existe
+      - ./client_secret.json:/app/client_secret.json:ro
+    environment:
+      - CACHE_DURATION=3600
+      - DEBUG=False
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  default:
+    name: google-ads-network

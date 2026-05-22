@@ -1,0 +1,377 @@
+"""
+Page Diagnostic - Analyse automatique avec recommandations
+"""
+
+import streamlit as st
+from typing import Dict, Any
+
+from config.settings import (
+    STREAMLIT_CONFIG,
+    DIAGNOSTIC_SEVERITY,
+    DATE_RANGES
+)
+from modules.google_ads_client import create_client
+from modules.queries import (
+    QUERY_CAMPAIGN_DETAIL,
+    QUERY_KEYWORDS,
+    QUERY_ADS,
+    QUERY_CAMPAIGN_PERFORMANCE,
+    QUERY_SEARCH_TERMS,
+    format_query
+)
+from modules.diagnostics import run_diagnostics, Severity
+
+
+# ============================================================================
+# CONFIGURATION
+# ============================================================================
+
+st.set_page_config(**STREAMLIT_CONFIG)
+
+
+# ============================================================================
+# FONCTIONS
+# ============================================================================
+
+def check_authentication():
+    """Vérifie si l'utilisateur est authentifié"""
+    if "authenticated" not in st.session_state or not st.session_state.authenticated:
+        st.error("❌ Vous devez vous connecter d'abord")
+        if st.button("🔧 Aller à la configuration"):
+            st.switch_page("pages/1_🔧_Configuration.py")
+        st.stop()
+
+
+def get_client():
+    """Récupère le client Google Ads"""
+    if "client" in st.session_state and st.session_state.client:
+        return st.session_state.client
+
+    if "credentials" in st.session_state and st.session_state.credentials:
+        st.session_state.client = create_client(st.session_state.credentials)
+        return st.session_state.client
+
+    st.error("❌ Client non initialisé")
+    st.stop()
+
+
+def collect_campaign_data(client, campaign_id: int, date_range: str) -> Dict[str, Any]:
+    """Collecte toutes les données nécessaires au diagnostic"""
+
+    data = {}
+
+    # Configuration de la campagne
+    query = format_query(QUERY_CAMPAIGN_DETAIL, campaign_id=campaign_id)
+    results = client.execute_query(query, use_cache=True)
+
+    if results:
+        row = results[0]
+        campaign = row.campaign
+        budget = row.campaign_budget
+
+        data["advertising_channel_type"] = campaign.advertising_channel_type.name
+        data["target_content_network"] = campaign.network_settings.target_content_network
+        data["target_partner_search_network"] = campaign.network_settings.target_partner_search_network
+        data["optimization_score"] = campaign.optimization_score if campaign.optimization_score else 0
+
+    # Métriques
+    query = format_query(
+        QUERY_CAMPAIGN_PERFORMANCE,
+        campaign_id=campaign_id,
+        date_range=date_range
+    )
+
+    results = client.execute_query(query, use_cache=True, params={"date_range": date_range})
+
+    total_impressions = 0
+    total_clicks = 0
+    total_cost = 0
+    total_conversions = 0
+
+    for row in results:
+        metrics = row.metrics
+        total_impressions += metrics.impressions
+        total_clicks += metrics.clicks
+        total_cost += metrics.cost_micros / 1_000_000
+        total_conversions += metrics.conversions
+
+    ctr = (total_clicks / total_impressions) if total_impressions > 0 else 0
+    conversion_rate = (total_conversions / total_clicks) if total_clicks > 0 else 0
+    cost_per_conversion = (total_cost / total_conversions) if total_conversions > 0 else 0
+
+    data["metrics"] = {
+        "impressions": total_impressions,
+        "clicks": total_clicks,
+        "ctr": ctr,
+        "cost": total_cost,
+        "conversions": total_conversions,
+        "conversion_rate": conversion_rate,
+        "cost_per_conversion": cost_per_conversion,
+    }
+
+    # Mots-clés
+    query = format_query(
+        QUERY_KEYWORDS,
+        campaign_id=campaign_id,
+        date_range=date_range
+    )
+
+    results = client.execute_query(query, use_cache=True, params={"date_range": date_range})
+
+    keywords = []
+    for row in results:
+        criterion = row.ad_group_criterion
+        metrics = row.metrics
+
+        keywords.append({
+            "text": criterion.keyword.text,
+            "match_type": criterion.keyword.match_type.name,
+            "system_serving_status": criterion.system_serving_status.name,
+            "quality_score": criterion.quality_info.quality_score if criterion.quality_info else None,
+            "impressions": metrics.impressions,
+            "clicks": metrics.clicks,
+            "conversions": metrics.conversions,
+        })
+
+    data["keywords"] = keywords
+
+    # Annonces
+    query = format_query(
+        QUERY_ADS,
+        campaign_id=campaign_id,
+        date_range=date_range
+    )
+
+    results = client.execute_query(query, use_cache=True, params={"date_range": date_range})
+
+    ads = []
+    ad_groups = {}
+
+    for row in results:
+        ad = row.ad_group_ad
+        ad_group_name = row.ad_group.name
+
+        ads.append({
+            "ad_strength": ad.ad_strength.name,
+            "headlines": ad.ad.responsive_search_ad.headlines,
+        })
+
+        # Compter les annonces par groupe
+        if ad_group_name not in ad_groups:
+            ad_groups[ad_group_name] = {"ads": []}
+
+        ad_groups[ad_group_name]["ads"].append(ad)
+
+    data["ads"] = ads
+    data["ad_groups"] = ad_groups
+
+    # Termes de recherche
+    query = format_query(
+        QUERY_SEARCH_TERMS,
+        campaign_id=campaign_id,
+        date_range=date_range
+    )
+
+    results = client.execute_query(query, use_cache=True, params={"date_range": date_range})
+
+    search_terms = []
+    for row in results:
+        segments = row.segments
+        metrics = row.metrics
+
+        search_terms.append({
+            "search_term": segments.search_term_view.search_term,
+            "clicks": metrics.clicks,
+            "conversions": metrics.conversions,
+        })
+
+    data["search_terms"] = search_terms
+
+    return data
+
+
+# ============================================================================
+# PAGE
+# ============================================================================
+
+def main():
+    """Page de diagnostic"""
+
+    check_authentication()
+
+    st.title("⚕️ Diagnostic automatique")
+    st.markdown("Analyse intelligente avec recommandations priorisées")
+
+    st.markdown("---")
+
+    # Client
+    client = get_client()
+
+    # Vérifier qu'une campagne est sélectionnée
+    if "selected_campaign_id" not in st.session_state:
+        st.warning("⚠️ Sélectionnez d'abord une campagne dans la vue d'ensemble")
+        if st.button("📊 Aller à la vue d'ensemble"):
+            st.switch_page("pages/2_📊_Vue_Ensemble.py")
+        st.stop()
+
+    campaign_id = st.session_state.selected_campaign_id
+    campaign_name = st.session_state.get("selected_campaign_name", f"Campagne {campaign_id}")
+
+    st.info(f"**Campagne :** {campaign_name}")
+
+    # Bouton retour
+    if st.button("← Retour à la vue d'ensemble"):
+        st.switch_page("pages/2_📊_Vue_Ensemble.py")
+
+    st.markdown("---")
+
+    # Période
+    date_range_name = st.selectbox(
+        "Période d'analyse",
+        options=list(DATE_RANGES.keys()),
+        index=3  # 30 derniers jours
+    )
+
+    date_range = DATE_RANGES[date_range_name]
+
+    if st.button("🔍 Lancer le diagnostic", type="primary", use_container_width=True):
+        st.session_state.diagnostic_run = True
+
+    st.markdown("---")
+
+    # Exécuter le diagnostic
+    if st.session_state.get("diagnostic_run", False):
+        with st.spinner("🔄 Collecte des données..."):
+            try:
+                # Collecter toutes les données
+                campaign_data = collect_campaign_data(client, campaign_id, date_range)
+
+                st.success("✅ Données collectées")
+
+            except Exception as e:
+                st.error(f"❌ Erreur lors de la collecte : {str(e)}")
+                return
+
+        with st.spinner("🔍 Analyse en cours..."):
+            try:
+                # Exécuter le diagnostic
+                results = run_diagnostics(campaign_data)
+
+                st.success(f"✅ Diagnostic terminé — {len(results)} problème(s) détecté(s)")
+
+            except Exception as e:
+                st.error(f"❌ Erreur lors du diagnostic : {str(e)}")
+                return
+
+        st.markdown("---")
+
+        # Afficher les résultats par sévérité
+        if not results:
+            st.success("🎉 **Aucun problème détecté !** Votre campagne est bien configurée.")
+        else:
+            # Grouper par sévérité
+            critiques = [r for r in results if r.severity == Severity.CRITIQUE]
+            importants = [r for r in results if r.severity == Severity.IMPORTANT]
+            conseils = [r for r in results if r.severity == Severity.CONSEIL]
+            infos = [r for r in results if r.severity == Severity.INFO]
+
+            # Résumé
+            col1, col2, col3, col4 = st.columns(4)
+
+            with col1:
+                st.metric("🔴 Critiques", len(critiques))
+
+            with col2:
+                st.metric("🟠 Importants", len(importants))
+
+            with col3:
+                st.metric("🟡 Conseils", len(conseils))
+
+            with col4:
+                st.metric("🔵 Infos", len(infos))
+
+            st.markdown("---")
+
+            # Afficher les diagnostics par catégorie de sévérité
+            if critiques:
+                st.markdown("### 🔴 Problèmes critiques")
+                st.error("Ces problèmes nécessitent une action immédiate")
+
+                for result in critiques:
+                    with st.expander(f"🔴 {result.title}"):
+                        st.markdown(result.message)
+
+                        if result.action:
+                            st.info(f"**Action recommandée :** {result.action}")
+
+                        if result.details:
+                            with st.expander("📊 Détails"):
+                                st.json(result.details)
+
+            if importants:
+                st.markdown("### 🟠 Problèmes importants")
+                st.warning("Ces problèmes impactent vos performances")
+
+                for result in importants:
+                    with st.expander(f"🟠 {result.title}"):
+                        st.markdown(result.message)
+
+                        if result.action:
+                            st.info(f"**Action recommandée :** {result.action}")
+
+                        if result.details:
+                            with st.expander("📊 Détails"):
+                                st.json(result.details)
+
+            if conseils:
+                st.markdown("### 🟡 Conseils d'optimisation")
+                st.info("Ces optimisations peuvent améliorer vos résultats")
+
+                for result in conseils:
+                    with st.expander(f"🟡 {result.title}"):
+                        st.markdown(result.message)
+
+                        if result.action:
+                            st.info(f"**Action recommandée :** {result.action}")
+
+                        if result.details:
+                            with st.expander("📊 Détails"):
+                                st.json(result.details)
+
+            if infos:
+                st.markdown("### 🔵 Informations")
+
+                for result in infos:
+                    with st.expander(f"🔵 {result.title}"):
+                        st.markdown(result.message)
+
+                        if result.details:
+                            with st.expander("📊 Détails"):
+                                st.json(result.details)
+
+            # Export du rapport
+            st.markdown("---")
+
+            st.markdown("### 📥 Export du rapport")
+
+            if st.button("📄 Télécharger le rapport (PDF)", type="secondary"):
+                st.warning("🚧 Fonctionnalité d'export PDF en développement")
+
+    else:
+        st.info(
+            "👆 **Cliquez sur 'Lancer le diagnostic'** pour analyser la configuration de cette campagne.\n\n"
+            "Le diagnostic vérifiera :\n"
+            "- La configuration des réseaux\n"
+            "- Les performances (conversions, CTR, etc.)\n"
+            "- Les mots-clés (types de correspondance, statuts)\n"
+            "- Les annonces (force, nombre)\n"
+            "- Les termes de recherche (détection de hors-cible)"
+        )
+
+
+# ============================================================================
+# EXÉCUTION
+# ============================================================================
+
+if __name__ == "__main__":
+    main()

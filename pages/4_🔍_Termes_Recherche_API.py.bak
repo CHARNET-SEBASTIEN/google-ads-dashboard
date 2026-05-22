@@ -1,0 +1,340 @@
+"""
+Page Termes de recherche - Requêtes réelles avec action rapide (ajout en négatif)
+"""
+
+import streamlit as st
+import pandas as pd
+from typing import List, Any
+
+from config.settings import (
+    STREAMLIT_CONFIG,
+    MATCH_TYPES,
+    DATE_RANGES
+)
+from modules.google_ads_client import create_client
+from modules.queries import QUERY_SEARCH_TERMS, format_query
+
+
+# ============================================================================
+# CONFIGURATION
+# ============================================================================
+
+st.set_page_config(**STREAMLIT_CONFIG)
+
+
+# ============================================================================
+# FONCTIONS
+# ============================================================================
+
+def check_authentication():
+    """Vérifie si l'utilisateur est authentifié"""
+    if "authenticated" not in st.session_state or not st.session_state.authenticated:
+        st.error("❌ Vous devez vous connecter d'abord")
+        if st.button("🔧 Aller à la configuration"):
+            st.switch_page("pages/1_🔧_Configuration.py")
+        st.stop()
+
+
+def get_client():
+    """Récupère le client Google Ads"""
+    if "client" in st.session_state and st.session_state.client:
+        return st.session_state.client
+
+    if "credentials" in st.session_state and st.session_state.credentials:
+        st.session_state.client = create_client(st.session_state.credentials)
+        return st.session_state.client
+
+    st.error("❌ Client non initialisé")
+    st.stop()
+
+
+def add_negative_keyword(client, campaign_id: int, keyword_text: str):
+    """Ajoute un mot-clé négatif à une campagne"""
+    try:
+        client.add_negative_keyword(
+            campaign_id=str(campaign_id),
+            keyword_text=keyword_text,
+            match_type="EXACT"
+        )
+        st.success(f"✅ Mot-clé négatif ajouté : **{keyword_text}**")
+
+        # Vider le cache
+        from modules.cache import cache_manager
+        cache_manager.clear(st.session_state.customer_id)
+
+        return True
+
+    except Exception as e:
+        st.error(f"❌ Erreur lors de l'ajout : {str(e)}")
+        return False
+
+
+# ============================================================================
+# PAGE
+# ============================================================================
+
+def main():
+    """Page des termes de recherche"""
+
+    check_authentication()
+
+    st.title("🔍 Termes de recherche réels")
+    st.markdown("Analyse des requêtes réelles ayant déclenché vos annonces")
+
+    st.markdown("---")
+
+    # Client
+    client = get_client()
+
+    # Vérifier qu'une campagne est sélectionnée
+    if "selected_campaign_id" not in st.session_state:
+        st.warning("⚠️ Sélectionnez d'abord une campagne dans la vue d'ensemble")
+        if st.button("📊 Aller à la vue d'ensemble"):
+            st.switch_page("pages/2_📊_Vue_Ensemble.py")
+        st.stop()
+
+    campaign_id = st.session_state.selected_campaign_id
+    campaign_name = st.session_state.get("selected_campaign_name", f"Campagne {campaign_id}")
+
+    st.info(f"**Campagne :** {campaign_name}")
+
+    # Bouton retour
+    if st.button("← Retour à la vue d'ensemble"):
+        st.switch_page("pages/2_📊_Vue_Ensemble.py")
+
+    st.markdown("---")
+
+    # Période
+    col1, col2 = st.columns([2, 1])
+
+    with col1:
+        date_range_name = st.selectbox(
+            "Période d'analyse",
+            options=list(DATE_RANGES.keys()),
+            index=3  # 30 derniers jours
+        )
+
+    with col2:
+        if st.button("🔄 Actualiser", use_container_width=True):
+            from modules.cache import cache_manager
+            cache_manager.clear(st.session_state.customer_id)
+            st.rerun()
+
+    date_range = DATE_RANGES[date_range_name]
+
+    st.markdown("---")
+
+    # Chargement des termes de recherche
+    with st.spinner("🔄 Chargement des termes de recherche..."):
+        try:
+            query = format_query(
+                QUERY_SEARCH_TERMS,
+                campaign_id=campaign_id,
+                date_range=date_range
+            )
+
+            results = client.execute_query(query, use_cache=True, params={"date_range": date_range})
+
+            if not results:
+                st.info("ℹ️ Aucun terme de recherche trouvé pour cette période")
+                return
+
+            # Parser les résultats
+            data = []
+            for row in results:
+                segments = row.segments
+                criterion = row.ad_group_criterion
+                metrics = row.metrics
+
+                search_term = segments.search_term_view.search_term
+                keyword_text = criterion.keyword.text
+                match_type = MATCH_TYPES.get(criterion.keyword.match_type.name, criterion.keyword.match_type.name)
+
+                data.append({
+                    "search_term": search_term,
+                    "keyword": keyword_text,
+                    "match_type": match_type,
+                    "impressions": metrics.impressions,
+                    "clicks": metrics.clicks,
+                    "ctr": metrics.ctr * 100,
+                    "avg_cpc": metrics.average_cpc / 1_000_000,
+                    "cost": metrics.cost_micros / 1_000_000,
+                    "conversions": metrics.conversions,
+                    "conv_rate": metrics.conversion_rate * 100,
+                })
+
+            df = pd.DataFrame(data)
+
+            # Statistiques globales
+            col1, col2, col3, col4 = st.columns(4)
+
+            with col1:
+                st.metric("Termes uniques", len(df))
+
+            with col2:
+                st.metric("Clics totaux", f"{df['clicks'].sum():,}".replace(",", " "))
+
+            with col3:
+                st.metric("Coût total", f"{df['cost'].sum():.2f} €")
+
+            with col4:
+                with_conversions = len(df[df["conversions"] > 0])
+                st.metric("Avec conversions", with_conversions)
+
+            st.markdown("---")
+
+            # Détection des termes hors-cible
+            st.markdown("### 🔴 Termes à exclure détectés")
+
+            negative_triggers = ["gratuit", "emploi", "formation", "stage", "cours", "pdf", "tuto", "tutoriel", "free"]
+
+            offtarget_df = df[df["search_term"].str.lower().str.contains("|".join(negative_triggers), na=False)]
+
+            if not offtarget_df.empty:
+                st.warning(f"⚠️ {len(offtarget_df)} terme(s) de recherche hors-cible détecté(s)")
+
+                # Afficher les termes hors-cible avec bouton d'action
+                for idx, row in offtarget_df.iterrows():
+                    col1, col2, col3 = st.columns([3, 2, 1])
+
+                    with col1:
+                        st.text(f"🔴 {row['search_term']}")
+
+                    with col2:
+                        st.caption(f"{row['clicks']} clics • {row['cost']:.2f} € • {row['conversions']:.0f} conv.")
+
+                    with col3:
+                        if st.button(f"➕ Ajouter en négatif", key=f"negative_{idx}"):
+                            add_negative_keyword(client, campaign_id, row['search_term'])
+                            st.rerun()
+
+            else:
+                st.success("✅ Aucun terme hors-cible évident détecté")
+
+            st.markdown("---")
+
+            # Termes sans conversion avec beaucoup de clics
+            st.markdown("### 🟠 Termes coûteux sans conversion")
+
+            expensive_no_conv = df[(df["conversions"] == 0) & (df["clicks"] >= 5)]
+
+            if not expensive_no_conv.empty:
+                st.warning(f"⚠️ {len(expensive_no_conv)} terme(s) avec ≥5 clics mais 0 conversion")
+
+                for idx, row in expensive_no_conv.head(10).iterrows():
+                    col1, col2, col3 = st.columns([3, 2, 1])
+
+                    with col1:
+                        st.text(f"🟠 {row['search_term']}")
+
+                    with col2:
+                        st.caption(f"{row['clicks']} clics • {row['cost']:.2f} € • 0 conv.")
+
+                    with col3:
+                        if st.button(f"➕ Ajouter en négatif", key=f"expensive_{idx}"):
+                            add_negative_keyword(client, campaign_id, row['search_term'])
+                            st.rerun()
+
+            else:
+                st.success("✅ Tous les termes avec clics ont au moins une conversion")
+
+            st.markdown("---")
+
+            # Tableau complet
+            st.markdown("### 📋 Tous les termes de recherche")
+
+            # Filtres
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                filter_match_type = st.multiselect(
+                    "Type de correspondance",
+                    options=df["match_type"].unique().tolist(),
+                    default=df["match_type"].unique().tolist()
+                )
+
+            with col2:
+                min_clicks = st.number_input("Clics minimum", min_value=0, value=0, step=1)
+
+            with col3:
+                show_only_no_conv = st.checkbox("Uniquement sans conversion", value=False)
+
+            # Appliquer les filtres
+            filtered_df = df[df["match_type"].isin(filter_match_type)]
+            filtered_df = filtered_df[filtered_df["clicks"] >= min_clicks]
+
+            if show_only_no_conv:
+                filtered_df = filtered_df[filtered_df["conversions"] == 0]
+
+            # Trier par clics décroissants
+            filtered_df = filtered_df.sort_values("clicks", ascending=False)
+
+            # Afficher
+            st.dataframe(
+                filtered_df.style.format({
+                    "ctr": "{:.2f}%",
+                    "avg_cpc": "{:.2f} €",
+                    "cost": "{:.2f} €",
+                    "conversions": "{:.1f}",
+                    "conv_rate": "{:.2f}%",
+                }),
+                use_container_width=True,
+                hide_index=True
+            )
+
+            st.caption(f"Affichage de {len(filtered_df)} / {len(df)} termes")
+
+            # Action en masse
+            st.markdown("---")
+
+            st.markdown("### 🛠️ Action en masse")
+
+            st.warning(
+                "⚠️ **Attention :** L'ajout de mots-clés négatifs est irréversible via cette interface. "
+                "Vérifiez bien avant d'ajouter."
+            )
+
+            negative_input = st.text_area(
+                "Entrez les termes à exclure (un par ligne)",
+                height=150,
+                help="Chaque terme sera ajouté en correspondance exacte comme mot-clé négatif"
+            )
+
+            if st.button("➕ Ajouter tous ces termes en négatifs", type="secondary"):
+                if negative_input.strip():
+                    terms = [term.strip() for term in negative_input.split("\n") if term.strip()]
+
+                    with st.spinner(f"Ajout de {len(terms)} terme(s)..."):
+                        success_count = 0
+                        for term in terms:
+                            try:
+                                client.add_negative_keyword(
+                                    campaign_id=str(campaign_id),
+                                    keyword_text=term,
+                                    match_type="EXACT"
+                                )
+                                success_count += 1
+                            except Exception as e:
+                                st.error(f"❌ Échec pour '{term}' : {str(e)}")
+
+                        if success_count > 0:
+                            st.success(f"✅ {success_count} / {len(terms)} terme(s) ajouté(s) en négatifs")
+
+                            # Vider le cache
+                            from modules.cache import cache_manager
+                            cache_manager.clear(st.session_state.customer_id)
+
+                            st.rerun()
+                else:
+                    st.warning("⚠️ Aucun terme saisi")
+
+        except Exception as e:
+            st.error(f"❌ Erreur : {str(e)}")
+
+
+# ============================================================================
+# EXÉCUTION
+# ============================================================================
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,536 @@
+{
+  "timestamp": "2026-05-22T14:26:37.075Z",
+  "account": {
+    "customerId": "490-867-6019",
+    "name": "D2L Informatique",
+    "currency": "EUR",
+    "timezone": "Europe/Paris"
+  },
+  "campaigns": [
+    {
+      "id": "23734698943",
+      "name": "Campaign #1",
+      "status": "ENABLED",
+      "type": "SEARCH",
+      "budget": 15,
+      "biddingStrategy": "MAXIMIZE_CONVERSIONS",
+      "targetSearch": true,
+      "targetDisplay": false,
+      "targetPartners": false,
+      "startDate": null,
+      "endDate": null,
+      "metrics": {
+        "impressions": 25718,
+        "clicks": 960,
+        "ctr": 0.03733,
+        "cost": 208.431454,
+        "conversions": 1,
+        "conversionRate": 0.10416666666666667,
+        "averageCpc": 0.217116,
+        "costPerConversion": 208.431454
+      },
+      "metrics7Days": {
+        "impressions": 4802,
+        "clicks": 224,
+        "cost": 54.080446,
+        "conversions": 0
+      },
+      "metricsToday": {
+        "impressions": 1635,
+        "clicks": 18,
+        "cost": 4.200673,
+        "conversions": 0
+      }
+    }
+  ],
+  "adGroups": [
+    {
+      "id": "193833623694",
+      "name": "Groupe d'annonces 1",
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "status": "ENABLED",
+      "metrics": {
+        "impressions": 25718,
+        "clicks": 960,
+        "ctr": 0.03733,
+        "cost": 208.431454,
+        "conversions": 1,
+        "averageCpc": 0.217116
+      }
+    }
+  ],
+  "keywords": [
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "logiciel chrs",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "logiciel médico social",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "logiciel essms",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "logiciel etablissement medico social",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "logiciel huda",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "démo silao",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "logiciel dui essms",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "dossier usager informatisé essms",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "dui médico social",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "dossier usager informatisé médico social",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "logiciel protection de l'enfance",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "dui protection de l'enfance",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "logiciel itep",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "logiciel ahi",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "logiciel sessad",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "logiciel cmpp",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "logiciel camsp",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "logiciel cada",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "text": "logiciel médico social gratuit",
+      "matchType": "PHRASE",
+      "status": "ENABLED",
+      "maxCpc": 0,
+      "qualityScore": 0,
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0,
+        "averageCpc": 0
+      }
+    }
+  ],
+  "ads": [
+    {
+      "id": "804139627903",
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "headline": "",
+      "description": "",
+      "status": "enabled",
+      "metrics": {
+        "impressions": 25718,
+        "clicks": 960,
+        "ctr": 3.73,
+        "cost": 208.43,
+        "conversions": 1
+      }
+    },
+    {
+      "id": "809723542927",
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "headline": "",
+      "description": "",
+      "status": "enabled",
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0
+      }
+    },
+    {
+      "id": "809801424863",
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "adGroupId": "193833623694",
+      "adGroupName": "Groupe d'annonces 1",
+      "headline": "",
+      "description": "",
+      "status": "enabled",
+      "metrics": {
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0,
+        "cost": 0,
+        "conversions": 0
+      }
+    }
+  ],
+  "searchTerms": [],
+  "performance": [],
+  "performanceByDevice": [
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "device": "Computers",
+      "impressions": 923,
+      "clicks": 21,
+      "cost": 6.92,
+      "conversions": 0,
+      "ctr": 2.28,
+      "averageCpc": 0.33
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "device": "Mobile devices with full browsers",
+      "impressions": 23359,
+      "clicks": 891,
+      "cost": 192.42,
+      "conversions": 1,
+      "ctr": 3.81,
+      "averageCpc": 0.22
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "device": "Tablets with full browsers",
+      "impressions": 1436,
+      "clicks": 48,
+      "cost": 9.09,
+      "conversions": 0,
+      "ctr": 3.34,
+      "averageCpc": 0.19
+    }
+  ],
+  "performanceByLocation": [
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "countryCode": "--",
+      "impressions": 380,
+      "clicks": 20,
+      "cost": 4.06,
+      "conversions": 0
+    },
+    {
+      "campaignId": "23734698943",
+      "campaignName": "Campaign #1",
+      "countryCode": "--",
+      "impressions": 25338,
+      "clicks": 940,
+      "cost": 204.38,
+      "conversions": 1
+    }
+  ]
+}

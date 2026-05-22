@@ -1,0 +1,17 @@
+{
+  "name": "googe_ads_perso",
+  "version": "1.0.0",
+  "description": "Application web autonome pour visualiser et analyser la configuration de vos campagnes Google Ads via l'API officielle — une alternative claire et lisible à l'interface native Google Ads.",
+  "main": "google_ads_export_script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "playwright": "^1.60.0"
+  }
+}

@@ -1,0 +1,471 @@
+"""
+Page Détail Campagne - Configuration, mots-clés, annonces, performances
+"""
+
+import streamlit as st
+import pandas as pd
+import plotly.graph_objects as go
+import plotly.express as px
+from typing import List, Any
+
+from config.settings import (
+    STREAMLIT_CONFIG,
+    STATUS_COLORS,
+    CAMPAIGN_TYPES,
+    BIDDING_STRATEGIES,
+    MATCH_TYPES,
+    KEYWORD_STATUS,
+    AD_STRENGTH,
+    DATE_RANGES
+)
+from modules.google_ads_client import create_client
+from modules.queries import (
+    QUERY_CAMPAIGN_DETAIL,
+    QUERY_KEYWORDS,
+    QUERY_ADS,
+    QUERY_CAMPAIGN_PERFORMANCE,
+    format_query
+)
+
+
+# ============================================================================
+# CONFIGURATION
+# ============================================================================
+
+st.set_page_config(**STREAMLIT_CONFIG)
+
+
+# ============================================================================
+# FONCTIONS
+# ============================================================================
+
+def check_authentication():
+    """Vérifie si l'utilisateur est authentifié"""
+    if "authenticated" not in st.session_state or not st.session_state.authenticated:
+        st.error("❌ Vous devez vous connecter d'abord")
+        if st.button("🔧 Aller à la configuration"):
+            st.switch_page("pages/1_🔧_Configuration.py")
+        st.stop()
+
+
+def get_client():
+    """Récupère le client Google Ads"""
+    if "client" in st.session_state and st.session_state.client:
+        return st.session_state.client
+
+    if "credentials" in st.session_state and st.session_state.credentials:
+        st.session_state.client = create_client(st.session_state.credentials)
+        return st.session_state.client
+
+    st.error("❌ Client non initialisé")
+    st.stop()
+
+
+# ============================================================================
+# PAGE
+# ============================================================================
+
+def main():
+    """Page de détail d'une campagne"""
+
+    check_authentication()
+
+    # Vérifier qu'une campagne est sélectionnée
+    if "selected_campaign_id" not in st.session_state:
+        st.warning("⚠️ Aucune campagne sélectionnée")
+        if st.button("📊 Retour à la vue d'ensemble"):
+            st.switch_page("pages/2_📊_Vue_Ensemble.py")
+        st.stop()
+
+    campaign_id = st.session_state.selected_campaign_id
+    campaign_name = st.session_state.get("selected_campaign_name", f"Campagne {campaign_id}")
+
+    st.title(f"🎯 {campaign_name}")
+    st.caption(f"ID : {campaign_id}")
+
+    # Bouton retour
+    if st.button("← Retour à la vue d'ensemble"):
+        st.switch_page("pages/2_📊_Vue_Ensemble.py")
+
+    st.markdown("---")
+
+    # Client
+    client = get_client()
+
+    # Période
+    date_range_name = st.selectbox(
+        "Période d'analyse",
+        options=list(DATE_RANGES.keys()),
+        index=3  # 30 derniers jours
+    )
+
+    date_range = DATE_RANGES[date_range_name]
+
+    st.markdown("---")
+
+    # Onglets
+    tab1, tab2, tab3, tab4 = st.tabs(["📋 Configuration", "🔑 Mots-clés", "📢 Annonces", "📊 Performances"])
+
+    # ========================================================================
+    # ONGLET 1 - CONFIGURATION
+    # ========================================================================
+
+    with tab1:
+        st.markdown("### ⚙️ Configuration complète")
+
+        with st.spinner("🔄 Chargement..."):
+            try:
+                query = format_query(QUERY_CAMPAIGN_DETAIL, campaign_id=campaign_id)
+                results = client.execute_query(query, use_cache=True)
+
+                if not results:
+                    st.error("❌ Campagne introuvable")
+                    return
+
+                row = results[0]
+                campaign = row.campaign
+                budget = row.campaign_budget
+
+                # Informations générales
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.markdown("#### Général")
+                    st.info(f"**Statut :** {STATUS_COLORS.get(campaign.status.name, '⚪')} {campaign.status.name}")
+                    st.info(f"**Type :** {CAMPAIGN_TYPES.get(campaign.advertising_channel_type.name, campaign.advertising_channel_type.name)}")
+                    st.info(f"**Stratégie d'enchères :** {BIDDING_STRATEGIES.get(campaign.bidding_strategy_type.name, campaign.bidding_strategy_type.name)}")
+
+                with col2:
+                    st.markdown("#### Budget")
+                    st.info(f"**Budget quotidien :** {budget.amount_micros / 1_000_000:.2f} €")
+                    st.info(f"**Méthode de diffusion :** {budget.delivery_method.name}")
+
+                # Réseaux
+                st.markdown("#### Réseaux ciblés")
+
+                col1, col2, col3 = st.columns(3)
+
+                with col1:
+                    search_enabled = campaign.network_settings.target_search_network
+                    st.info(f"**Recherche :** {'✅ Activé' if search_enabled else '❌ Désactivé'}")
+
+                with col2:
+                    display_enabled = campaign.network_settings.target_content_network
+                    if display_enabled and campaign.advertising_channel_type.name == "SEARCH":
+                        st.error(f"**Display :** 🔴 Activé (⚠️ À désactiver !)")
+                    else:
+                        st.info(f"**Display :** {'✅ Activé' if display_enabled else '❌ Désactivé'}")
+
+                with col3:
+                    partners_enabled = campaign.network_settings.target_partner_search_network
+                    st.info(f"**Partenaires :** {'✅ Activé' if partners_enabled else '❌ Désactivé'}")
+
+                # Dates
+                st.markdown("#### Planification")
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.info(f"**Date de début :** {campaign.start_date if campaign.start_date else 'Non définie'}")
+
+                with col2:
+                    st.info(f"**Date de fin :** {campaign.end_date if campaign.end_date else 'Non définie'}")
+
+                # Score d'optimisation
+                if campaign.optimization_score:
+                    st.markdown("#### Score d'optimisation")
+                    st.progress(campaign.optimization_score, text=f"{campaign.optimization_score*100:.0f}%")
+
+                    if campaign.optimization_score < 0.7:
+                        st.warning("⚠️ Score d'optimisation faible — consultez les recommandations Google Ads")
+
+            except Exception as e:
+                st.error(f"❌ Erreur : {str(e)}")
+
+    # ========================================================================
+    # ONGLET 2 - MOTS-CLÉS
+    # ========================================================================
+
+    with tab2:
+        st.markdown("### 🔑 Mots-clés")
+
+        with st.spinner("🔄 Chargement des mots-clés..."):
+            try:
+                query = format_query(
+                    QUERY_KEYWORDS,
+                    campaign_id=campaign_id,
+                    date_range=date_range
+                )
+
+                results = client.execute_query(query, use_cache=True, params={"date_range": date_range})
+
+                if not results:
+                    st.info("ℹ️ Aucun mot-clé trouvé")
+                else:
+                    # Parser les résultats
+                    data = []
+                    for row in results:
+                        criterion = row.ad_group_criterion
+                        metrics = row.metrics
+
+                        data.append({
+                            "keyword": criterion.keyword.text,
+                            "match_type": MATCH_TYPES.get(criterion.keyword.match_type.name, criterion.keyword.match_type.name),
+                            "status": KEYWORD_STATUS.get(criterion.status.name, criterion.status.name),
+                            "serving_status": criterion.system_serving_status.name,
+                            "cpc_bid": criterion.cpc_bid_micros / 1_000_000 if criterion.cpc_bid_micros else 0,
+                            "quality_score": criterion.quality_info.quality_score if criterion.quality_info else "N/A",
+                            "impressions": metrics.impressions,
+                            "clicks": metrics.clicks,
+                            "ctr": metrics.ctr * 100,
+                            "avg_cpc": metrics.average_cpc / 1_000_000,
+                            "cost": metrics.cost_micros / 1_000_000,
+                            "conversions": metrics.conversions,
+                            "conv_rate": metrics.conversion_rate * 100,
+                        })
+
+                    df = pd.DataFrame(data)
+
+                    # Statistiques
+                    col1, col2, col3, col4 = st.columns(4)
+
+                    with col1:
+                        st.metric("Total mots-clés", len(df))
+
+                    with col2:
+                        st.metric("En large", len(df[df["match_type"] == "Large"]))
+
+                    with col3:
+                        rarely_served = len(df[df["serving_status"] == "RARELY_SERVED"])
+                        st.metric("Rarement diffusés", rarely_served, delta=f"-{rarely_served}" if rarely_served > 0 else None)
+
+                    with col4:
+                        with_conversions = len(df[df["conversions"] > 0])
+                        st.metric("Avec conversions", with_conversions)
+
+                    st.markdown("---")
+
+                    # Alertes
+                    alerts = []
+
+                    # Mots-clés rarement diffusés
+                    rarely_served_kw = df[df["serving_status"] == "RARELY_SERVED"]
+                    if not rarely_served_kw.empty:
+                        alerts.append(f"🟡 {len(rarely_served_kw)} mot(s)-clé(s) rarement diffusé(s)")
+
+                    # Requête large sans conversion
+                    broad_no_conv = df[(df["match_type"] == "Large") & (df["conversions"] == 0) & (df["clicks"] > 0)]
+                    if not broad_no_conv.empty:
+                        alerts.append(f"🟠 {len(broad_no_conv)} mot(s)-clé(s) en large sans conversion")
+
+                    # Mots-clés hors-cible
+                    negative_triggers = ["gratuit", "emploi", "formation", "stage", "cours"]
+                    offtarget_kw = df[df["keyword"].str.lower().str.contains("|".join(negative_triggers), na=False)]
+                    if not offtarget_kw.empty:
+                        alerts.append(f"🔴 {len(offtarget_kw)} mot(s)-clé(s) à exclure détecté(s)")
+
+                    if alerts:
+                        st.warning("**⚠️ Alertes :**\n\n" + "\n".join(f"- {alert}" for alert in alerts))
+
+                    st.markdown("---")
+
+                    # Tableau
+                    st.dataframe(
+                        df.style.format({
+                            "cpc_bid": "{:.2f} €",
+                            "ctr": "{:.2f}%",
+                            "avg_cpc": "{:.2f} €",
+                            "cost": "{:.2f} €",
+                            "conversions": "{:.1f}",
+                            "conv_rate": "{:.2f}%",
+                        }),
+                        use_container_width=True,
+                        hide_index=True
+                    )
+
+            except Exception as e:
+                st.error(f"❌ Erreur : {str(e)}")
+
+    # ========================================================================
+    # ONGLET 3 - ANNONCES
+    # ========================================================================
+
+    with tab3:
+        st.markdown("### 📢 Annonces")
+
+        with st.spinner("🔄 Chargement des annonces..."):
+            try:
+                query = format_query(
+                    QUERY_ADS,
+                    campaign_id=campaign_id,
+                    date_range=date_range
+                )
+
+                results = client.execute_query(query, use_cache=True, params={"date_range": date_range})
+
+                if not results:
+                    st.info("ℹ️ Aucune annonce trouvée")
+                else:
+                    # Afficher chaque annonce
+                    for idx, row in enumerate(results):
+                        ad = row.ad_group_ad
+                        metrics = row.metrics
+
+                        with st.expander(f"📢 Annonce #{idx+1} — {row.ad_group.name}"):
+                            # Force de l'annonce
+                            ad_strength = AD_STRENGTH.get(ad.ad_strength.name, ad.ad_strength.name)
+                            strength_color = "🟢" if ad_strength == "Excellente" else "🟡" if ad_strength == "Bonne" else "🟠" if ad_strength == "Moyenne" else "🔴"
+
+                            st.info(f"**Force de l'annonce :** {strength_color} {ad_strength}")
+
+                            # URL finale
+                            if ad.ad.final_urls:
+                                st.caption(f"🔗 **URL :** {ad.ad.final_urls[0]}")
+
+                            # Titres
+                            st.markdown("**Titres :**")
+                            for i, headline in enumerate(ad.ad.responsive_search_ad.headlines):
+                                pinned = f" (épinglé: {headline.pinned_field.name})" if headline.pinned_field else ""
+                                st.markdown(f"{i+1}. {headline.text}{pinned}")
+
+                            # Descriptions
+                            st.markdown("**Descriptions :**")
+                            for i, description in enumerate(ad.ad.responsive_search_ad.descriptions):
+                                pinned = f" (épinglé: {description.pinned_field.name})" if description.pinned_field else ""
+                                st.markdown(f"{i+1}. {description.text}{pinned}")
+
+                            # Métriques
+                            st.markdown("**Performances :**")
+                            col1, col2, col3, col4 = st.columns(4)
+
+                            with col1:
+                                st.metric("Impressions", f"{metrics.impressions:,}".replace(",", " "))
+
+                            with col2:
+                                st.metric("Clics", metrics.clicks)
+
+                            with col3:
+                                st.metric("CTR", f"{metrics.ctr*100:.2f}%")
+
+                            with col4:
+                                st.metric("Conversions", f"{metrics.conversions:.1f}")
+
+            except Exception as e:
+                st.error(f"❌ Erreur : {str(e)}")
+
+    # ========================================================================
+    # ONGLET 4 - PERFORMANCES
+    # ========================================================================
+
+    with tab4:
+        st.markdown("### 📊 Performances")
+
+        with st.spinner("🔄 Chargement des performances..."):
+            try:
+                query = format_query(
+                    QUERY_CAMPAIGN_PERFORMANCE,
+                    campaign_id=campaign_id,
+                    date_range=date_range
+                )
+
+                results = client.execute_query(query, use_cache=True, params={"date_range": date_range})
+
+                if not results:
+                    st.info("ℹ️ Aucune donnée de performance")
+                else:
+                    # Parser les résultats
+                    data = []
+                    for row in results:
+                        metrics = row.metrics
+                        segments = row.segments
+
+                        data.append({
+                            "date": segments.date,
+                            "impressions": metrics.impressions,
+                            "clicks": metrics.clicks,
+                            "ctr": metrics.ctr * 100,
+                            "avg_cpc": metrics.average_cpc / 1_000_000,
+                            "cost": metrics.cost_micros / 1_000_000,
+                            "conversions": metrics.conversions,
+                        })
+
+                    df = pd.DataFrame(data)
+
+                    # KPIs globaux
+                    col1, col2, col3, col4, col5 = st.columns(5)
+
+                    with col1:
+                        st.metric("Impressions", f"{df['impressions'].sum():,.0f}".replace(",", " "))
+
+                    with col2:
+                        st.metric("Clics", f"{df['clicks'].sum():,}".replace(",", " "))
+
+                    with col3:
+                        avg_ctr = (df['clicks'].sum() / df['impressions'].sum() * 100) if df['impressions'].sum() > 0 else 0
+                        st.metric("CTR", f"{avg_ctr:.2f}%")
+
+                    with col4:
+                        st.metric("Coût total", f"{df['cost'].sum():.2f} €")
+
+                    with col5:
+                        st.metric("Conversions", f"{df['conversions'].sum():.1f}")
+
+                    st.markdown("---")
+
+                    # Graphique d'évolution
+                    fig = go.Figure()
+
+                    fig.add_trace(go.Scatter(
+                        x=df["date"],
+                        y=df["impressions"],
+                        mode="lines+markers",
+                        name="Impressions",
+                        yaxis="y1"
+                    ))
+
+                    fig.add_trace(go.Scatter(
+                        x=df["date"],
+                        y=df["clicks"],
+                        mode="lines+markers",
+                        name="Clics",
+                        yaxis="y2"
+                    ))
+
+                    fig.update_layout(
+                        title="Évolution quotidienne",
+                        xaxis_title="Date",
+                        yaxis_title="Impressions",
+                        yaxis2=dict(
+                            title="Clics",
+                            overlaying="y",
+                            side="right"
+                        ),
+                        hovermode="x unified"
+                    )
+
+                    st.plotly_chart(fig, use_container_width=True)
+
+                    # Tableau détaillé
+                    st.markdown("### 📋 Détail quotidien")
+
+                    st.dataframe(
+                        df.style.format({
+                            "ctr": "{:.2f}%",
+                            "avg_cpc": "{:.2f} €",
+                            "cost": "{:.2f} €",
+                            "conversions": "{:.1f}",
+                        }),
+                        use_container_width=True,
+                        hide_index=True
+                    )
+
+            except Exception as e:
+                st.error(f"❌ Erreur : {str(e)}")
+
+
+# ============================================================================
+# EXÉCUTION
+# ============================================================================
+
+if __name__ == "__main__":
+    main()

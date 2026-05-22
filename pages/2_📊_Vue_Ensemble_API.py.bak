@@ -1,0 +1,325 @@
+"""
+Page Vue d'ensemble - Liste de toutes les campagnes avec KPIs
+"""
+
+import streamlit as st
+import pandas as pd
+from typing import List, Any
+
+from config.settings import (
+    STREAMLIT_CONFIG,
+    STATUS_COLORS,
+    CAMPAIGN_TYPES,
+    BIDDING_STRATEGIES,
+    DATE_RANGES
+)
+from modules.google_ads_client import create_client
+from modules.storage import storage
+from modules.queries import QUERY_CAMPAIGNS_OVERVIEW, QUERY_CAMPAIGN_PERFORMANCE, format_query
+
+
+# ============================================================================
+# CONFIGURATION
+# ============================================================================
+
+st.set_page_config(**STREAMLIT_CONFIG)
+
+
+# ============================================================================
+# FONCTIONS
+# ============================================================================
+
+def check_authentication():
+    """Vérifie si l'utilisateur est authentifié"""
+    if "authenticated" not in st.session_state or not st.session_state.authenticated:
+        st.error("❌ Vous devez vous connecter d'abord")
+        if st.button("🔧 Aller à la configuration"):
+            st.switch_page("pages/1_🔧_Configuration.py")
+        st.stop()
+
+
+def get_client():
+    """Récupère le client Google Ads depuis la session"""
+    if "client" in st.session_state and st.session_state.client:
+        return st.session_state.client
+
+    # Sinon, recréer depuis les credentials
+    if "credentials" in st.session_state and st.session_state.credentials:
+        st.session_state.client = create_client(st.session_state.credentials)
+        return st.session_state.client
+
+    st.error("❌ Client non initialisé")
+    st.stop()
+
+
+def parse_campaigns(results: List[Any]) -> pd.DataFrame:
+    """Parse les résultats de la requête campagnes en DataFrame"""
+    data = []
+
+    for row in results:
+        campaign = row.campaign
+        budget = row.campaign_budget
+
+        data.append({
+            "id": campaign.id,
+            "name": campaign.name,
+            "status": campaign.status.name,
+            "type": CAMPAIGN_TYPES.get(campaign.advertising_channel_type.name, campaign.advertising_channel_type.name),
+            "bidding_strategy": BIDDING_STRATEGIES.get(campaign.bidding_strategy_type.name, campaign.bidding_strategy_type.name),
+            "budget_daily": budget.amount_micros / 1_000_000 if budget.amount_micros else 0,
+            "target_search": campaign.network_settings.target_search_network,
+            "target_display": campaign.network_settings.target_content_network,
+            "target_partners": campaign.network_settings.target_partner_search_network,
+            "optimization_score": campaign.optimization_score if campaign.optimization_score else 0,
+            "start_date": campaign.start_date if campaign.start_date else "Non définie",
+            "end_date": campaign.end_date if campaign.end_date else "Non définie",
+        })
+
+    return pd.DataFrame(data)
+
+
+def get_campaign_metrics(client, campaign_id: int, date_range: str) -> dict:
+    """Récupère les métriques d'une campagne"""
+    query = format_query(
+        QUERY_CAMPAIGN_PERFORMANCE,
+        campaign_id=campaign_id,
+        date_range=date_range
+    )
+
+    try:
+        results = client.execute_query(query, use_cache=True, params={"date_range": date_range})
+
+        # Agréger les métriques
+        total_impressions = 0
+        total_clicks = 0
+        total_cost = 0
+        total_conversions = 0
+
+        for row in results:
+            metrics = row.metrics
+            total_impressions += metrics.impressions
+            total_clicks += metrics.clicks
+            total_cost += metrics.cost_micros / 1_000_000
+            total_conversions += metrics.conversions
+
+        ctr = (total_clicks / total_impressions * 100) if total_impressions > 0 else 0
+        avg_cpc = (total_cost / total_clicks) if total_clicks > 0 else 0
+        conversion_rate = (total_conversions / total_clicks * 100) if total_clicks > 0 else 0
+
+        return {
+            "impressions": total_impressions,
+            "clicks": total_clicks,
+            "ctr": ctr,
+            "avg_cpc": avg_cpc,
+            "cost": total_cost,
+            "conversions": total_conversions,
+            "conversion_rate": conversion_rate,
+        }
+
+    except Exception as e:
+        st.warning(f"⚠️ Impossible de récupérer les métriques : {str(e)}")
+        return {
+            "impressions": 0,
+            "clicks": 0,
+            "ctr": 0,
+            "avg_cpc": 0,
+            "cost": 0,
+            "conversions": 0,
+            "conversion_rate": 0,
+        }
+
+
+# ============================================================================
+# PAGE
+# ============================================================================
+
+def main():
+    """Page Vue d'ensemble"""
+
+    check_authentication()
+
+    st.title("📊 Vue d'ensemble des campagnes")
+    st.markdown(f"**Compte :** {st.session_state.customer_id}")
+
+    st.markdown("---")
+
+    # Sélection de la période
+    col1, col2, col3 = st.columns([2, 2, 1])
+
+    with col1:
+        date_range = st.selectbox(
+            "Période d'analyse",
+            options=list(DATE_RANGES.keys()),
+            index=3  # 30 derniers jours par défaut
+        )
+
+    with col2:
+        show_metrics = st.checkbox("Afficher les métriques détaillées", value=True)
+
+    with col3:
+        if st.button("🔄 Actualiser", use_container_width=True):
+            # Vider le cache
+            from modules.cache import cache_manager
+            cache_manager.clear(st.session_state.customer_id)
+            st.rerun()
+
+    st.markdown("---")
+
+    # Récupérer les campagnes
+    client = get_client()
+
+    with st.spinner("🔄 Chargement des campagnes..."):
+        try:
+            results = client.execute_query(QUERY_CAMPAIGNS_OVERVIEW, use_cache=True)
+
+            if not results:
+                st.info("ℹ️ Aucune campagne trouvée")
+                return
+
+            df = parse_campaigns(results)
+
+            # Récupérer les métriques si demandé
+            if show_metrics:
+                date_range_code = DATE_RANGES[date_range]
+
+                with st.spinner(f"📊 Chargement des métriques ({date_range})..."):
+                    metrics_list = []
+
+                    for campaign_id in df["id"]:
+                        metrics = get_campaign_metrics(client, campaign_id, date_range_code)
+                        metrics_list.append(metrics)
+
+                    # Ajouter les métriques au DataFrame
+                    metrics_df = pd.DataFrame(metrics_list)
+                    df = pd.concat([df, metrics_df], axis=1)
+
+            # Afficher les statistiques globales
+            st.markdown("### 📈 Statistiques globales")
+
+            col1, col2, col3, col4 = st.columns(4)
+
+            with col1:
+                st.metric(
+                    "Campagnes actives",
+                    len(df[df["status"] == "ENABLED"])
+                )
+
+            with col2:
+                st.metric(
+                    "Campagnes en pause",
+                    len(df[df["status"] == "PAUSED"])
+                )
+
+            with col3:
+                if show_metrics:
+                    st.metric(
+                        "Impressions totales",
+                        f"{df['impressions'].sum():,.0f}".replace(",", " ")
+                    )
+
+            with col4:
+                if show_metrics:
+                    st.metric(
+                        "Conversions totales",
+                        f"{df['conversions'].sum():.1f}"
+                    )
+
+            st.markdown("---")
+
+            # Afficher le tableau
+            st.markdown("### 📋 Liste des campagnes")
+
+            # Formatter pour l'affichage
+            display_df = df.copy()
+
+            # Ajouter l'emoji de statut
+            display_df["Statut"] = display_df["status"].apply(lambda x: f"{STATUS_COLORS.get(x, '⚪')} {x}")
+
+            # Alertes (Display activé sur Search)
+            display_df["⚠️"] = display_df.apply(
+                lambda row: "🔴 Display activé !" if row["type"] == "Recherche" and row["target_display"] else "",
+                axis=1
+            )
+
+            # Colonnes à afficher
+            columns_to_show = ["Statut", "name", "type", "bidding_strategy", "budget_daily"]
+
+            if show_metrics:
+                columns_to_show += ["impressions", "clicks", "ctr", "cost", "conversions", "conversion_rate"]
+
+            columns_to_show += ["optimization_score", "⚠️"]
+
+            # Renommer les colonnes
+            display_df = display_df.rename(columns={
+                "name": "Nom de la campagne",
+                "type": "Type",
+                "bidding_strategy": "Stratégie d'enchères",
+                "budget_daily": "Budget/jour (€)",
+                "impressions": "Impressions",
+                "clicks": "Clics",
+                "ctr": "CTR (%)",
+                "cost": "Coût (€)",
+                "conversions": "Conversions",
+                "conversion_rate": "Taux conv. (%)",
+                "optimization_score": "Score optim. (%)",
+            })
+
+            # Formatter les nombres
+            if show_metrics:
+                display_df["Impressions"] = display_df["Impressions"].apply(lambda x: f"{x:,.0f}".replace(",", " "))
+                display_df["Clics"] = display_df["Clics"].apply(lambda x: f"{x:,.0f}".replace(",", " "))
+                display_df["CTR (%)"] = display_df["CTR (%)"].apply(lambda x: f"{x:.2f}")
+                display_df["Coût (€)"] = display_df["Coût (€)"].apply(lambda x: f"{x:.2f}")
+                display_df["Conversions"] = display_df["Conversions"].apply(lambda x: f"{x:.1f}")
+                display_df["Taux conv. (%)"] = display_df["Taux conv. (%)"].apply(lambda x: f"{x:.2f}")
+
+            display_df["Budget/jour (€)"] = display_df["Budget/jour (€)"].apply(lambda x: f"{x:.2f}")
+            display_df["Score optim. (%)"] = display_df["Score optim. (%)"].apply(lambda x: f"{x*100:.0f}" if x > 0 else "N/A")
+
+            # Afficher le DataFrame
+            st.dataframe(
+                display_df[["Statut", "Nom de la campagne", "Type", "Stratégie d'enchères", "Budget/jour (€)"] +
+                           (["Impressions", "Clics", "CTR (%)", "Coût (€)", "Conversions", "Taux conv. (%)"] if show_metrics else []) +
+                           ["Score optim. (%)", "⚠️"]],
+                use_container_width=True,
+                hide_index=True
+            )
+
+            # Filtrer pour afficher les alertes
+            alerts_df = display_df[display_df["⚠️"] != ""]
+
+            if not alerts_df.empty:
+                st.error(f"🔴 **Alertes détectées sur {len(alerts_df)} campagne(s) !**")
+
+                for idx, row in alerts_df.iterrows():
+                    st.warning(f"➤ **{row['Nom de la campagne']}** : {row['⚠️']}")
+
+            st.markdown("---")
+
+            # Bouton pour voir le détail
+            st.markdown("### 🎯 Voir le détail d'une campagne")
+
+            selected_campaign = st.selectbox(
+                "Sélectionnez une campagne :",
+                options=df["name"].tolist(),
+                format_func=lambda x: f"{x}"
+            )
+
+            if st.button("🎯 Voir le détail", type="primary"):
+                # Stocker l'ID de la campagne sélectionnée
+                selected_id = df[df["name"] == selected_campaign]["id"].values[0]
+                st.session_state.selected_campaign_id = int(selected_id)
+                st.session_state.selected_campaign_name = selected_campaign
+
+                st.switch_page("pages/3_🎯_Detail_Campagne.py")
+
+        except Exception as e:
+            st.error(f"❌ Erreur lors du chargement des campagnes : {str(e)}")
+
+
+# ============================================================================
+# EXÉCUTION
+# ============================================================================
+
+if __name__ == "__main__":
+    main()

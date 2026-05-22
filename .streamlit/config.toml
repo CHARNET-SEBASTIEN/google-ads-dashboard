@@ -1,0 +1,45 @@
+# Streamlit Configuration - Silao Treehouse Theme
+
+[theme]
+# Primary color (Deep blue from Silao)
+primaryColor = "#1a4d8f"  # hsl(220 80% 29%)
+
+# Background color (Light blue-gray)
+backgroundColor = "#fbfcfe"  # hsl(216 100% 99%)
+
+# Secondary background color (Muted)
+secondaryBackgroundColor = "#f0f4f8"  # hsl(210 40% 96%)
+
+# Text color (Dark foreground)
+textColor = "#1a202c"  # hsl(222 47% 11%)
+
+# Font
+font = "sans serif"
+
+[server]
+# Headless mode for production
+headless = true
+
+# Port
+port = 8501
+
+# Enable CORS (must be true when XSRF protection is enabled)
+enableCORS = true
+
+# Enable XSRF protection
+enableXsrfProtection = true
+
+[browser]
+# Gather usage stats
+gatherUsageStats = false
+
+# Server address
+serverAddress = "0.0.0.0"
+
+[client]
+# Show sidebar navigation (deprecated config moved here)
+showSidebarNavigation = false
+
+[ui]
+# Hide the hamburger menu
+hideTopBar = false

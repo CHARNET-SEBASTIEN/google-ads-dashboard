@@ -1,0 +1,479 @@
+/*
+ * Dashboard ADS application overrides.
+ * These selectors sit after the theme file and make Streamlit behave like a
+ * compact product dashboard: fixed sidebar, 56px header, dense navigation.
+ */
+
+:root {
+  --rafo-header: var(--rafo-sidebar);
+  --rafo-radius: 6px;
+  --rafo-topbar-height: 56px;
+}
+
+html,
+body,
+.stApp {
+  min-height: 100%;
+  background: var(--rafo-bg) !important;
+  color: var(--rafo-text) !important;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif !important;
+}
+
+.block-container {
+  max-width: none !important;
+  padding: 80px 24px 32px !important;
+}
+
+.main,
+[data-testid="stAppViewContainer"] {
+  background: var(--rafo-bg) !important;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+  width: 224px !important;
+  min-width: 224px !important;
+  top: 0 !important;
+  height: 100vh !important;
+  background: var(--rafo-sidebar) !important;
+  border-right: 1px solid var(--rafo-border) !important;
+  border-top: 0 !important;
+}
+
+section[data-testid="stSidebar"] > div {
+  width: 224px !important;
+  top: 0 !important;
+  height: 100vh !important;
+  background: var(--rafo-sidebar) !important;
+  padding: 0 !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+  padding: 0 !important;
+}
+
+section[data-testid="stSidebar"] button[data-testid="baseButton-header"],
+section[data-testid="stSidebar"] div:has(> button[data-testid="baseButton-header"]) {
+  display: none !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
+  padding: 0 !important;
+  width: 224px !important;
+}
+
+.rafo-sidebar-brand {
+  height: 56px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 8px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--rafo-border);
+}
+
+.rafo-wordmark {
+  color: var(--rafo-text);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.rafo-mascot {
+  width: 34px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--rafo-hover);
+  border: 1px solid var(--rafo-border);
+  color: var(--rafo-text);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.rafo-product-label {
+  grid-column: 1 / -1;
+  color: var(--rafo-text-secondary);
+  font-size: 0.72rem;
+  line-height: 1;
+  margin-top: -7px;
+}
+
+.rafo-nav-section-label {
+  color: var(--rafo-text-secondary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 16px 20px 6px;
+}
+
+.rafo-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+section[data-testid="stSidebar"] .stMarkdown,
+section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {
+  width: 100% !important;
+}
+
+.rafo-nav-link {
+  min-height: 36px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 8px 12px !important;
+  border-radius: var(--rafo-radius) !important;
+  color: var(--rafo-text-tertiary) !important;
+  background: transparent !important;
+  border: 0 !important;
+  text-decoration: none !important;
+  font-size: 0.875rem !important;
+  font-weight: 400 !important;
+  line-height: 1.25 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  transition: background-color 140ms ease, color 140ms ease !important;
+}
+
+.rafo-nav-link span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rafo-nav-link:hover {
+  background: var(--rafo-hover) !important;
+  color: var(--rafo-text) !important;
+}
+
+.rafo-nav-link.is-active {
+  background: var(--rafo-hover) !important;
+  color: var(--rafo-text) !important;
+  font-weight: 500 !important;
+}
+
+.rafo-nav-icon {
+  width: 16px;
+  display: inline-flex;
+  justify-content: center;
+  color: inherit;
+}
+
+section[data-testid="stSidebar"] hr {
+  display: none !important;
+}
+
+section[data-testid="stSidebar"] .stAlert {
+  margin: 16px 8px !important;
+}
+
+section[data-testid="stSidebar"] .streamlit-expanderHeader,
+section[data-testid="stSidebar"] details {
+  margin: 14px 8px 0 !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stMetric"] {
+  padding: 8px !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+
+.rafo-sidebar-footer {
+  color: var(--rafo-text-secondary);
+  font-size: 0.75rem;
+  padding: 20px 16px;
+  margin-top: 20px;
+}
+
+/* Typography and content density */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--rafo-text) !important;
+  letter-spacing: 0 !important;
+}
+
+h1 {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  margin: 0 0 24px !important;
+  padding-bottom: 16px !important;
+  border-bottom: 1px solid var(--rafo-border) !important;
+}
+
+h2 {
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  margin: 24px 0 12px !important;
+}
+
+h3 {
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+}
+
+p,
+li,
+.stMarkdown,
+[data-testid="stMarkdownContainer"] {
+  color: var(--rafo-text-tertiary) !important;
+}
+
+/* Cards and metrics */
+div[data-testid="stMetric"],
+.stDataFrame,
+.js-plotly-plot {
+  background: var(--rafo-card) !important;
+  border: 1px solid var(--rafo-border) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+div[data-testid="column"] > div[data-testid="stVerticalBlock"] {
+  height: auto !important;
+  min-height: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  transform: none !important;
+}
+
+div[data-testid="stMetric"]:hover {
+  background: var(--rafo-card) !important;
+  border-color: var(--rafo-border) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+div[data-testid="stMetric"] {
+  padding: 16px !important;
+}
+
+div[data-testid="stMetric"] label {
+  color: var(--rafo-text-secondary) !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+}
+
+div[data-testid="stMetric"] [data-testid="stMetricValue"] {
+  color: var(--rafo-text) !important;
+  font-size: 1.75rem !important;
+  font-weight: 600 !important;
+}
+
+/* Buttons and inputs */
+.stButton button,
+.stButton > button,
+.stButton button[data-testid^="baseButton"] {
+  min-height: 36px !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  padding: 0 14px !important;
+  border-radius: var(--rafo-radius) !important;
+  box-shadow: none !important;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease !important;
+  white-space: normal !important;
+}
+
+.block-container div[data-testid="column"] .stButton button,
+.block-container div[data-testid="column"] .stButton > button,
+.block-container div[data-testid="column"] .stButton button[data-testid^="baseButton"] {
+  width: 100% !important;
+  min-width: 120px !important;
+  height: auto !important;
+  min-height: 38px !important;
+  padding: 0 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.stButton button[kind="primary"] {
+  background: var(--rafo-active) !important;
+  color: var(--rafo-bg) !important;
+  border: 1px solid var(--rafo-active) !important;
+}
+
+.stButton button[kind="secondary"],
+.stButton button[data-testid="baseButton-secondary"] {
+  background: var(--rafo-card) !important;
+  color: var(--rafo-text) !important;
+  border: 1px solid var(--rafo-border) !important;
+}
+
+.stButton button:hover {
+  background: var(--rafo-hover) !important;
+  border-color: var(--rafo-border) !important;
+  color: var(--rafo-text) !important;
+  transform: none !important;
+}
+
+.stTextInput input,
+.stNumberInput input,
+.stTextArea textarea,
+.stSelectbox > div > div,
+div[data-baseweb="select"] > div {
+  min-height: 36px !important;
+  background: var(--rafo-card) !important;
+  color: var(--rafo-text) !important;
+  border-color: var(--rafo-border) !important;
+  border-radius: var(--rafo-radius) !important;
+  box-shadow: none !important;
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab-list"] {
+  gap: 6px !important;
+  padding: 4px !important;
+  border: 1px solid var(--rafo-border) !important;
+  border-radius: 8px !important;
+  background: var(--rafo-card) !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+}
+
+.stTabs [data-baseweb="tab"] {
+  min-height: 34px !important;
+  height: 34px !important;
+  padding: 6px 12px !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  color: var(--rafo-text-secondary) !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+}
+
+.stTabs [data-baseweb="tab"]:hover {
+  background: var(--rafo-hover) !important;
+  color: var(--rafo-text) !important;
+}
+
+.stTabs [aria-selected="true"] {
+  background: var(--rafo-hover) !important;
+  color: var(--rafo-text) !important;
+}
+
+.stTabs [data-baseweb="tab-highlight"] {
+  display: none !important;
+}
+
+/* Tables */
+.stDataFrame thead tr th,
+[data-testid="stDataFrame"] th {
+  background: var(--rafo-hover) !important;
+  color: var(--rafo-text-secondary) !important;
+  border-color: var(--rafo-border) !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+}
+
+.stDataFrame tbody td,
+[data-testid="stDataFrame"] td {
+  color: var(--rafo-text-secondary) !important;
+  border-color: var(--rafo-border) !important;
+}
+
+/* Alerts */
+.stAlert {
+  border-radius: var(--rafo-radius) !important;
+  border-width: 1px !important;
+  box-shadow: none !important;
+}
+
+/* Product page sections */
+.ads-page-kicker {
+  color: var(--rafo-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+
+.ads-home-hero {
+  background: var(--rafo-card);
+  border: 1px solid var(--rafo-border);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.ads-home-hero h1 {
+  border: 0 !important;
+  margin: 0 0 10px !important;
+  padding: 0 !important;
+  font-size: 1.75rem !important;
+}
+
+.ads-home-hero p {
+  max-width: 760px;
+  margin: 0 !important;
+  color: var(--rafo-text-tertiary) !important;
+}
+
+.ads-status-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.ads-status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 10px;
+  border: 1px solid var(--rafo-border);
+  border-radius: 999px;
+  background: var(--rafo-hover);
+  color: var(--rafo-text);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.ads-section-title {
+  color: var(--rafo-text);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 22px 0 10px;
+}
+
+.ads-muted {
+  color: var(--rafo-text-secondary);
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  section[data-testid="stSidebar"],
+  section[data-testid="stSidebar"] > div {
+    width: 224px !important;
+  }
+
+  .block-container {
+    padding-top: 80px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
