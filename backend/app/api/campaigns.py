@@ -149,7 +149,7 @@ async def get_campaign_keywords(
         search_lower = search.lower()
         keywords_data = [
             kw for kw in keywords_data
-            if search_lower in kw.get('keywordText', '').lower()
+            if search_lower in kw.get('text', kw.get('keywordText', '')).lower()
         ]
 
     # Filtrer par min_clicks
@@ -163,7 +163,7 @@ async def get_campaign_keywords(
         Keyword(
             id=str(kw.get('id')),
             campaign_id=str(kw.get('campaignId')),
-            text=kw.get('keywordText', ''),
+            text=kw.get('text', kw.get('keywordText', '')),  # Support both field names
             match_type=kw.get('matchType', 'UNKNOWN'),
             status=kw.get('status', 'UNKNOWN'),
             impressions=kw.get('impressions', 0),
