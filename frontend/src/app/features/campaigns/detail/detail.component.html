@@ -175,8 +175,17 @@
         </div>
 
         <div *ngIf="performance.length > 0">
-          <p class="info-text">Graphiques Plotly.js à venir</p>
-          <div class="table-container">
+          <!-- Performance Chart -->
+          <div class="chart-section">
+            <app-chart
+              [data]="performanceChartData"
+              [layout]="performanceChartLayout"
+            ></app-chart>
+          </div>
+
+          <!-- Performance Table -->
+          <div class="table-container" style="margin-top: 2rem;">
+            <h3 style="margin-bottom: 1rem;">Données détaillées</h3>
             <table class="data-table">
               <thead>
                 <tr>
