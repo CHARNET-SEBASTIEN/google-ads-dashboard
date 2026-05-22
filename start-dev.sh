@@ -7,7 +7,7 @@
 #   ./start-dev.sh 4300 8001         # Frontend sur 4300, backend sur 8001
 
 # Ports par défaut
-FRONTEND_PORT=${1:-4200}
+FRONTEND_PORT=${1:-4201}
 BACKEND_PORT=${2:-8000}
 
 echo "🚀 Démarrage du Dashboard Google Ads..."
