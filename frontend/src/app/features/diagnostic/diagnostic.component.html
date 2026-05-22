@@ -1,155 +1,218 @@
 <div class="diagnostic-page">
   <!-- Header -->
   <div class="page-header">
-    <div class="header-content">
-      <h1 class="page-title">{{ 'diagnostic.title' | transloco }}</h1>
-      <p class="page-subtitle">{{ 'diagnostic.subtitle' | transloco }}</p>
-    </div>
+    <p class="page-subtitle">{{ 'diagnostic.subtitle' | transloco }}</p>
     <div class="header-actions">
-      <button class="btn btn-secondary" (click)="runDiagnostics()" [disabled]="loading">
-        <span>🔄</span>
-        {{ 'diagnostic.run' | transloco }}
+      <button class="btn btn-ai" (click)="runAiAnalysis()" [disabled]="loadingAi">
+        <span>{{ loadingAi ? '⏳' : '🔄' }}</span>
+        {{ loadingAi ? ('diagnostic.loading' | transloco) : ('diagnostic.refresh' | transloco) }}
       </button>
-      <button class="btn btn-primary" (click)="exportCsv()">
+
+      <!-- Main view toggle (Rapport / Échéancier) -->
+      <button class="btn btn-secondary" (click)="toggleMainView()" [disabled]="!aiAnalysis || loadingAi" *ngIf="aiAnalysis">
+        <span class="material-icons" style="font-size: 1.1rem;">
+          {{ mainView === 'report' ? 'event_note' : 'description' }}
+        </span>
+        {{ mainView === 'report' ? 'Échéancier' : 'Rapport' }}
+      </button>
+
+      <!-- Report sub-view toggle (Table / Markdown) - visible only in report view -->
+      <button class="btn btn-secondary" (click)="toggleReportView()" [disabled]="!aiAnalysis || loadingAi" *ngIf="aiAnalysis && mainView === 'report'">
+        <span class="material-icons" style="font-size: 1.1rem;">
+          {{ reportView === 'table' ? 'article' : 'table_chart' }}
+        </span>
+        {{ reportView === 'table' ? 'Markdown' : 'Table' }}
+      </button>
+
+      <!-- Export Excel - visible only in report table view -->
+      <button class="btn btn-secondary" (click)="exportExcel()" [disabled]="!aiAnalysis || loadingAi || recommendations.length === 0" *ngIf="aiAnalysis && mainView === 'report' && reportView === 'table'">
+        <span class="material-icons" style="font-size: 1.1rem;">table_chart</span>
+        {{ 'overview.export_excel' | transloco }}
+      </button>
+
+      <!-- Download markdown - visible only in report markdown view -->
+      <button class="btn btn-secondary" (click)="downloadAiReport()" [disabled]="!aiAnalysis || loadingAi" *ngIf="aiAnalysis && mainView === 'report' && reportView === 'markdown'">
         <span>📥</span>
-        {{ 'diagnostic.export' | transloco }}
+        {{ 'diagnostic.download' | transloco }}
       </button>
     </div>
-  </div>
-
-  <!-- Summary Cards -->
-  <div class="summary-section">
-    <app-metric-card
-      [label]="'diagnostic.total' | transloco"
-      [value]="totalIssues"
-      icon="📋"
-    ></app-metric-card>
-
-    <app-metric-card
-      [label]="'diagnostic.critical' | transloco"
-      [value]="criticalCount"
-      icon="🔴"
-      color="red"
-    ></app-metric-card>
-
-    <app-metric-card
-      [label]="'diagnostic.high' | transloco"
-      [value]="highCount"
-      icon="🟠"
-      color="orange"
-    ></app-metric-card>
-
-    <app-metric-card
-      [label]="'diagnostic.medium' | transloco"
-      [value]="mediumCount"
-      icon="🟡"
-      color="orange"
-    ></app-metric-card>
-
-    <app-metric-card
-      [label]="'diagnostic.low' | transloco"
-      [value]="lowCount"
-      icon="🔵"
-      color="blue"
-    ></app-metric-card>
-  </div>
-
-  <!-- Filters -->
-  <div class="filters-section">
-    <div class="filter-group">
-      <label class="filter-label">{{ 'diagnostic.filter_severity' | transloco }}</label>
-      <div class="filter-chips">
-        <button
-          *ngFor="let severity of severityOptions"
-          class="filter-chip"
-          [class.active]="selectedSeverities.includes(severity.value)"
-          (click)="toggleSeverity(severity.value)"
-        >
-          {{ severity.label }}
-        </button>
-      </div>
-    </div>
-
-    <div class="filter-group" *ngIf="categoryOptions.length > 0">
-      <label class="filter-label">{{ 'diagnostic.filter_category' | transloco }}</label>
-      <div class="filter-chips">
-        <button
-          *ngFor="let category of categoryOptions"
-          class="filter-chip"
-          [class.active]="selectedCategories.includes(category.value)"
-          (click)="toggleCategory(category.value)"
-        >
-          {{ category.label }}
-        </button>
-      </div>
-    </div>
-
-    <button
-      *ngIf="selectedSeverities.length > 0 || selectedCategories.length > 0"
-      class="btn-clear-filters"
-      (click)="clearFilters()"
-    >
-      {{ 'diagnostic.clear_filters' | transloco }}
-    </button>
   </div>
 
   <!-- Loading State -->
-  <div *ngIf="loading" class="loading-container">
+  <div *ngIf="loadingAi" class="loading-container">
     <div class="spinner"></div>
-    <p>{{ 'diagnostic.loading' | transloco }}</p>
+    <p>{{ 'diagnostic.analyzing' | transloco }}</p>
+    <p class="loading-hint">{{ 'diagnostic.loading_hint' | transloco }}</p>
   </div>
 
-  <!-- Issues List -->
-  <div *ngIf="!loading && issues.length > 0" class="issues-list">
-    <div
-      *ngFor="let issue of issues"
-      class="issue-card"
-      [ngClass]="getSeverityClass(issue.severity)"
-    >
-      <div class="issue-header" (click)="toggleIssue(issue.id)">
-        <div class="issue-header-left">
-          <span class="severity-badge" [ngClass]="getSeverityClass(issue.severity)">
-            {{ getSeverityLabel(issue.severity) }}
-          </span>
-          <span class="category-badge">
-            {{ getCategoryLabel(issue.category) }}
-          </span>
+  <!-- Error State -->
+  <div *ngIf="aiError && !loadingAi" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <h3>{{ 'diagnostic.error_title' | transloco }}</h3>
+    <p>{{ aiError }}</p>
+    <button class="btn btn-primary" (click)="runAiAnalysis()">
+      {{ 'diagnostic.retry' | transloco }}
+    </button>
+  </div>
+
+  <!-- AI Analysis Content -->
+  <div *ngIf="aiAnalysis && !loadingAi" class="analysis-container">
+
+    <!-- RAPPORT VIEW (Table or Markdown) -->
+    <div *ngIf="mainView === 'report'">
+
+      <!-- Table View -->
+      <div *ngIf="reportView === 'table'" class="table-view">
+      <div *ngIf="recommendations.length === 0" class="empty-recommendations">
+        <p>{{ 'diagnostic.no_issues' | transloco }}</p>
+        <p class="text-secondary">{{ 'diagnostic.no_issues_desc' | transloco }}</p>
+      </div>
+
+      <div *ngIf="recommendations.length > 0" class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="text-center" style="width: 60px;">N°</th>
+              <th (click)="sortBy('campaign')" class="sortable">
+                {{ 'search_terms.campaign' | transloco }}
+                <span class="sort-icon" *ngIf="sortField === 'campaign'">
+                  <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                </span>
+              </th>
+              <th (click)="sortBy('issue')" class="sortable">
+                {{ 'diagnostic.issues' | transloco }}
+                <span class="sort-icon" *ngIf="sortField === 'issue'">
+                  <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                </span>
+              </th>
+              <th (click)="sortBy('severity')" class="sortable text-center">
+                Gravité
+                <span class="sort-icon" *ngIf="sortField === 'severity'">
+                  <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                </span>
+              </th>
+              <th (click)="sortBy('impact')" class="sortable">
+                {{ 'diagnostic.impact' | transloco }}
+                <span class="sort-icon" *ngIf="sortField === 'impact'">
+                  <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                </span>
+              </th>
+              <th (click)="sortBy('recommendation')" class="sortable">
+                {{ 'diagnostic.recommendation' | transloco }}
+                <span class="sort-icon" *ngIf="sortField === 'recommendation'">
+                  <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let rec of recommendations; let i = index">
+              <td class="text-center font-bold" style="color: var(--green);">{{ i + 1 }}</td>
+              <td class="font-bold">{{ rec.campaign }}</td>
+              <td>{{ rec.issue }}</td>
+              <td class="text-center">
+                <span class="severity-badge" [ngClass]="getSeverityClass(rec.severity)">
+                  {{ rec.severity }}
+                </span>
+              </td>
+              <td class="text-secondary">{{ rec.impact }}</td>
+              <td>{{ rec.recommendation }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+      <!-- Markdown View -->
+      <div *ngIf="reportView === 'markdown'" class="markdown-view">
+        <div class="markdown-content" [innerHTML]="getFormattedAnalysis()"></div>
+      </div>
+
+    </div>
+
+    <!-- ÉCHÉANCIER VIEW (Checklist) -->
+    <div *ngIf="mainView === 'schedule'" class="schedule-view">
+      <div class="schedule-header">
+        <div class="progress-section">
+          <h3>Progression : {{ getCompletionPercentage() }}%</h3>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getCompletionPercentage()"></div>
+          </div>
+          <p class="progress-text">{{ completedTasks.size }} / {{ recommendations.length }} tâches complétées</p>
         </div>
-        <div class="issue-header-right">
-          <span class="expand-icon">{{ isExpanded(issue.id) ? '▼' : '▶' }}</span>
+        <button class="btn btn-secondary" (click)="clearCompletedTasks()" *ngIf="completedTasks.size > 0">
+          <span class="material-icons">restart_alt</span>
+          Réinitialiser
+        </button>
+      </div>
+
+      <div class="checklist">
+        <div *ngFor="let rec of getScheduledRecommendations(); let i = index"
+             class="checklist-item"
+             [class.completed]="isTaskCompleted(i)"
+             [class.severity-critical]="rec.severity.toLowerCase() === 'critical'"
+             [class.severity-high]="rec.severity.toLowerCase() === 'high'"
+             [class.severity-medium]="rec.severity.toLowerCase() === 'medium'"
+             [class.severity-low]="rec.severity.toLowerCase() === 'low'">
+
+          <div class="checklist-checkbox">
+            <input
+              type="checkbox"
+              [id]="'task-' + i"
+              [checked]="isTaskCompleted(i)"
+              (change)="toggleTaskComplete(i)">
+            <label [for]="'task-' + i"></label>
+          </div>
+
+          <div class="checklist-content">
+            <div class="checklist-header-row">
+              <h4 class="checklist-title">
+                <span class="task-number">{{ i + 1 }}.</span>
+                {{ rec.campaign }}
+              </h4>
+              <div class="checklist-meta">
+                <span class="urgency-badge" [ngClass]="getSeverityClass(rec.severity)">
+                  {{ getUrgencyLabel(rec.severity) }}
+                </span>
+                <span class="deadline">
+                  <span class="material-icons">event</span>
+                  {{ getSuggestedDeadline(rec.severity, i) }}
+                </span>
+              </div>
+            </div>
+
+            <div class="checklist-details">
+              <div class="detail-section">
+                <strong>Problème :</strong>
+                <p>{{ rec.issue }}</p>
+              </div>
+              <div class="detail-section" *ngIf="rec.impact !== 'N/A'">
+                <strong>Impact :</strong>
+                <p>{{ rec.impact }}</p>
+              </div>
+              <div class="detail-section action-section" *ngIf="rec.recommendation !== 'N/A'">
+                <strong>Action à entreprendre :</strong>
+                <p>{{ rec.recommendation }}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="issue-body">
-        <h3 class="issue-title">{{ issue.title }}</h3>
-        <p class="issue-campaign">{{ issue.campaign_name }}</p>
-        <p class="issue-message">{{ issue.message }}</p>
-      </div>
-
-      <div *ngIf="isExpanded(issue.id)" class="issue-details">
-        <div *ngIf="issue.impact" class="issue-detail-section">
-          <h4 class="detail-label">{{ 'diagnostic.impact' | transloco }}</h4>
-          <p class="detail-content">{{ issue.impact }}</p>
-        </div>
-
-        <div *ngIf="issue.recommendation" class="issue-detail-section">
-          <h4 class="detail-label">{{ 'diagnostic.recommendation' | transloco }}</h4>
-          <p class="detail-content">{{ issue.recommendation }}</p>
-        </div>
-
-        <div class="issue-actions" *ngIf="issue.campaign_id">
-          <a [routerLink]="['/campaign-detail']" [queryParams]="{id: issue.campaign_id}" class="btn-action btn-action-primary">
-            {{ 'diagnostic.view_campaign' | transloco }}
-          </a>
-        </div>
+      <div *ngIf="recommendations.length === 0" class="empty-recommendations">
+        <p>{{ 'diagnostic.no_issues' | transloco }}</p>
+        <p class="text-secondary">{{ 'diagnostic.no_issues_desc' | transloco }}</p>
       </div>
     </div>
   </div>
 
-  <!-- Empty State -->
-  <div *ngIf="!loading && issues.length === 0" class="empty-state">
-    <div class="empty-icon">✅</div>
-    <h3>{{ 'diagnostic.no_issues' | transloco }}</h3>
-    <p>{{ 'diagnostic.no_issues_desc' | transloco }}</p>
+  <!-- Empty State (no analysis yet) -->
+  <div *ngIf="!aiAnalysis && !loadingAi && !aiError" class="empty-state">
+    <div class="empty-icon">🤖</div>
+    <h3>{{ 'diagnostic.no_analysis_title' | transloco }}</h3>
+    <p>{{ 'diagnostic.no_analysis_desc' | transloco }}</p>
+    <button class="btn btn-ai" (click)="runAiAnalysis()">
+      🚀 {{ 'diagnostic.start_analysis' | transloco }}
+    </button>
   </div>
 </div>

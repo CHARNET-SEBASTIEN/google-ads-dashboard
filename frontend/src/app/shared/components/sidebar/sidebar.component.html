@@ -4,12 +4,11 @@
       <span class="material-icons title-icon">ads_click</span>
       <span>{{ 'app.title' | transloco }}</span>
     </h1>
-    <p class="sidebar-subtitle">{{ 'app.subtitle' | transloco }}</p>
   </div>
 
   <nav class="sidebar-nav">
     <div class="menu-section">
-      <div class="menu-section-label">Navigation</div>
+      <div class="menu-section-label">{{ 'nav.section_navigation' | transloco }}</div>
       <a
         [routerLink]="menuItems[0].route"
         routerLinkActive="active"
@@ -20,21 +19,12 @@
         <span class="material-icons nav-icon">{{ menuItems[0].icon }}</span>
         <span class="nav-label">{{ menuItems[0].translationKey | transloco }}</span>
       </a>
-      <a
-        [routerLink]="menuItems[1].route"
-        routerLinkActive="active"
-        class="nav-item"
-        [title]="menuItems[1].translationKey | transloco"
-      >
-        <span class="material-icons nav-icon">{{ menuItems[1].icon }}</span>
-        <span class="nav-label">{{ menuItems[1].translationKey | transloco }}</span>
-      </a>
     </div>
 
     <div class="menu-section">
-      <div class="menu-section-label">Analyse</div>
+      <div class="menu-section-label">{{ 'nav.section_analysis' | transloco }}</div>
       <a
-        *ngFor="let item of menuItems.slice(2, 5)"
+        *ngFor="let item of menuItems.slice(1, 3)"
         [routerLink]="item.route"
         routerLinkActive="active"
         class="nav-item"
@@ -46,21 +36,21 @@
     </div>
 
     <div class="menu-section">
-      <div class="menu-section-label">Outils</div>
+      <div class="menu-section-label">{{ 'nav.section_tools' | transloco }}</div>
       <a
-        [routerLink]="menuItems[5].route"
+        [routerLink]="menuItems[3].route"
         routerLinkActive="active"
         class="nav-item"
-        [title]="menuItems[5].translationKey | transloco"
+        [title]="menuItems[3].translationKey | transloco"
       >
-        <span class="material-icons nav-icon">{{ menuItems[5].icon }}</span>
-        <span class="nav-label">{{ menuItems[5].translationKey | transloco }}</span>
+        <span class="material-icons nav-icon">{{ menuItems[3].icon }}</span>
+        <span class="nav-label">{{ menuItems[3].translationKey | transloco }}</span>
       </a>
     </div>
   </nav>
 
   <div class="sidebar-footer">
     <p class="version">v1.0.0</p>
-    <p class="powered-by">Powered by Angular</p>
+    <p class="powered-by">{{ 'sidebar.powered_by' | transloco }}</p>
   </div>
 </aside>

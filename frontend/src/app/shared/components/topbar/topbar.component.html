@@ -4,6 +4,25 @@
   </div>
 
   <div class="topbar-right">
+    <!-- Data refresh button (visible when Drive is configured) -->
+    <button
+      *ngIf="isDriveConfigured"
+      (click)="refreshData()"
+      class="btn-refresh"
+      title="{{ 'config.refresh_drive' | transloco }}"
+    >
+      <span class="material-icons">cloud_sync</span>
+    </button>
+
+    <!-- Help icon -->
+    <button
+      (click)="toggleHelp()"
+      class="btn-help"
+      title="Aide"
+    >
+      <span class="material-icons">help_outline</span>
+    </button>
+
     <!-- Language selector -->
     <div class="control-group">
       <button
@@ -37,3 +56,63 @@
     </div>
   </div>
 </header>
+
+<!-- Help Modal -->
+<div class="help-modal-overlay" *ngIf="showHelp" (click)="toggleHelp()">
+  <div class="help-modal" (click)="$event.stopPropagation()">
+    <div class="help-modal-header">
+      <h2>{{ 'app.title' | transloco }}</h2>
+      <button class="btn-close" (click)="toggleHelp()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="help-modal-content">
+      <section class="help-hero">
+        <h3>{{ 'app.subtitle' | transloco }}</h3>
+        <p>{{ 'home.description' | transloco }}</p>
+      </section>
+
+      <section class="help-features">
+        <h3>{{ 'home.main_features' | transloco }}</h3>
+        <div class="help-features-grid">
+          <div class="help-feature-card">
+            <span class="material-icons help-feature-icon">analytics</span>
+            <h4>{{ 'home.analysis' | transloco }}</h4>
+            <ul>
+              <li>Vue d'ensemble des campagnes</li>
+              <li>Configuration détaillée</li>
+              <li>Analyse des mots-clés</li>
+              <li>Performances détaillées</li>
+              <li>Termes de recherche réels</li>
+              <li>Diagnostic automatique</li>
+            </ul>
+          </div>
+
+          <div class="help-feature-card">
+            <span class="material-icons help-feature-icon">storage</span>
+            <h4>{{ 'home.data' | transloco }}</h4>
+            <ul>
+              <li>Import JSON manuel</li>
+              <li>Actualisation Google Drive</li>
+              <li>Cache local contrôlé</li>
+              <li>Export Excel</li>
+              <li>Aucun serveur tiers</li>
+            </ul>
+          </div>
+
+          <div class="help-feature-card">
+            <span class="material-icons help-feature-icon">tune</span>
+            <h4>{{ 'home.control' | transloco }}</h4>
+            <ul>
+              <li>Lecture sans OAuth complexe</li>
+              <li>Statuts de campagne</li>
+              <li>Budgets et enchères</li>
+              <li>Requêtes utilisateurs</li>
+              <li>Recommandations IA</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

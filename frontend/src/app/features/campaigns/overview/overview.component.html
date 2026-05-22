@@ -1,11 +1,9 @@
 <div class="campaigns-page">
   <div class="page-header">
-    <div>
-      <h1>{{ 'nav.overview' | transloco }}</h1>
-      <p>Liste de toutes vos campagnes Google Ads avec métriques</p>
-    </div>
-    <button class="btn btn-primary" (click)="exportCsv()">
-      📥 Export CSV
+    <p class="page-subtitle">{{ 'overview.subtitle' | transloco }}</p>
+    <button class="btn btn-primary" (click)="exportExcel()">
+      <span class="material-icons" style="font-size: 1.1rem;">table_chart</span>
+      {{ 'overview.export_excel' | transloco }}
     </button>
   </div>
 
@@ -13,28 +11,28 @@
   <section class="stats-section">
     <div class="stats-grid">
       <app-metric-card
-        label="Campagnes"
+        [label]="'overview.total_campaigns' | transloco"
         [value]="totalCampaigns"
         icon="📊"
         color="blue"
       ></app-metric-card>
 
       <app-metric-card
-        label="Impressions"
+        [label]="'overview.total_impressions' | transloco"
         [value]="totalImpressions"
         icon="👁️"
         color="green"
       ></app-metric-card>
 
       <app-metric-card
-        label="Clics"
+        [label]="'overview.total_clicks' | transloco"
         [value]="totalClicks"
         icon="👆"
         color="orange"
       ></app-metric-card>
 
       <app-metric-card
-        label="Coût total"
+        [label]="'overview.total_cost' | transloco"
         [value]="totalCost.toFixed(2) + '€'"
         icon="💰"
         color="red"
@@ -50,7 +48,7 @@
           type="text"
           [(ngModel)]="searchText"
           (keyup.enter)="onSearch()"
-          placeholder="Rechercher une campagne..."
+          [placeholder]="'overview.search_placeholder' | transloco"
           class="search-input"
         >
         <button class="btn-search" (click)="onSearch()">
@@ -59,7 +57,7 @@
       </div>
 
       <div class="status-filters">
-        <label class="filter-label">Statut :</label>
+        <label class="filter-label">{{ 'overview.status_label' | transloco }} :</label>
         <button
           *ngFor="let status of statusOptions"
           (click)="toggleStatus(status.value)"
@@ -71,7 +69,7 @@
       </div>
 
       <button class="btn btn-secondary" (click)="clearFilters()">
-        ✕ Réinitialiser
+        ✕ {{ 'overview.reset_filters' | transloco }}
       </button>
     </div>
   </section>
@@ -82,20 +80,98 @@
     <p>{{ 'common.loading' | transloco }}...</p>
   </div>
 
-  <!-- Campaigns List -->
+  <!-- Campaigns Table -->
   <section class="campaigns-list" *ngIf="!loading">
     <div *ngIf="filteredCampaigns.length === 0" class="empty-state">
       <div class="empty-icon">📭</div>
-      <h3>Aucune campagne trouvée</h3>
-      <p>Essayez de modifier vos filtres ou d'importer des données</p>
+      <h3>{{ 'overview.no_campaigns' | transloco }}</h3>
+      <p>{{ 'overview.no_campaigns_desc' | transloco }}</p>
     </div>
 
-    <div class="campaigns-grid" *ngIf="filteredCampaigns.length > 0">
-      <app-campaign-card
-        *ngFor="let campaign of filteredCampaigns"
-        [campaign]="campaign"
-        (viewDetails)="onViewCampaignDetails($event)"
-      ></app-campaign-card>
+    <div class="table-container" *ngIf="filteredCampaigns.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th (click)="sortBy('name')" class="sortable">
+              {{ 'campaign.name' | transloco }}
+              <span class="sort-icon" *ngIf="sortField === 'name'">
+                <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+              </span>
+            </th>
+            <th (click)="sortBy('status')" class="sortable">
+              {{ 'campaign.status' | transloco }}
+              <span class="sort-icon" *ngIf="sortField === 'status'">
+                <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+              </span>
+            </th>
+            <th (click)="sortBy('budget')" class="sortable text-right">
+              {{ 'campaign.budget' | transloco }}
+              <span class="sort-icon" *ngIf="sortField === 'budget'">
+                <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+              </span>
+            </th>
+            <th (click)="sortBy('impressions')" class="sortable text-right">
+              {{ 'campaign.impressions' | transloco }}
+              <span class="sort-icon" *ngIf="sortField === 'impressions'">
+                <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+              </span>
+            </th>
+            <th (click)="sortBy('clicks')" class="sortable text-right">
+              {{ 'campaign.clicks' | transloco }}
+              <span class="sort-icon" *ngIf="sortField === 'clicks'">
+                <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+              </span>
+            </th>
+            <th (click)="sortBy('ctr')" class="sortable text-right">
+              {{ 'campaign.ctr' | transloco }}
+              <span class="sort-icon" *ngIf="sortField === 'ctr'">
+                <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+              </span>
+            </th>
+            <th (click)="sortBy('cpc')" class="sortable text-right">
+              {{ 'campaign.cpc' | transloco }}
+              <span class="sort-icon" *ngIf="sortField === 'cpc'">
+                <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+              </span>
+            </th>
+            <th (click)="sortBy('cost')" class="sortable text-right">
+              {{ 'campaign.cost' | transloco }}
+              <span class="sort-icon" *ngIf="sortField === 'cost'">
+                <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+              </span>
+            </th>
+            <th (click)="sortBy('conversions')" class="sortable text-right">
+              {{ 'campaign.conversions' | transloco }}
+              <span class="sort-icon" *ngIf="sortField === 'conversions'">
+                <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+              </span>
+            </th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let campaign of filteredCampaigns" (click)="onViewCampaignDetails(campaign.id)" class="clickable-row">
+            <td class="font-bold">{{ campaign.name }}</td>
+            <td>
+              <span class="status-badge" [class]="'status-' + campaign.status.toLowerCase()">
+                {{ getStatusKey(campaign.status) | transloco }}
+              </span>
+            </td>
+            <td class="text-right">{{ campaign.budget ? (campaign.budget | numberFormat:2) + '€' : '-' }}</td>
+            <td class="text-right">{{ campaign.impressions || 0 | numberFormat }}</td>
+            <td class="text-right">{{ campaign.clicks || 0 | numberFormat }}</td>
+            <td class="text-right">{{ (campaign.ctr || 0) | numberFormat:2 }}%</td>
+            <td class="text-right">{{ (campaign.cpc || 0) | numberFormat:2 }}€</td>
+            <td class="text-right">{{ (campaign.cost || 0) | numberFormat:2 }}€</td>
+            <td class="text-right">{{ campaign.conversions || 0 | numberFormat:1 }}</td>
+            <td class="text-center">
+              <button class="btn-icon-small" (click)="onViewCampaignDetails(campaign.id); $event.stopPropagation()" title="{{ 'overview.view_details' | transloco }}">
+                <span class="material-icons">visibility</span>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </section>
 </div>

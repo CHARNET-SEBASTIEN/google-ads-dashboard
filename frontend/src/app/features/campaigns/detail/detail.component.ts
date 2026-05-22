@@ -6,11 +6,13 @@ import { CampaignService, Keyword, Ad, Performance } from '../../../core/service
 import { Campaign } from '../../../shared/components/campaign-card/campaign-card.component';
 import { MetricCardComponent } from '../../../shared/components/metric-card/metric-card.component';
 import { ChartComponent, ChartData, ChartLayout } from '../../../shared/components/chart/chart.component';
+import { NumberFormatPipe } from '../../../shared/pipes/number-format.pipe';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-detail',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, MetricCardComponent, ChartComponent],
+  imports: [CommonModule, TranslocoModule, MetricCardComponent, ChartComponent, NumberFormatPipe],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss'
 })
@@ -23,6 +25,10 @@ export class DetailComponent implements OnInit {
 
   activeTab: 'overview' | 'keywords' | 'ads' | 'performance' = 'overview';
   loading = false;
+
+  // Sorting for keywords
+  sortField: keyof Keyword | '' = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
 
   // Chart data
   performanceChartData: ChartData[] = [];
@@ -167,32 +173,93 @@ export class DetailComponent implements OnInit {
     }
   }
 
-  getStatusLabel(status: string): string {
+  getStatusKey(status: string): string {
     const upperStatus = status?.toUpperCase() || '';
-    const labels: { [key: string]: string } = {
-      'ENABLED': 'Activée',
-      'PAUSED': 'En pause',
-      'REMOVED': 'Supprimée'
+    const keys: { [key: string]: string } = {
+      'ENABLED': 'campaign.enabled',
+      'PAUSED': 'campaign.paused',
+      'REMOVED': 'campaign.removed'
     };
-    return labels[upperStatus] || status;
+    return keys[upperStatus] || status;
   }
 
-  getMatchTypeLabel(type: string): string {
-    const labels: { [key: string]: string } = {
-      'EXACT': 'Exact',
-      'PHRASE': 'Expression',
-      'BROAD': 'Large'
+  getMatchTypeKey(type: string): string {
+    const keys: { [key: string]: string } = {
+      'EXACT': 'detail.match_exact',
+      'PHRASE': 'detail.match_phrase',
+      'BROAD': 'detail.match_broad'
     };
-    return labels[type] || type;
+    return keys[type] || type;
   }
 
-  getAdTypeLabel(type: string): string {
-    const labels: { [key: string]: string } = {
-      'RESPONSIVE_SEARCH_AD': 'Annonce adaptative',
-      'EXPANDED_TEXT_AD': 'Annonce textuelle',
-      'TEXT_AD': 'Annonce texte',
-      'UNKNOWN': 'Type inconnu'
+  getAdTypeKey(type: string): string {
+    const keys: { [key: string]: string } = {
+      'RESPONSIVE_SEARCH_AD': 'detail.ad_rsa',
+      'EXPANDED_TEXT_AD': 'detail.ad_eta',
+      'TEXT_AD': 'detail.ad_text',
+      'UNKNOWN': 'detail.ad_unknown'
     };
-    return labels[type] || type;
+    return keys[type] || type;
+  }
+
+  sortBy(field: keyof Keyword) {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+    this.applySorting();
+  }
+
+  applySorting() {
+    if (!this.sortField) return;
+
+    this.keywords.sort((a, b) => {
+      const aValue = a[this.sortField as keyof Keyword];
+      const bValue = b[this.sortField as keyof Keyword];
+
+      if (aValue === null || aValue === undefined) return 1;
+      if (bValue === null || bValue === undefined) return -1;
+
+      let comparison = 0;
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        comparison = aValue.localeCompare(bValue);
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        comparison = aValue - bValue;
+      }
+
+      return this.sortDirection === 'asc' ? comparison : -comparison;
+    });
+  }
+
+  exportKeywordsExcel() {
+    const data = this.keywords.map(keyword => ({
+      'Mot-clé': keyword.text || 'N/A',
+      'Type': keyword.match_type || 'N/A',
+      'Statut': keyword.status || 'N/A',
+      'Impressions': keyword.impressions || 0,
+      'Clics': keyword.clicks || 0,
+      'CTR (%)': keyword.ctr ? keyword.ctr.toFixed(2) : '0.00',
+      'Coût (€)': keyword.cost ? keyword.cost.toFixed(2) : '0.00'
+    }));
+
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Mots-clés');
+
+    const colWidths = [
+      { wch: 40 }, // Mot-clé
+      { wch: 15 }, // Type
+      { wch: 12 }, // Statut
+      { wch: 15 }, // Impressions
+      { wch: 10 }, // Clics
+      { wch: 10 }, // CTR
+      { wch: 12 }  // Coût
+    ];
+    ws['!cols'] = colWidths;
+
+    const fileName = `keywords_${this.campaign?.name || 'campaign'}_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, fileName);
   }
 }

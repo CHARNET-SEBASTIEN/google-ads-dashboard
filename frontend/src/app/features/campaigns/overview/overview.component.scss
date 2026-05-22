@@ -115,6 +115,57 @@
         }
       }
     }
+
+    .sort-control {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+
+      .filter-label {
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-right: 0.5rem;
+      }
+
+      .sort-select {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        border-radius: 6px;
+        cursor: pointer;
+        min-width: 150px;
+
+        &:focus {
+          outline: none;
+          border-color: var(--green);
+        }
+      }
+
+      .btn-sort-dir {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        .material-icons {
+          font-size: 1.125rem;
+        }
+
+        &:hover {
+          border-color: var(--green);
+          background-color: var(--hover-color);
+        }
+      }
+    }
   }
 }
 
@@ -228,5 +279,149 @@
 
   .campaigns-grid {
     grid-template-columns: 1fr !important;
+  }
+}
+
+// Table styles
+.table-container {
+  background-color: var(--card-color);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      background-color: var(--hover-color);
+
+      th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-color);
+        border-bottom: 2px solid var(--border-color);
+        white-space: nowrap;
+
+        &.sortable {
+          cursor: pointer;
+          user-select: none;
+          position: relative;
+          transition: background-color 0.2s;
+
+          &:hover {
+            background-color: var(--border-color);
+          }
+
+          .sort-icon {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 0.25rem;
+
+            .material-icons {
+              font-size: 1rem;
+              color: var(--green);
+            }
+          }
+        }
+
+        &.text-right {
+          text-align: right;
+        }
+
+        &.text-center {
+          text-align: center;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.15s;
+
+        &.clickable-row {
+          cursor: pointer;
+
+          &:hover {
+            background-color: var(--hover-color);
+          }
+        }
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        td {
+          padding: 0.875rem 1rem;
+          color: var(--text-color);
+
+          &.font-bold {
+            font-weight: 600;
+          }
+
+          &.text-right {
+            text-align: right;
+          }
+
+          &.text-center {
+            text-align: center;
+          }
+
+          .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+
+            &.status-enabled {
+              background-color: #d4edda;
+              color: #155724;
+            }
+
+            &.status-paused {
+              background-color: #fff3cd;
+              color: #856404;
+            }
+
+            &.status-removed {
+              background-color: #f8d7da;
+              color: #721c24;
+            }
+          }
+
+          .btn-icon-small {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border: 1px solid var(--border-color);
+            background-color: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+
+            .material-icons {
+              font-size: 1.125rem;
+              color: var(--text-color);
+            }
+
+            &:hover {
+              background-color: var(--green);
+              border-color: var(--green);
+
+              .material-icons {
+                color: white;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

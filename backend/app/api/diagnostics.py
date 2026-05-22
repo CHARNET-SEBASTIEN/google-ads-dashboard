@@ -13,12 +13,14 @@ from app.models.diagnostic import (
 )
 from app.services.data_loader_service import data_loader_service
 from app.services.diagnostics_service import diagnostics_service
+from app.services.ai_diagnostics_service import ai_diagnostics_service
 
 
 router = APIRouter()
 
 
 @router.get("", response_model=DiagnosticResponse)
+@router.post("/run", response_model=DiagnosticResponse)
 async def run_diagnostics(
     campaign_ids: Optional[List[str]] = Query(None),
     severity: Optional[List[str]] = Query(None),
@@ -171,3 +173,63 @@ async def diagnostics_rules():
     ]
 
     return {"rules": rules, "total": len(rules)}
+
+
+@router.get("/ai-analysis/cached")
+async def get_cached_ai_analysis():
+    """
+    Récupère l'analyse IA en cache si disponible
+
+    Returns:
+        Dernière analyse IA sauvegardée ou null
+    """
+    cached = ai_diagnostics_service.get_cached_analysis()
+    if cached:
+        return cached
+    else:
+        return {"success": False, "message": "No cached analysis available"}
+
+
+@router.post("/ai-analysis")
+async def ai_analysis(
+    campaign_ids: Optional[List[str]] = Query(None),
+    language: str = Query("fr", description="Language for the analysis (fr, en, de)")
+):
+    """
+    Analyse IA des campagnes via Claude
+
+    Args:
+        campaign_ids: Analyser uniquement ces campagnes (optionnel)
+        language: Langue du rapport (fr, en, de)
+
+    Returns:
+        Rapport d'analyse détaillé avec recommandations IA
+    """
+    # Charger toutes les données
+    campaigns = data_loader_service.get_campaigns()
+    keywords = data_loader_service.get_keywords()
+    search_terms = data_loader_service.get_search_terms()
+    ads = data_loader_service.get_ads()
+    account_info = data_loader_service.get_account_info()
+
+    # Filtrer par campaign_ids si fourni
+    if campaign_ids:
+        campaigns = [c for c in campaigns if str(c.get('id')) in campaign_ids]
+
+        # Filtrer aussi keywords, ads, search_terms
+        campaign_ids_set = set(campaign_ids)
+        keywords = [kw for kw in keywords if str(kw.get('campaignId')) in campaign_ids_set]
+        ads = [ad for ad in ads if str(ad.get('campaignId')) in campaign_ids_set]
+        search_terms = [st for st in search_terms if str(st.get('campaignId')) in campaign_ids_set]
+
+    # Lancer l'analyse IA
+    result = ai_diagnostics_service.analyze_campaigns(
+        campaigns=campaigns,
+        keywords=keywords,
+        search_terms=search_terms,
+        ads=ads,
+        account_info=account_info,
+        language=language
+    )
+
+    return result

@@ -1,0 +1,14 @@
+<div class="snackbar-container">
+  <div
+    *ngFor="let msg of messages"
+    class="snackbar"
+    [class]="'snackbar-' + msg.type"
+    [class.visible]="msg.visible">
+
+    <span class="material-icons snackbar-icon">{{ getIcon(msg.type) }}</span>
+    <span class="snackbar-message">{{ msg.message }}</span>
+    <button class="snackbar-close" (click)="hideMessage(msg.id)">
+      <span class="material-icons">close</span>
+    </button>
+  </div>
+</div>

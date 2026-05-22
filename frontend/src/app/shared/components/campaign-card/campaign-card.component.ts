@@ -35,13 +35,13 @@ export class CampaignCardComponent {
     return statusMap[status] || 'status-unknown';
   }
 
-  getStatusLabel(status: string): string {
-    const labelMap: { [key: string]: string } = {
-      'ENABLED': 'Activée',
-      'PAUSED': 'En pause',
-      'REMOVED': 'Supprimée'
+  getStatusKey(status: string): string {
+    const keyMap: { [key: string]: string } = {
+      'ENABLED': 'campaign.enabled',
+      'PAUSED': 'campaign.paused',
+      'REMOVED': 'campaign.removed'
     };
-    return labelMap[status] || status;
+    return keyMap[status] || status;
   }
 
   onViewDetails() {

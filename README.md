@@ -60,6 +60,23 @@ npm install
 
 ### Développement
 
+**Option 1 : Script automatique (recommandé)**
+```bash
+# Démarrer backend + frontend
+./start-dev.sh
+
+# Arrêter tous les services
+./stop.sh
+
+# Arrêter uniquement le backend
+./stop.sh backend
+
+# Arrêter uniquement le frontend
+./stop.sh frontend
+```
+
+**Option 2 : Lancement manuel**
+
 Terminal 1 - Backend :
 ```bash
 cd backend
@@ -73,7 +90,7 @@ cd frontend
 npm start
 ```
 
-Accéder à l'application : **http://localhost:4200**
+Accéder à l'application : **http://localhost:4201**
 
 ### Production
 

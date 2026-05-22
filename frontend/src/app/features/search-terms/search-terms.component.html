@@ -1,15 +1,13 @@
 <div class="search-terms-page">
   <div class="page-header">
-    <div>
-      <h1>{{ 'nav.search_terms' | transloco }}</h1>
-      <p>Termes de recherche réels utilisés par les internautes</p>
-    </div>
+    <p class="page-subtitle">{{ 'search_terms.subtitle' | transloco }}</p>
     <div class="header-actions">
       <button class="btn btn-secondary" (click)="toggleSuspects()">
-        {{ showOnlySuspects ? '📋 Tous' : '⚠️ Suspects' }}
+        {{ showOnlySuspects ? ('📋 ' + ('common.all' | transloco)) : '⚠️ Suspects' }}
       </button>
-      <button class="btn btn-primary" (click)="exportCsv()">
-        📥 Export CSV
+      <button class="btn btn-primary" (click)="exportExcel()">
+        <span class="material-icons" style="font-size: 1.1rem;">table_chart</span>
+        {{ 'overview.export_excel' | transloco }}
       </button>
     </div>
   </div>
@@ -20,7 +18,7 @@
         type="text"
         [(ngModel)]="searchText"
         (keyup.enter)="loadSearchTerms()"
-        placeholder="Rechercher un terme..."
+        [placeholder]="'common.search' | transloco"
         class="search-input"
         [disabled]="showOnlySuspects"
       >
@@ -36,20 +34,55 @@
   </div>
 
   <div *ngIf="!loading && searchTerms.length === 0" class="empty-state">
-    <p>Aucun terme de recherche trouvé</p>
+    <p>{{ 'search_terms.no_terms' | transloco }}</p>
   </div>
 
   <div *ngIf="!loading && searchTerms.length > 0" class="table-container">
     <table class="data-table">
       <thead>
         <tr>
-          <th>Requête</th>
-          <th>Campagne</th>
-          <th class="text-right">Impressions</th>
-          <th class="text-right">Clics</th>
-          <th class="text-right">CTR</th>
-          <th class="text-right">Coût</th>
-          <th class="text-right">Conv.</th>
+          <th (click)="sortBy('query')" class="sortable">
+            {{ 'search_terms.query' | transloco }}
+            <span class="sort-icon" *ngIf="sortField === 'query'">
+              <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+            </span>
+          </th>
+          <th (click)="sortBy('campaign_name')" class="sortable">
+            {{ 'search_terms.campaign' | transloco }}
+            <span class="sort-icon" *ngIf="sortField === 'campaign_name'">
+              <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+            </span>
+          </th>
+          <th (click)="sortBy('impressions')" class="sortable text-right">
+            {{ 'campaign.impressions' | transloco }}
+            <span class="sort-icon" *ngIf="sortField === 'impressions'">
+              <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+            </span>
+          </th>
+          <th (click)="sortBy('clicks')" class="sortable text-right">
+            {{ 'campaign.clicks' | transloco }}
+            <span class="sort-icon" *ngIf="sortField === 'clicks'">
+              <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+            </span>
+          </th>
+          <th (click)="sortBy('ctr')" class="sortable text-right">
+            {{ 'campaign.ctr' | transloco }}
+            <span class="sort-icon" *ngIf="sortField === 'ctr'">
+              <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+            </span>
+          </th>
+          <th (click)="sortBy('cost')" class="sortable text-right">
+            {{ 'campaign.cost' | transloco }}
+            <span class="sort-icon" *ngIf="sortField === 'cost'">
+              <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+            </span>
+          </th>
+          <th (click)="sortBy('conversions')" class="sortable text-right">
+            {{ 'campaign.conversions' | transloco }}
+            <span class="sort-icon" *ngIf="sortField === 'conversions'">
+              <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+            </span>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -59,11 +92,11 @@
             <span *ngIf="term.is_suspect" class="suspect-badge">⚠️ Suspect</span>
           </td>
           <td class="text-secondary">{{ term.campaign_name || 'N/A' }}</td>
-          <td class="text-right">{{ term.impressions | number }}</td>
-          <td class="text-right">{{ term.clicks | number }}</td>
-          <td class="text-right">{{ term.ctr | number:'1.2-2' }}%</td>
-          <td class="text-right">{{ term.cost | number:'1.2-2' }}€</td>
-          <td class="text-right">{{ term.conversions | number:'1.1-1' }}</td>
+          <td class="text-right">{{ term.impressions | numberFormat }}</td>
+          <td class="text-right">{{ term.clicks | numberFormat }}</td>
+          <td class="text-right">{{ term.ctr | numberFormat:2 }}%</td>
+          <td class="text-right">{{ term.cost | numberFormat:2 }}€</td>
+          <td class="text-right">{{ term.conversions | numberFormat:1 }}</td>
         </tr>
       </tbody>
     </table>

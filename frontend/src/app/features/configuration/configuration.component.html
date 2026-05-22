@@ -1,7 +1,6 @@
 <div class="config-page">
   <div class="page-header">
-    <h1>{{ 'nav.config' | transloco }}</h1>
-    <p>Importez vos données Google Ads pour commencer l'analyse</p>
+    <p class="page-subtitle">{{ 'config.subtitle' | transloco }}</p>
   </div>
 
   <!-- Alert Message -->
@@ -11,18 +10,18 @@
 
   <!-- Data Status -->
   <section class="status-section" *ngIf="dataStatus">
-    <h2>État des données</h2>
+    <h2>{{ 'config.data_status' | transloco }}</h2>
 
     <div *ngIf="dataStatus.data_exists" class="status-card status-success">
       <div class="status-icon">✅</div>
       <div class="status-content">
-        <h3>Données disponibles</h3>
+        <h3>{{ 'config.data_available' | transloco }}</h3>
         <p *ngIf="dataStatus.account_info">
           <strong>{{ dataStatus.account_info.name || 'N/A' }}</strong>
           ({{ dataStatus.account_info.customerId }})
         </p>
         <p *ngIf="dataStatus.last_update" class="status-date">
-          Dernière mise à jour : {{ dataStatus.last_update | date:'dd/MM/yyyy à HH:mm' }}
+          {{ 'config.last_update' | transloco }} : {{ dataStatus.last_update | date:'dd/MM/yyyy à HH:mm' }}
         </p>
       </div>
     </div>
@@ -30,36 +29,36 @@
     <div *ngIf="!dataStatus.data_exists" class="status-card status-warning">
       <div class="status-icon">⚠️</div>
       <div class="status-content">
-        <h3>Aucune donnée disponible</h3>
-        <p>Importez des données pour commencer l'analyse</p>
+        <h3>{{ 'config.no_data' | transloco }}</h3>
+        <p>{{ 'config.no_data_desc' | transloco }}</p>
       </div>
     </div>
 
     <!-- Stats -->
     <div class="stats-grid" *ngIf="dataStatus.data_exists">
       <app-metric-card
-        label="Campagnes"
+        [label]="'config.campaigns' | transloco"
         [value]="dataStatus.stats.campaigns"
         icon="📊"
         color="blue"
       ></app-metric-card>
 
       <app-metric-card
-        label="Mots-clés"
+        [label]="'config.keywords' | transloco"
         [value]="dataStatus.stats.keywords"
         icon="🔑"
         color="green"
       ></app-metric-card>
 
       <app-metric-card
-        label="Annonces"
+        [label]="'config.ads' | transloco"
         [value]="dataStatus.stats.ads"
         icon="📢"
         color="orange"
       ></app-metric-card>
 
       <app-metric-card
-        label="Termes recherche"
+        [label]="'config.search_terms_stat' | transloco"
         [value]="dataStatus.stats.search_terms"
         icon="🔍"
         color="blue"
@@ -69,24 +68,24 @@
 
   <!-- Import Tabs -->
   <section class="import-section">
-    <h2>Importer des données</h2>
+    <h2>{{ 'config.import_data' | transloco }}</h2>
 
     <div class="tabs">
       <input type="radio" id="tab1" name="tabs" checked>
-      <label for="tab1">📤 Import JSON</label>
+      <label for="tab1">📤 {{ 'config.import_json' | transloco }}</label>
 
       <input type="radio" id="tab2" name="tabs">
-      <label for="tab2">☁️ Google Drive</label>
+      <label for="tab2">☁️ {{ 'config.import_drive' | transloco }}</label>
 
       <input type="radio" id="tab3" name="tabs">
-      <label for="tab3">📖 Guide</label>
+      <label for="tab3">📖 {{ 'config.guide' | transloco }}</label>
 
       <!-- Tab 1: JSON Upload -->
       <div class="tab-content">
-        <h3>Import manuel du fichier JSON</h3>
-        
+        <h3>{{ 'config.manual_import' | transloco }}</h3>
+
         <p class="tab-description">
-          Téléchargez le fichier JSON exporté par le script Google Ads et importez-le ici.
+          {{ 'config.manual_import_desc' | transloco }}
         </p>
 
         <div class="upload-zone">
@@ -97,10 +96,10 @@
             (change)="onFileSelected($event)"
             style="display: none"
           >
-          
+
           <label for="fileInput" class="upload-button">
             <span class="upload-icon">📁</span>
-            <span>{{ selectedFile ? selectedFile.name : 'Choisir un fichier JSON' }}</span>
+            <span>{{ selectedFile ? selectedFile.name : ('config.choose_file' | transloco) }}</span>
           </label>
 
           <button
@@ -116,37 +115,37 @@
 
       <!-- Tab 2: Google Drive -->
       <div class="tab-content">
-        <h3>Import depuis Google Drive</h3>
+        <h3>{{ 'config.drive_import' | transloco }}</h3>
 
         <p class="tab-description">
-          Collez l'URL ou l'ID du fichier Google Drive partagé publiquement.
+          {{ 'config.drive_import_desc' | transloco }}
         </p>
 
         <!-- Configuration sauvegardée -->
         <div *ngIf="dataStatus?.drive_config" class="drive-saved-config">
           <div class="saved-config-header">
             <span class="material-icons">cloud_done</span>
-            <strong>Fichier Google Drive configuré</strong>
+            <strong>{{ 'config.drive_configured' | transloco }}</strong>
           </div>
           <p class="saved-config-id">
-            ID : <code>{{ dataStatus.drive_config.file_id }}</code>
+            {{ 'config.drive_id' | transloco }} : <code>{{ dataStatus.drive_config.file_id }}</code>
           </p>
           <p class="saved-config-date">
-            Dernière synchro : {{ dataStatus.drive_config.last_sync | date:'dd/MM/yyyy à HH:mm' }}
+            {{ 'config.last_sync' | transloco }} : {{ dataStatus.drive_config.last_sync | date:'dd/MM/yyyy à HH:mm' }}
           </p>
           <button
             class="btn btn-success"
             [disabled]="uploadProgress"
             (click)="refreshFromDrive()"
           >
-            <span *ngIf="!uploadProgress">🔄 Rafraîchir depuis Drive</span>
+            <span *ngIf="!uploadProgress">🔄 {{ 'config.refresh_drive' | transloco }}</span>
             <span *ngIf="uploadProgress">{{ 'common.loading' | transloco }}...</span>
           </button>
         </div>
 
         <!-- Nouveau fichier -->
         <div class="form-group" [class.has-saved-config]="dataStatus?.drive_config">
-          <label for="driveUrl">{{ dataStatus?.drive_config ? 'Changer de fichier' : 'URL ou ID du fichier' }}</label>
+          <label for="driveUrl">{{ dataStatus?.drive_config ? ('config.change_file' | transloco) : ('config.drive_url_label' | transloco) }}</label>
           <input
             type="text"
             id="driveUrl"
@@ -155,7 +154,7 @@
             class="form-input"
           >
           <small class="form-hint">
-            Exemple : https://drive.google.com/file/d/1a2B3c4D5e6F7g8H9i0J/view
+            {{ 'config.drive_url_example' | transloco }}
           </small>
         </div>
 
@@ -164,32 +163,32 @@
           [disabled]="!googleDriveFileId || uploadProgress"
           (click)="importFromGoogleDrive()"
         >
-          <span *ngIf="!uploadProgress">{{ dataStatus?.drive_config ? 'Changer de fichier' : 'Importer depuis Drive' }}</span>
+          <span *ngIf="!uploadProgress">{{ dataStatus?.drive_config ? ('config.change_file' | transloco) : ('config.import_from_drive' | transloco) }}</span>
           <span *ngIf="uploadProgress">{{ 'common.loading' | transloco }}...</span>
         </button>
       </div>
 
       <!-- Tab 3: Guide -->
       <div class="tab-content">
-        <h3>Guide d'utilisation</h3>
+        <h3>{{ 'config.guide_title' | transloco }}</h3>
 
         <div class="guide-content">
-          <h4>1. Exporter vos données</h4>
-          <p>Utilisez le script Google Ads fourni pour exporter vos données au format JSON.</p>
+          <h4>{{ 'config.guide_step1' | transloco }}</h4>
+          <p>{{ 'config.guide_step1_desc' | transloco }}</p>
 
-          <h4>2. Choisir la méthode d'import</h4>
+          <h4>{{ 'config.guide_step2' | transloco }}</h4>
           <ul>
-            <li><strong>Import manuel</strong> : Téléchargez le fichier JSON et importez-le</li>
-            <li><strong>Google Drive</strong> : Partagez le fichier publiquement et collez l'URL</li>
+            <li><strong>{{ 'config.guide_step2_manual' | transloco }}</strong> : {{ 'config.guide_step2_manual_desc' | transloco }}</li>
+            <li><strong>{{ 'config.guide_step2_drive' | transloco }}</strong> : {{ 'config.guide_step2_drive_desc' | transloco }}</li>
           </ul>
 
-          <h4>3. Analyser vos données</h4>
-          <p>Une fois importées, accédez aux différentes pages d'analyse :</p>
+          <h4>{{ 'config.guide_step3' | transloco }}</h4>
+          <p>{{ 'config.guide_step3_desc' | transloco }}</p>
           <ul>
-            <li>Vue d'ensemble : Liste de toutes vos campagnes</li>
-            <li>Détail campagne : Configuration complète</li>
-            <li>Termes de recherche : Requêtes réelles</li>
-            <li>Diagnostic : Analyse automatique</li>
+            <li>{{ 'config.guide_overview' | transloco }}</li>
+            <li>{{ 'config.guide_detail' | transloco }}</li>
+            <li>{{ 'config.guide_search' | transloco }}</li>
+            <li>{{ 'config.guide_diagnostic' | transloco }}</li>
           </ul>
         </div>
       </div>
@@ -203,7 +202,7 @@
     </button>
 
     <button class="btn btn-danger" (click)="clearData()">
-      🗑️ Supprimer les données
+      🗑️ {{ 'config.delete_data' | transloco }}
     </button>
   </section>
 </div>

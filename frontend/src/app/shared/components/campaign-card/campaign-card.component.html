@@ -5,7 +5,7 @@
       <span class="campaign-id">#{{ campaign.id }}</span>
     </div>
     <span class="status-badge" [ngClass]="getStatusClass(campaign.status)">
-      {{ getStatusLabel(campaign.status) }}
+      {{ getStatusKey(campaign.status) | transloco }}
     </span>
   </div>
 
@@ -33,7 +33,7 @@
 
   <div class="card-footer">
     <button class="btn-details" (click)="onViewDetails()">
-      Voir les détails →
+      {{ 'overview.view_details' | transloco }} →
     </button>
   </div>
 </div>

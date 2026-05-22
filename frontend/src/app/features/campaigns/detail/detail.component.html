@@ -12,7 +12,7 @@
         <div class="campaign-meta">
           <span class="campaign-id">#{{ campaign.id }}</span>
           <span class="status-badge" [class]="'status-' + campaign.status.toLowerCase()">
-            {{ getStatusLabel(campaign.status) }}
+            {{ getStatusKey(campaign.status) | transloco }}
           </span>
         </div>
       </div>
@@ -36,14 +36,14 @@
 
       <app-metric-card
         label="{{ 'campaign.ctr' | transloco }}"
-        [value]="(campaign.ctr || 0) | number:'1.2-2'"
+        [value]="(campaign.ctr || 0) | numberFormat:2"
         icon="📊"
         color="orange"
       ></app-metric-card>
 
       <app-metric-card
         label="{{ 'campaign.cost' | transloco }}"
-        [value]="(campaign.cost || 0) | number:'1.2-2'"
+        [value]="(campaign.cost || 0) | numberFormat:2"
         icon="💰"
         color="red"
       ></app-metric-card>
@@ -57,28 +57,28 @@
           [class.active]="activeTab === 'overview'"
           class="tab-button"
         >
-          📋 Vue d'ensemble
+          📋 {{ 'nav.overview' | transloco }}
         </button>
         <button
           (click)="setActiveTab('keywords')"
           [class.active]="activeTab === 'keywords'"
           class="tab-button"
         >
-          🔑 Mots-clés ({{ keywords.length }})
+          🔑 {{ 'detail.keywords_section' | transloco }} ({{ keywords.length }})
         </button>
         <button
           (click)="setActiveTab('ads')"
           [class.active]="activeTab === 'ads'"
           class="tab-button"
         >
-          📢 Annonces ({{ ads.length }})
+          📢 {{ 'detail.ads_section' | transloco }} ({{ ads.length }})
         </button>
         <button
           (click)="setActiveTab('performance')"
           [class.active]="activeTab === 'performance'"
           class="tab-button"
         >
-          📈 Performances
+          📈 {{ 'detail.performance_section' | transloco }}
         </button>
       </div>
 
@@ -86,23 +86,23 @@
       <div *ngIf="activeTab === 'overview'" class="tab-content">
         <div class="overview-grid">
           <div class="info-card">
-            <h3>Budget</h3>
+            <h3>{{ 'detail.budget' | transloco }}</h3>
             <p class="value">{{ campaign.budget ? (campaign.budget + ' €') : 'N/A' }}</p>
           </div>
 
           <div class="info-card">
-            <h3>Conversions</h3>
+            <h3>{{ 'detail.conversions' | transloco }}</h3>
             <p class="value">{{ campaign.conversions || 0 }}</p>
           </div>
 
           <div class="info-card">
-            <h3>CPC moyen</h3>
-            <p class="value">{{ (campaign.cpc || 0) | number:'1.2-2' }}€</p>
+            <h3>{{ 'campaign.cpc' | transloco }}</h3>
+            <p class="value">{{ (campaign.cpc || 0) | numberFormat:2 }}€</p>
           </div>
 
           <div class="info-card">
-            <h3>Statut</h3>
-            <p class="value">{{ getStatusLabel(campaign.status) }}</p>
+            <h3>{{ 'detail.status' | transloco }}</h3>
+            <p class="value">{{ getStatusKey(campaign.status) | transloco }}</p>
           </div>
         </div>
       </div>
@@ -110,58 +110,102 @@
       <!-- Tab: Keywords -->
       <div *ngIf="activeTab === 'keywords'" class="tab-content">
         <div *ngIf="keywords.length === 0" class="empty-state">
-          <p>Aucun mot-clé trouvé</p>
+          <p>{{ 'detail.no_keywords' | transloco }}</p>
         </div>
 
-        <div *ngIf="keywords.length > 0" class="table-container">
+        <div *ngIf="keywords.length > 0">
+          <div class="keywords-header">
+            <button class="btn btn-primary" (click)="exportKeywordsExcel()">
+              <span class="material-icons" style="font-size: 1.1rem;">table_chart</span>
+              {{ 'overview.export_excel' | transloco }}
+            </button>
+          </div>
+
+          <div class="table-container">
           <table class="data-table">
             <thead>
               <tr>
-                <th>Mot-clé</th>
-                <th>Type</th>
-                <th>Statut</th>
-                <th class="text-right">Impressions</th>
-                <th class="text-right">Clics</th>
-                <th class="text-right">CTR</th>
-                <th class="text-right">Coût</th>
+                <th (click)="sortBy('text')" class="sortable">
+                  {{ 'detail.keyword' | transloco }}
+                  <span class="sort-icon" *ngIf="sortField === 'text'">
+                    <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                  </span>
+                </th>
+                <th (click)="sortBy('match_type')" class="sortable">
+                  {{ 'detail.type' | transloco }}
+                  <span class="sort-icon" *ngIf="sortField === 'match_type'">
+                    <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                  </span>
+                </th>
+                <th (click)="sortBy('status')" class="sortable">
+                  {{ 'detail.status' | transloco }}
+                  <span class="sort-icon" *ngIf="sortField === 'status'">
+                    <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                  </span>
+                </th>
+                <th (click)="sortBy('impressions')" class="sortable text-right">
+                  {{ 'campaign.impressions' | transloco }}
+                  <span class="sort-icon" *ngIf="sortField === 'impressions'">
+                    <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                  </span>
+                </th>
+                <th (click)="sortBy('clicks')" class="sortable text-right">
+                  {{ 'campaign.clicks' | transloco }}
+                  <span class="sort-icon" *ngIf="sortField === 'clicks'">
+                    <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                  </span>
+                </th>
+                <th (click)="sortBy('ctr')" class="sortable text-right">
+                  {{ 'campaign.ctr' | transloco }}
+                  <span class="sort-icon" *ngIf="sortField === 'ctr'">
+                    <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                  </span>
+                </th>
+                <th (click)="sortBy('cost')" class="sortable text-right">
+                  {{ 'campaign.cost' | transloco }}
+                  <span class="sort-icon" *ngIf="sortField === 'cost'">
+                    <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                  </span>
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let keyword of keywords">
                 <td class="font-bold">
                   <span *ngIf="keyword.text && keyword.text.trim()">{{ keyword.text }}</span>
-                  <em *ngIf="!keyword.text || !keyword.text.trim()" style="color: var(--text-secondary);">Mot-clé sans texte</em>
+                  <em *ngIf="!keyword.text || !keyword.text.trim()" style="color: var(--text-secondary);">{{ 'detail.keyword_no_text' | transloco }}</em>
                 </td>
                 <td>
-                  <span class="badge">{{ getMatchTypeLabel(keyword.match_type) }}</span>
+                  <span class="badge">{{ getMatchTypeKey(keyword.match_type) | transloco }}</span>
                 </td>
                 <td>
                   <span class="status-badge" [class]="'status-' + keyword.status.toLowerCase()">
-                    {{ getStatusLabel(keyword.status) }}
+                    {{ getStatusKey(keyword.status) | transloco }}
                   </span>
                 </td>
-                <td class="text-right">{{ keyword.impressions | number }}</td>
-                <td class="text-right">{{ keyword.clicks | number }}</td>
-                <td class="text-right">{{ keyword.ctr | number:'1.2-2' }}%</td>
-                <td class="text-right">{{ keyword.cost | number:'1.2-2' }}€</td>
+                <td class="text-right">{{ keyword.impressions | numberFormat }}</td>
+                <td class="text-right">{{ keyword.clicks | numberFormat }}</td>
+                <td class="text-right">{{ keyword.ctr | numberFormat:2 }}%</td>
+                <td class="text-right">{{ keyword.cost | numberFormat:2 }}€</td>
               </tr>
             </tbody>
           </table>
+          </div>
         </div>
       </div>
 
       <!-- Tab: Ads -->
       <div *ngIf="activeTab === 'ads'" class="tab-content">
         <div *ngIf="ads.length === 0" class="empty-state">
-          <p>Aucune annonce trouvée</p>
+          <p>{{ 'detail.no_ads' | transloco }}</p>
         </div>
 
         <div *ngIf="ads.length > 0" class="ads-list">
           <div *ngFor="let ad of ads" class="ad-card">
             <div class="ad-header">
-              <span class="ad-type">{{ getAdTypeLabel(ad.type) }}</span>
+              <span class="ad-type">{{ getAdTypeKey(ad.type) | transloco }}</span>
               <span class="ad-status" [class]="'status-' + (ad.status || 'unknown').toLowerCase()">
-                {{ getStatusLabel(ad.status) }}
+                {{ getStatusKey(ad.status) | transloco }}
               </span>
             </div>
             <div class="ad-content">
@@ -171,12 +215,12 @@
               <p class="ad-description" *ngIf="ad.description">{{ ad.description }}</p>
               <p class="ad-description" *ngIf="ad.description2">{{ ad.description2 }}</p>
               <p class="ad-empty" *ngIf="!ad.headline1 && !ad.headline2 && !ad.headline3 && !ad.description">
-                <em>Contenu de l'annonce non disponible</em>
+                <em>{{ 'detail.ad_content_unavailable' | transloco }}</em>
               </p>
             </div>
             <div class="ad-metrics">
-              <span>{{ ad.impressions || 0 | number }} impressions</span>
-              <span>{{ ad.clicks || 0 | number }} clics</span>
+              <span>{{ ad.impressions || 0 | numberFormat }} {{ 'campaign.impressions' | transloco | lowercase }}</span>
+              <span>{{ ad.clicks || 0 | numberFormat }} {{ 'campaign.clicks' | transloco | lowercase }}</span>
             </div>
           </div>
         </div>
@@ -185,7 +229,7 @@
       <!-- Tab: Performance -->
       <div *ngIf="activeTab === 'performance'" class="tab-content">
         <div *ngIf="performance.length === 0" class="empty-state">
-          <p>Aucune donnée de performance disponible</p>
+          <p>{{ 'detail.no_performance' | transloco }}</p>
         </div>
 
         <div *ngIf="performance.length > 0">
@@ -199,24 +243,24 @@
 
           <!-- Performance Table -->
           <div class="table-container" style="margin-top: 2rem;">
-            <h3 style="margin-bottom: 1rem;">Données détaillées</h3>
+            <h3 style="margin-bottom: 1rem;">{{ 'detail.detailed_data' | transloco }}</h3>
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th class="text-right">Impressions</th>
-                  <th class="text-right">Clics</th>
-                  <th class="text-right">Coût</th>
-                  <th class="text-right">Conversions</th>
+                  <th>{{ 'detail.date' | transloco }}</th>
+                  <th class="text-right">{{ 'campaign.impressions' | transloco }}</th>
+                  <th class="text-right">{{ 'campaign.clicks' | transloco }}</th>
+                  <th class="text-right">{{ 'campaign.cost' | transloco }}</th>
+                  <th class="text-right">{{ 'campaign.conversions' | transloco }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let perf of performance">
                   <td>{{ perf.date }}</td>
-                  <td class="text-right">{{ perf.impressions | number }}</td>
-                  <td class="text-right">{{ perf.clicks | number }}</td>
-                  <td class="text-right">{{ perf.cost | number:'1.2-2' }}€</td>
-                  <td class="text-right">{{ perf.conversions | number:'1.1-1' }}</td>
+                  <td class="text-right">{{ perf.impressions | numberFormat }}</td>
+                  <td class="text-right">{{ perf.clicks | numberFormat }}</td>
+                  <td class="text-right">{{ perf.cost | numberFormat:2 }}€</td>
+                  <td class="text-right">{{ perf.conversions | numberFormat:1 }}</td>
                 </tr>
               </tbody>
             </table>
@@ -227,7 +271,7 @@
   </div>
 
   <div *ngIf="!loading && !campaign" class="empty-state">
-    <h2>Campagne introuvable</h2>
-    <p>Sélectionnez une campagne depuis la liste</p>
+    <h2>{{ 'detail.not_found' | transloco }}</h2>
+    <p>{{ 'detail.not_found_desc' | transloco }}</p>
   </div>
 </div>

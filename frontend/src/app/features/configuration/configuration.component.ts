@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
+import { Subscription } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
+import { DiagnosticService } from '../../core/services/diagnostic.service';
 import { MetricCardComponent } from '../../shared/components/metric-card/metric-card.component';
 
 interface DataStatus {
@@ -28,7 +30,7 @@ interface DataStatus {
   templateUrl: './configuration.component.html',
   styleUrls: ['./configuration.component.scss', './configuration-drive.scss']
 })
-export class ConfigurationComponent implements OnInit {
+export class ConfigurationComponent implements OnInit, OnDestroy {
   dataStatus: DataStatus | null = null;
   loading = false;
   uploadProgress = false;
@@ -37,10 +39,24 @@ export class ConfigurationComponent implements OnInit {
   message: string | null = null;
   messageType: 'success' | 'error' | 'info' = 'info';
 
-  constructor(private api: ApiService) {}
+  private refreshSubscription?: Subscription;
+
+  constructor(
+    private api: ApiService,
+    private diagnosticService: DiagnosticService
+  ) {}
 
   ngOnInit() {
     this.loadDataStatus();
+
+    // Subscribe to refresh events from topbar
+    this.refreshSubscription = this.diagnosticService.refresh$.subscribe(() => {
+      this.refreshFromDrive();
+    });
+  }
+
+  ngOnDestroy() {
+    this.refreshSubscription?.unsubscribe();
   }
 
   loadDataStatus() {
@@ -49,10 +65,15 @@ export class ConfigurationComponent implements OnInit {
       next: (status) => {
         this.dataStatus = status;
         this.loading = false;
+
+        // Notify if Drive is configured
+        const isDriveConfigured = !!(status.drive_config?.file_id);
+        this.diagnosticService.setDriveConfigured(isDriveConfigured);
       },
       error: (err) => {
         console.error('Failed to load data status:', err);
         this.loading = false;
+        this.diagnosticService.setDriveConfigured(false);
       }
     });
   }

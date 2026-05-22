@@ -132,6 +132,29 @@
         font-weight: 600;
         color: var(--text-color);
         border-bottom: 2px solid var(--border-color);
+        white-space: nowrap;
+
+        &.sortable {
+          cursor: pointer;
+          user-select: none;
+          position: relative;
+          transition: background-color 0.2s;
+
+          &:hover {
+            background-color: var(--border-color);
+          }
+
+          .sort-icon {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 0.25rem;
+
+            .material-icons {
+              font-size: 1rem;
+              color: var(--green);
+            }
+          }
+        }
 
         &.text-right {
           text-align: right;
