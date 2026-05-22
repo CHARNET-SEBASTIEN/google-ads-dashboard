@@ -1,0 +1,89 @@
+<div class="home-page">
+  <section class="hero">
+    <div class="hero-kicker">{{ 'app.title' | transloco }}</div>
+    <h1>{{ 'app.subtitle' | transloco }}</h1>
+    <p class="hero-description">
+      Analysez la structure de vos campagnes, repérez les problèmes de configuration
+      et suivez les signaux utiles depuis une interface locale, claire et rapide.
+    </p>
+
+    <div class="status-pills" *ngIf="isAuthenticated">
+      <span class="pill pill-success">✓ {{ 'auth.connected' | transloco }}</span>
+      <span class="pill pill-info">{{ customerName || 'Account' }}</span>
+      <span class="pill pill-default">Données locales</span>
+    </div>
+  </section>
+
+  <section class="features" *ngIf="!isAuthenticated">
+    <h2>{{ 'common.select' | transloco }} fonctionnalités</h2>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Analyse</h3>
+        <ul>
+          <li>Vue d'ensemble des campagnes</li>
+          <li>Configuration détaillée</li>
+          <li>Analyse des mots-clés</li>
+          <li>Performances détaillées</li>
+          <li>Termes de recherche réels</li>
+          <li>Diagnostic automatique</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">💾</div>
+        <h3>Données</h3>
+        <ul>
+          <li>Import JSON manuel</li>
+          <li>Actualisation Google Drive</li>
+          <li>Cache local contrôlé</li>
+          <li>Export CSV</li>
+          <li>Aucun serveur tiers</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Contrôle</h3>
+        <ul>
+          <li>Lecture sans OAuth complexe</li>
+          <li>Statuts de campagne</li>
+          <li>Budgets et enchères</li>
+          <li>Requêtes utilisateurs</li>
+          <li>Recommandations</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cta">
+      <a routerLink="/configuration" class="btn btn-primary">
+        Commencer →
+      </a>
+    </div>
+  </section>
+
+  <section class="quick-links" *ngIf="isAuthenticated">
+    <h2>Accès rapide</h2>
+    
+    <div class="quick-links-grid">
+      <a routerLink="/campaigns" class="quick-link-card">
+        <span class="link-icon">📊</span>
+        <h3>{{ 'nav.overview' | transloco }}</h3>
+        <p>Liste de toutes vos campagnes avec métriques</p>
+      </a>
+
+      <a routerLink="/search-terms" class="quick-link-card">
+        <span class="link-icon">🔍</span>
+        <h3>{{ 'nav.search_terms' | transloco }}</h3>
+        <p>Analyse des requêtes utilisateurs</p>
+      </a>
+
+      <a routerLink="/diagnostic" class="quick-link-card">
+        <span class="link-icon">⚕️</span>
+        <h3>{{ 'nav.diagnostic' | transloco }}</h3>
+        <p>Détection automatique des problèmes</p>
+      </a>
+    </div>
+  </section>
+</div>

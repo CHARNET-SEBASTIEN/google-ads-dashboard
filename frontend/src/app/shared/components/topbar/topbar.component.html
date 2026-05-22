@@ -1,0 +1,36 @@
+<header class="topbar">
+  <div class="topbar-left">
+    <!-- Breadcrumb or page title could go here -->
+  </div>
+
+  <div class="topbar-right">
+    <!-- Language selector -->
+    <div class="control-group">
+      <button
+        *ngFor="let lang of languages"
+        (click)="changeLanguage(lang.code)"
+        [class.active]="currentLang === lang.code"
+        class="btn-lang"
+      >
+        {{ lang.label }}
+      </button>
+    </div>
+
+    <!-- Theme toggle -->
+    <button
+      (click)="toggleTheme()"
+      class="btn-icon"
+      [title]="isDarkMode ? 'Mode clair' : 'Mode sombre'"
+    >
+      <span>{{ isDarkMode ? '☀️' : '🌙' }}</span>
+    </button>
+
+    <!-- User info & logout -->
+    <div class="user-info" *ngIf="isAuthenticated">
+      <span class="user-name">{{ customerName || 'Account' }}</span>
+      <button (click)="logout()" class="btn-logout">
+        {{ 'auth.logout' | transloco }}
+      </button>
+    </div>
+  </div>
+</header>

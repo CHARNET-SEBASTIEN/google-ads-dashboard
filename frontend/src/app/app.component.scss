@@ -1,0 +1,21 @@
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+}
+
+.main-content {
+  margin-left: 260px;
+  margin-top: 60px;
+  padding: 2rem;
+  flex: 1;
+  min-height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 220px;
+    padding: 1rem;
+  }
+}

@@ -1,0 +1,27 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h1 class="sidebar-title">
+      <span class="title-icon">📊</span>
+      <span>{{ 'app.title' | transloco }}</span>
+    </h1>
+    <p class="sidebar-subtitle">{{ 'app.subtitle' | transloco }}</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a
+      *ngFor="let item of menuItems"
+      [routerLink]="item.route"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+      class="nav-item"
+    >
+      <span class="nav-icon">{{ item.icon }}</span>
+      <span class="nav-label">{{ item.translationKey | transloco }}</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <p class="version">v1.0.0</p>
+    <p class="powered-by">Powered by Angular</p>
+  </div>
+</aside>
