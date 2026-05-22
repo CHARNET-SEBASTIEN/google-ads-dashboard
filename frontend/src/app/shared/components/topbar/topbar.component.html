@@ -1,6 +1,6 @@
 <header class="topbar">
   <div class="topbar-left">
-    <!-- Breadcrumb or page title could go here -->
+    <h2 class="page-title">{{ pageTitleKey | transloco }}</h2>
   </div>
 
   <div class="topbar-right">
@@ -11,6 +11,7 @@
         (click)="changeLanguage(lang.code)"
         [class.active]="currentLang === lang.code"
         class="btn-lang"
+        [title]="'Changer la langue en ' + lang.label"
       >
         {{ lang.label }}
       </button>
@@ -20,16 +21,18 @@
     <button
       (click)="toggleTheme()"
       class="btn-icon"
-      [title]="isDarkMode ? 'Mode clair' : 'Mode sombre'"
+      [title]="(isDarkMode ? 'Passer en mode clair' : 'Passer en mode sombre') | transloco"
     >
-      <span>{{ isDarkMode ? '☀️' : '🌙' }}</span>
+      <span class="material-icons">{{ isDarkMode ? 'light_mode' : 'dark_mode' }}</span>
     </button>
 
     <!-- User info & logout -->
     <div class="user-info" *ngIf="isAuthenticated">
+      <span class="material-icons user-icon">account_circle</span>
       <span class="user-name">{{ customerName || 'Account' }}</span>
-      <button (click)="logout()" class="btn-logout">
-        {{ 'auth.logout' | transloco }}
+      <button (click)="logout()" class="btn-logout" title="{{ 'auth.logout' | transloco }}">
+        <span class="material-icons">logout</span>
+        <span>{{ 'auth.logout' | transloco }}</span>
       </button>
     </div>
   </div>

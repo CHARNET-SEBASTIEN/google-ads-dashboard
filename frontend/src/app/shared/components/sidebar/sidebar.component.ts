@@ -19,12 +19,12 @@ interface MenuItem {
 })
 export class SidebarComponent {
   menuItems: MenuItem[] = [
-    { icon: '🏠', label: 'Accueil', route: '/', translationKey: 'nav.home' },
-    { icon: '⚙️', label: 'Configuration', route: '/configuration', translationKey: 'nav.config' },
-    { icon: '📊', label: 'Vue d\'ensemble', route: '/campaigns', translationKey: 'nav.overview' },
-    { icon: '🎯', label: 'Détail campagne', route: '/campaign-detail', translationKey: 'nav.campaign_detail' },
-    { icon: '🔍', label: 'Termes recherche', route: '/search-terms', translationKey: 'nav.search_terms' },
-    { icon: '⚕️', label: 'Diagnostic', route: '/diagnostic', translationKey: 'nav.diagnostic' }
+    { icon: 'home', label: 'Accueil', route: '/', translationKey: 'nav.home' },
+    { icon: 'settings', label: 'Configuration', route: '/configuration', translationKey: 'nav.config' },
+    { icon: 'dashboard', label: 'Vue d\'ensemble', route: '/campaigns', translationKey: 'nav.overview' },
+    { icon: 'campaign', label: 'Détail campagne', route: '/campaign-detail', translationKey: 'nav.campaign_detail' },
+    { icon: 'search', label: 'Termes recherche', route: '/search-terms', translationKey: 'nav.search_terms' },
+    { icon: 'medical_services', label: 'Diagnostic', route: '/diagnostic', translationKey: 'nav.diagnostic' }
   ];
 
   constructor(public router: Router) {}

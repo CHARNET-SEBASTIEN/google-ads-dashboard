@@ -1,7 +1,7 @@
 <aside class="sidebar">
   <div class="sidebar-header">
     <h1 class="sidebar-title">
-      <span class="title-icon">📊</span>
+      <span class="material-icons title-icon">ads_click</span>
       <span>{{ 'app.title' | transloco }}</span>
     </h1>
     <p class="sidebar-subtitle">{{ 'app.subtitle' | transloco }}</p>
@@ -14,8 +14,9 @@
       routerLinkActive="active"
       [routerLinkActiveOptions]="{ exact: item.route === '/' }"
       class="nav-item"
+      [title]="item.translationKey | transloco"
     >
-      <span class="nav-icon">{{ item.icon }}</span>
+      <span class="material-icons nav-icon">{{ item.icon }}</span>
       <span class="nav-label">{{ item.translationKey | transloco }}</span>
     </a>
   </nav>

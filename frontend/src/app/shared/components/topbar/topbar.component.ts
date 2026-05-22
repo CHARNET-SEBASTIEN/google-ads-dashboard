@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ThemeService } from '../../../core/services/theme.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -12,6 +14,8 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrl: './topbar.component.scss'
 })
 export class TopbarComponent implements OnInit {
+  pageTitle: string = '';
+  pageTitleKey: string = 'app.title';
   isDarkMode = false;
   currentLang = 'fr';
   isAuthenticated = false;
@@ -26,7 +30,8 @@ export class TopbarComponent implements OnInit {
   constructor(
     private themeService: ThemeService,
     private translocoService: TranslocoService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -43,6 +48,35 @@ export class TopbarComponent implements OnInit {
       this.isAuthenticated = status.authenticated;
       this.customerName = status.customer_name;
     });
+
+    // Update page title on route change
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.updatePageTitle();
+    });
+
+    // Set initial title
+    this.updatePageTitle();
+  }
+
+  private updatePageTitle() {
+    const route = this.router.url;
+    if (route === '/' || route === '/home') {
+      this.pageTitleKey = 'nav.home';
+    } else if (route.includes('/configuration')) {
+      this.pageTitleKey = 'nav.config';
+    } else if (route.includes('/campaign-detail')) {
+      this.pageTitleKey = 'nav.campaign_detail';
+    } else if (route.includes('/campaigns')) {
+      this.pageTitleKey = 'nav.overview';
+    } else if (route.includes('/search-terms')) {
+      this.pageTitleKey = 'nav.search_terms';
+    } else if (route.includes('/diagnostic')) {
+      this.pageTitleKey = 'nav.diagnostic';
+    } else {
+      this.pageTitleKey = 'app.title';
+    }
   }
 
   toggleTheme() {
