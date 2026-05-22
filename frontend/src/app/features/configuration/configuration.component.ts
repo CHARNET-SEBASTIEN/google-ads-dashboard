@@ -15,6 +15,10 @@ interface DataStatus {
     ads: number;
     search_terms: number;
   };
+  drive_config?: {
+    file_id: string;
+    last_sync: string;
+  };
 }
 
 @Component({
@@ -22,7 +26,7 @@ interface DataStatus {
   standalone: true,
   imports: [CommonModule, FormsModule, TranslocoModule, MetricCardComponent],
   templateUrl: './configuration.component.html',
-  styleUrl: './configuration.component.scss'
+  styleUrls: ['./configuration.component.scss', './configuration-drive.scss']
 })
 export class ConfigurationComponent implements OnInit {
   dataStatus: DataStatus | null = null;
@@ -143,6 +147,24 @@ export class ConfigurationComponent implements OnInit {
       },
       error: (err) => {
         this.showMessage('❌ Erreur : ' + err.message, 'error');
+      }
+    });
+  }
+
+  refreshFromDrive() {
+    this.uploadProgress = true;
+    this.api.post('data/refresh-from-drive', {}).subscribe({
+      next: (response: any) => {
+        this.showMessage(
+          `✅ Données rafraîchies ! ${response.stats.campaigns} campagnes, ${response.stats.keywords} mots-clés`,
+          'success'
+        );
+        this.loadDataStatus();
+        this.uploadProgress = false;
+      },
+      error: (err) => {
+        this.showMessage('❌ Erreur rafraîchissement : ' + (err.error?.detail || err.message), 'error');
+        this.uploadProgress = false;
       }
     });
   }

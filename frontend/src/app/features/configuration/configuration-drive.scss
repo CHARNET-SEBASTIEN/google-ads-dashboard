@@ -1,0 +1,83 @@
+/* Styles pour la configuration Google Drive */
+.drive-saved-config {
+  background-color: #d1fae5;
+  border: 1px solid #6ee7b7;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  .saved-config-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    color: #065f46;
+
+    .material-icons {
+      font-size: 1.5rem;
+    }
+
+    strong {
+      font-size: 1rem;
+    }
+  }
+
+  .saved-config-id {
+    font-size: 0.875rem;
+    margin: 0.5rem 0;
+    color: #047857;
+
+    code {
+      background-color: #f0fdf4;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.875rem;
+    }
+  }
+
+  .saved-config-date {
+    font-size: 0.8rem;
+    color: #047857;
+    margin: 0.5rem 0 1rem 0;
+  }
+
+  .btn-success {
+    background-color: #10b981;
+    color: white;
+    border: none;
+
+    &:hover:not(:disabled) {
+      background-color: #059669;
+    }
+  }
+}
+
+.form-group.has-saved-config {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+
+  label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+}
+
+.dark .drive-saved-config {
+  background-color: #064e3b;
+  border-color: #047857;
+
+  .saved-config-header {
+    color: #6ee7b7;
+  }
+
+  .saved-config-id,
+  .saved-config-date {
+    color: #a7f3d0;
+  }
+
+  .saved-config-id code {
+    background-color: #022c22;
+  }
+}

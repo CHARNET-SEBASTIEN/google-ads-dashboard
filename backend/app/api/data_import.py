@@ -27,6 +27,7 @@ class DataStatusResponse(BaseModel):
     last_update: Optional[str] = None
     account_info: Optional[dict] = None
     stats: dict
+    drive_config: Optional[dict] = None
 
 
 class ImportResponse(BaseModel):
@@ -169,13 +170,15 @@ async def data_status():
         Statut des données avec infos compte et statistiques
     """
     data_exists = data_loader_service.data_exists()
+    drive_config = data_loader_service.get_drive_config()
 
     if not data_exists:
         return DataStatusResponse(
             data_exists=False,
             last_update=None,
             account_info=None,
-            stats={"campaigns": 0, "keywords": 0, "ads": 0, "search_terms": 0}
+            stats={"campaigns": 0, "keywords": 0, "ads": 0, "search_terms": 0},
+            drive_config=drive_config
         )
 
     last_update = data_loader_service.get_last_update()
@@ -186,8 +189,54 @@ async def data_status():
         data_exists=True,
         last_update=last_update,
         account_info=account_info,
-        stats=stats
+        stats=stats,
+        drive_config=drive_config
     )
+
+
+@router.post("/refresh-from-drive", response_model=ImportResponse)
+async def refresh_from_drive():
+    """
+    Rafraîchit les données depuis le dernier fichier Google Drive configuré
+
+    Returns:
+        Résultat de l'import avec statistiques
+    """
+    try:
+        # Vérifier qu'une config Drive existe
+        config = data_loader_service.get_drive_config()
+        if not config or 'file_id' not in config:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No Google Drive file configured. Please import from Drive first."
+            )
+
+        # Rafraîchir les données
+        success = data_loader_service.refresh_from_drive()
+
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Failed to refresh from Google Drive. Check file accessibility."
+            )
+
+        # Récupérer les stats
+        stats = data_loader_service.get_stats()
+
+        return ImportResponse(
+            success=True,
+            message=f"Data refreshed from Google Drive: {stats['campaigns']} campaigns, "
+                    f"{stats['keywords']} keywords, {stats['ads']} ads",
+            stats=stats
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Refresh failed: {str(e)}"
+        )
 
 
 @router.delete("/clear")

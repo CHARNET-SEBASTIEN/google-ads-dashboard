@@ -160,29 +160,105 @@ class DataLoaderService:
             print(f"Failed to import from file: {e}")
             return False
 
-    def download_from_google_drive(self, file_id: str) -> bool:
+    def download_from_google_drive(self, file_id: str, save_url: bool = True) -> bool:
         """
         Télécharge les données depuis Google Drive
 
         Args:
             file_id: ID du fichier Google Drive
+            save_url: Si True, sauvegarde l'URL pour les prochains rafraîchissements
 
         Returns:
             True si succès
         """
         try:
-            url = f"https://drive.google.com/uc?export=download&id={file_id}"
+            # Essayer plusieurs formats d'URL Google Drive
+            urls = [
+                f"https://drive.google.com/uc?export=download&id={file_id}",
+                f"https://drive.google.com/uc?id={file_id}&export=download",
+                f"https://docs.google.com/uc?export=download&id={file_id}"
+            ]
 
-            response = requests.get(url, timeout=30)
-            response.raise_for_status()
+            data = None
+            last_error = None
 
-            data = response.json()
+            for url in urls:
+                try:
+                    print(f"Trying URL: {url}")
+                    response = requests.get(url, timeout=30, allow_redirects=True)
 
-            return self.save_data(data)
+                    # Vérifier si c'est du JSON
+                    content_type = response.headers.get('Content-Type', '')
+
+                    if response.status_code == 200:
+                        # Essayer de parser en JSON
+                        try:
+                            data = response.json()
+                            print(f"✅ Successfully downloaded from: {url}")
+                            break
+                        except json.JSONDecodeError:
+                            # Peut-être une page HTML d'erreur
+                            if 'html' in content_type.lower():
+                                continue
+                            raise
+
+                except requests.exceptions.RequestException as e:
+                    last_error = e
+                    continue
+
+            if data is None:
+                raise Exception(f"Failed to download from any URL. Last error: {last_error}")
+
+            # Valider les données
+            if 'campaigns' not in data:
+                raise Exception("Invalid data format: missing 'campaigns' field")
+
+            # Sauvegarder les données
+            if self.save_data(data):
+                # Sauvegarder l'URL pour les prochains rafraîchissements
+                if save_url:
+                    self._save_drive_config(file_id)
+                return True
+
+            return False
 
         except Exception as e:
             print(f"Failed to download from Google Drive: {e}")
+            import traceback
+            traceback.print_exc()
             return False
+
+    def _save_drive_config(self, file_id: str):
+        """Sauvegarde la configuration Google Drive"""
+        try:
+            config_file = self.data_dir / 'drive_config.json'
+            config = {
+                'file_id': file_id,
+                'last_sync': datetime.utcnow().isoformat()
+            }
+            with open(config_file, 'w', encoding='utf-8') as f:
+                json.dump(config, f, indent=2)
+        except Exception as e:
+            print(f"Failed to save drive config: {e}")
+
+    def get_drive_config(self) -> Optional[Dict[str, str]]:
+        """Récupère la configuration Google Drive sauvegardée"""
+        try:
+            config_file = self.data_dir / 'drive_config.json'
+            if config_file.exists():
+                with open(config_file, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+        except Exception as e:
+            print(f"Failed to load drive config: {e}")
+        return None
+
+    def refresh_from_drive(self) -> bool:
+        """Rafraîchit les données depuis le dernier fichier Drive configuré"""
+        config = self.get_drive_config()
+        if not config or 'file_id' not in config:
+            return False
+
+        return self.download_from_google_drive(config['file_id'], save_url=False)
 
     def refresh_from_url(self, url: str) -> bool:
         """

@@ -117,13 +117,36 @@
       <!-- Tab 2: Google Drive -->
       <div class="tab-content">
         <h3>Import depuis Google Drive</h3>
-        
+
         <p class="tab-description">
           Collez l'URL ou l'ID du fichier Google Drive partagé publiquement.
         </p>
 
-        <div class="form-group">
-          <label for="driveUrl">URL ou ID du fichier</label>
+        <!-- Configuration sauvegardée -->
+        <div *ngIf="dataStatus?.drive_config" class="drive-saved-config">
+          <div class="saved-config-header">
+            <span class="material-icons">cloud_done</span>
+            <strong>Fichier Google Drive configuré</strong>
+          </div>
+          <p class="saved-config-id">
+            ID : <code>{{ dataStatus.drive_config.file_id }}</code>
+          </p>
+          <p class="saved-config-date">
+            Dernière synchro : {{ dataStatus.drive_config.last_sync | date:'dd/MM/yyyy à HH:mm' }}
+          </p>
+          <button
+            class="btn btn-success"
+            [disabled]="uploadProgress"
+            (click)="refreshFromDrive()"
+          >
+            <span *ngIf="!uploadProgress">🔄 Rafraîchir depuis Drive</span>
+            <span *ngIf="uploadProgress">{{ 'common.loading' | transloco }}...</span>
+          </button>
+        </div>
+
+        <!-- Nouveau fichier -->
+        <div class="form-group" [class.has-saved-config]="dataStatus?.drive_config">
+          <label for="driveUrl">{{ dataStatus?.drive_config ? 'Changer de fichier' : 'URL ou ID du fichier' }}</label>
           <input
             type="text"
             id="driveUrl"
@@ -141,7 +164,7 @@
           [disabled]="!googleDriveFileId || uploadProgress"
           (click)="importFromGoogleDrive()"
         >
-          <span *ngIf="!uploadProgress">Importer depuis Drive</span>
+          <span *ngIf="!uploadProgress">{{ dataStatus?.drive_config ? 'Changer de fichier' : 'Importer depuis Drive' }}</span>
           <span *ngIf="uploadProgress">{{ 'common.loading' | transloco }}...</span>
         </button>
       </div>
