@@ -4,9 +4,23 @@ Variables d'environnement et settings globaux
 """
 
 from pathlib import Path
-from typing import List
-from pydantic_settings import BaseSettings
-from pydantic import field_validator
+from typing import List, Union, Any
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator, Field
+
+
+def parse_cors(v: Any) -> List[str]:
+    """Parse CORS origins from various formats"""
+    if isinstance(v, list):
+        return v
+    if isinstance(v, str):
+        # Handle JSON array format
+        if v.startswith('['):
+            import json
+            return json.loads(v)
+        # Handle comma-separated format
+        return [origin.strip() for origin in v.split(',') if origin.strip()]
+    return []
 
 
 class Settings(BaseSettings):
@@ -20,12 +34,17 @@ class Settings(BaseSettings):
     # API
     API_PREFIX: str = "/api"
 
-    # CORS
-    CORS_ORIGINS: List[str] = [
-        "http://localhost:4200",
-        "http://localhost:3000",
-        "http://127.0.0.1:4200",
-    ]
+    # CORS - Use Field with default_factory to avoid JSON parsing
+    CORS_ORIGINS: List[str] = Field(
+        default=[
+            "http://localhost:4200",
+            "http://localhost:4201",
+            "http://localhost:4300",
+            "http://localhost:5000",
+            "http://localhost:3000",
+            "http://127.0.0.1:4200",
+        ]
+    )
 
     # JWT
     SECRET_KEY: str = "your-secret-key-change-in-production"
@@ -46,14 +65,17 @@ class Settings(BaseSettings):
 
     @field_validator('CORS_ORIGINS', mode='before')
     @classmethod
-    def parse_cors_origins(cls, v):
-        if isinstance(v, str):
-            return [origin.strip() for origin in v.split(',')]
-        return v
+    def parse_cors_origins(cls, v: Any) -> List[str]:
+        return parse_cors(v)
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding='utf-8',
+        case_sensitive=True,
+        extra='ignore',
+        # Don't parse env vars as JSON by default
+        env_parse_none_str=None,
+    )
 
 
 settings = Settings()
