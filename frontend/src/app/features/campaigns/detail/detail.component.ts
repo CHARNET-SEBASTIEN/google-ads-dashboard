@@ -105,7 +105,12 @@ export class DetailComponent implements OnInit {
 
     this.campaignService.getCampaignPerformance(this.campaignId).subscribe({
       next: (response) => {
-        this.performance = response.performance;
+        // Calculate CTR and CPC for each performance entry
+        this.performance = response.performance.map(p => ({
+          ...p,
+          ctr: p.impressions > 0 ? (p.clicks / p.impressions) * 100 : 0,
+          cpc: p.clicks > 0 ? p.cost / p.clicks : 0
+        }));
         this.applyPerformanceSorting();
         this.prepareChartData();
       },
@@ -122,6 +127,7 @@ export class DetailComponent implements OnInit {
     const impressions = this.performance.map(p => p.impressions);
     const clicks = this.performance.map(p => p.clicks);
     const conversions = this.performance.map(p => p.conversions);
+    const ctr = this.performance.map(p => p.ctr || 0);
     const cost = this.performance.map(p => p.cost);
 
     // Use brighter colors that work better in dark mode
@@ -146,19 +152,29 @@ export class DetailComponent implements OnInit {
       },
       {
         x: dates,
+        y: ctr,
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'CTR (%)',
+        line: { color: '#F97316', width: 2 },
+        marker: { size: 6, color: '#F97316' },
+        yaxis: 'y2'
+      },
+      {
+        x: dates,
         y: conversions,
         type: 'scatter',
         mode: 'lines+markers',
         name: 'Conversions',
         line: { color: '#FBBF24', width: 2 },
         marker: { size: 6, color: '#FBBF24' },
-        yaxis: 'y2'
+        yaxis: 'y3'
       }
     ];
 
     this.performanceChartLayout = {
       title: 'Performance au fil du temps',
-      height: 400,
+      height: 450,
       showlegend: true,
       yaxis: {
         title: 'Impressions / Clics',
@@ -166,10 +182,19 @@ export class DetailComponent implements OnInit {
         zerolinecolor: 'rgba(148, 163, 184, 0.3)'
       },
       yaxis2: {
-        title: 'Conversions',
+        title: 'CTR (%)',
         overlaying: 'y',
         side: 'right',
         gridcolor: 'rgba(148, 163, 184, 0.1)',
+        zerolinecolor: 'rgba(148, 163, 184, 0.3)'
+      },
+      yaxis3: {
+        title: 'Conversions',
+        anchor: 'free',
+        overlaying: 'y',
+        side: 'right',
+        position: 0.95,
+        gridcolor: 'rgba(148, 163, 184, 0.05)',
         zerolinecolor: 'rgba(148, 163, 184, 0.3)'
       }
     };
@@ -309,6 +334,8 @@ export class DetailComponent implements OnInit {
       'Date': perf.date || 'N/A',
       'Impressions': perf.impressions || 0,
       'Clics': perf.clicks || 0,
+      'CTR (%)': perf.ctr ? perf.ctr.toFixed(2) : '0.00',
+      'CPC (€)': perf.cpc ? perf.cpc.toFixed(2) : '0.00',
       'Coût (€)': perf.cost ? perf.cost.toFixed(2) : '0.00',
       'Conversions': perf.conversions ? perf.conversions.toFixed(1) : '0.0'
     }));
@@ -321,6 +348,8 @@ export class DetailComponent implements OnInit {
       { wch: 12 }, // Date
       { wch: 15 }, // Impressions
       { wch: 12 }, // Clics
+      { wch: 12 }, // CTR
+      { wch: 12 }, // CPC
       { wch: 12 }, // Coût
       { wch: 15 }  // Conversions
     ];

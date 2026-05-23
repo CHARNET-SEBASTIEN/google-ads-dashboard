@@ -34,6 +34,8 @@ export interface Performance {
   clicks: number;
   cost: number;
   conversions: number;
+  ctr?: number;
+  cpc?: number;
 }
 
 @Injectable({

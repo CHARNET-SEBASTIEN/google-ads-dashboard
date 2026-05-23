@@ -271,6 +271,18 @@
                       <span class="material-icons">{{ sortDirectionPerf === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
                     </span>
                   </th>
+                  <th (click)="sortPerformanceBy('ctr')" class="sortable text-right">
+                    {{ 'campaign.ctr' | transloco }}
+                    <span class="sort-icon" *ngIf="sortFieldPerf === 'ctr'">
+                      <span class="material-icons">{{ sortDirectionPerf === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                    </span>
+                  </th>
+                  <th (click)="sortPerformanceBy('cpc')" class="sortable text-right">
+                    {{ 'campaign.cpc' | transloco }}
+                    <span class="sort-icon" *ngIf="sortFieldPerf === 'cpc'">
+                      <span class="material-icons">{{ sortDirectionPerf === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                    </span>
+                  </th>
                   <th (click)="sortPerformanceBy('cost')" class="sortable text-right">
                     {{ 'campaign.cost' | transloco }}
                     <span class="sort-icon" *ngIf="sortFieldPerf === 'cost'">
@@ -290,6 +302,8 @@
                   <td>{{ perf.date }}</td>
                   <td class="text-right">{{ perf.impressions | numberFormat }}</td>
                   <td class="text-right">{{ perf.clicks | numberFormat }}</td>
+                  <td class="text-right">{{ (perf.ctr || 0) | numberFormat:2 }}%</td>
+                  <td class="text-right">{{ (perf.cpc || 0) | numberFormat:2 }}€</td>
                   <td class="text-right">{{ perf.cost | numberFormat:2 }}€</td>
                   <td class="text-right">{{ perf.conversions | numberFormat:1 }}</td>
                 </tr>
