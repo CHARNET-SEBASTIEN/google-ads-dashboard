@@ -18,7 +18,7 @@
     <button
       (click)="toggleHelp()"
       class="btn-help"
-      title="Aide"
+      [title]="'common.help' | transloco"
     >
       <span class="material-icons">help_outline</span>
     </button>
@@ -30,7 +30,7 @@
         (click)="changeLanguage(lang.code)"
         [class.active]="currentLang === lang.code"
         class="btn-lang"
-        [title]="'Changer la langue en ' + lang.label"
+        [title]="lang.label"
       >
         {{ lang.label }}
       </button>
@@ -79,12 +79,12 @@
             <span class="material-icons help-feature-icon">analytics</span>
             <h4>{{ 'home.analysis' | transloco }}</h4>
             <ul>
-              <li>Vue d'ensemble des campagnes</li>
-              <li>Configuration détaillée</li>
-              <li>Analyse des mots-clés</li>
-              <li>Performances détaillées</li>
-              <li>Termes de recherche réels</li>
-              <li>Diagnostic automatique</li>
+              <li>{{ 'home.analysis_overview' | transloco }}</li>
+              <li>{{ 'home.analysis_detailed' | transloco }}</li>
+              <li>{{ 'home.analysis_keywords' | transloco }}</li>
+              <li>{{ 'home.analysis_performance' | transloco }}</li>
+              <li>{{ 'home.analysis_search_terms' | transloco }}</li>
+              <li>{{ 'home.analysis_diagnostic' | transloco }}</li>
             </ul>
           </div>
 
@@ -92,11 +92,11 @@
             <span class="material-icons help-feature-icon">storage</span>
             <h4>{{ 'home.data' | transloco }}</h4>
             <ul>
-              <li>Import JSON manuel</li>
-              <li>Actualisation Google Drive</li>
-              <li>Cache local contrôlé</li>
-              <li>Export Excel</li>
-              <li>Aucun serveur tiers</li>
+              <li>{{ 'home.data_json_import' | transloco }}</li>
+              <li>{{ 'home.data_drive_refresh' | transloco }}</li>
+              <li>{{ 'home.data_local_cache' | transloco }}</li>
+              <li>{{ 'home.data_excel_export' | transloco }}</li>
+              <li>{{ 'home.data_no_third_party' | transloco }}</li>
             </ul>
           </div>
 
@@ -104,11 +104,11 @@
             <span class="material-icons help-feature-icon">tune</span>
             <h4>{{ 'home.control' | transloco }}</h4>
             <ul>
-              <li>Lecture sans OAuth complexe</li>
-              <li>Statuts de campagne</li>
-              <li>Budgets et enchères</li>
-              <li>Requêtes utilisateurs</li>
-              <li>Recommandations IA</li>
+              <li>{{ 'home.control_no_oauth' | transloco }}</li>
+              <li>{{ 'home.control_campaign_status' | transloco }}</li>
+              <li>{{ 'home.control_budgets' | transloco }}</li>
+              <li>{{ 'home.control_user_queries' | transloco }}</li>
+              <li>{{ 'home.control_ai_recommendations' | transloco }}</li>
             </ul>
           </div>
         </div>

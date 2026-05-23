@@ -3,6 +3,29 @@
     "title": "AdsPilot",
     "subtitle": "Google Ads Intelligenzplattform"
   },
+  "home": {
+    "description": "Analysieren Sie Ihre Kampagnenstruktur, erkennen Sie Konfigurationsprobleme und verfolgen Sie nützliche Signale über eine lokale, klare und schnelle Oberfläche.",
+    "main_features": "Hauptfunktionen",
+    "analysis": "Analyse",
+    "analysis_overview": "Kampagnenübersicht",
+    "analysis_detailed": "Detaillierte Konfiguration",
+    "analysis_keywords": "Keyword-Analyse",
+    "analysis_performance": "Detaillierte Leistung",
+    "analysis_search_terms": "Tatsächliche Suchbegriffe",
+    "analysis_diagnostic": "Automatische Diagnose",
+    "data": "Daten",
+    "data_json_import": "Manueller JSON-Import",
+    "data_drive_refresh": "Google Drive-Aktualisierung",
+    "data_local_cache": "Kontrollierter lokaler Cache",
+    "data_excel_export": "Excel-Export",
+    "data_no_third_party": "Keine Drittanbieter-Server",
+    "control": "Kontrolle",
+    "control_no_oauth": "Lesen ohne komplexes OAuth",
+    "control_campaign_status": "Kampagnenstatus",
+    "control_budgets": "Budgets und Gebote",
+    "control_user_queries": "Benutzeranfragen",
+    "control_ai_recommendations": "KI-Empfehlungen"
+  },
   "nav": {
     "home": "Startseite",
     "config": "Konfiguration",
@@ -43,7 +66,8 @@
     "no": "Nein",
     "all": "Alle",
     "none": "Keine",
-    "select": "Auswählen"
+    "select": "Auswählen",
+    "help": "Hilfe"
   },
   "campaign": {
     "name": "Name",
