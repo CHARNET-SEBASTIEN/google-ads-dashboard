@@ -357,13 +357,48 @@
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th>Appareil</th>
-                    <th class="text-right">Impressions</th>
-                    <th class="text-right">Clics</th>
-                    <th class="text-right">CTR (%)</th>
-                    <th class="text-right">CPC (€)</th>
-                    <th class="text-right">Coût (€)</th>
-                    <th class="text-right">Conversions</th>
+                    <th (click)="sortDeviceBy('device')" class="sortable">
+                      {{ 'analytics.device' | transloco }}
+                      <span class="sort-icon" *ngIf="sortFieldDevice === 'device'">
+                        <span class="material-icons">{{ sortDirectionDevice === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                      </span>
+                    </th>
+                    <th (click)="sortDeviceBy('impressions')" class="sortable text-right">
+                      {{ 'campaign.impressions' | transloco }}
+                      <span class="sort-icon" *ngIf="sortFieldDevice === 'impressions'">
+                        <span class="material-icons">{{ sortDirectionDevice === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                      </span>
+                    </th>
+                    <th (click)="sortDeviceBy('clicks')" class="sortable text-right">
+                      {{ 'campaign.clicks' | transloco }}
+                      <span class="sort-icon" *ngIf="sortFieldDevice === 'clicks'">
+                        <span class="material-icons">{{ sortDirectionDevice === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                      </span>
+                    </th>
+                    <th (click)="sortDeviceBy('ctr')" class="sortable text-right">
+                      {{ 'campaign.ctr' | transloco }}
+                      <span class="sort-icon" *ngIf="sortFieldDevice === 'ctr'">
+                        <span class="material-icons">{{ sortDirectionDevice === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                      </span>
+                    </th>
+                    <th (click)="sortDeviceBy('cpc')" class="sortable text-right">
+                      {{ 'campaign.cpc' | transloco }}
+                      <span class="sort-icon" *ngIf="sortFieldDevice === 'cpc'">
+                        <span class="material-icons">{{ sortDirectionDevice === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                      </span>
+                    </th>
+                    <th (click)="sortDeviceBy('cost')" class="sortable text-right">
+                      {{ 'campaign.cost' | transloco }}
+                      <span class="sort-icon" *ngIf="sortFieldDevice === 'cost'">
+                        <span class="material-icons">{{ sortDirectionDevice === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                      </span>
+                    </th>
+                    <th (click)="sortDeviceBy('conversions')" class="sortable text-right">
+                      {{ 'campaign.conversions' | transloco }}
+                      <span class="sort-icon" *ngIf="sortFieldDevice === 'conversions'">
+                        <span class="material-icons">{{ sortDirectionDevice === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                      </span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -416,13 +451,48 @@
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th>Jour</th>
-                    <th class="text-right">Impressions</th>
-                    <th class="text-right">Clics</th>
-                    <th class="text-right">CTR (%)</th>
-                    <th class="text-right">CPC (€)</th>
-                    <th class="text-right">Coût (€)</th>
-                    <th class="text-right">Conversions</th>
+                    <th (click)="sortDayBy('day_of_week')" class="sortable">
+                      {{ 'analytics.day' | transloco }}
+                      <span class="sort-icon" *ngIf="sortFieldDay === 'day_of_week'">
+                        <span class="material-icons">{{ sortDirectionDay === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                      </span>
+                    </th>
+                    <th (click)="sortDayBy('impressions')" class="sortable text-right">
+                      {{ 'campaign.impressions' | transloco }}
+                      <span class="sort-icon" *ngIf="sortFieldDay === 'impressions'">
+                        <span class="material-icons">{{ sortDirectionDay === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                      </span>
+                    </th>
+                    <th (click)="sortDayBy('clicks')" class="sortable text-right">
+                      {{ 'campaign.clicks' | transloco }}
+                      <span class="sort-icon" *ngIf="sortFieldDay === 'clicks'">
+                        <span class="material-icons">{{ sortDirectionDay === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                      </span>
+                    </th>
+                    <th (click)="sortDayBy('ctr')" class="sortable text-right">
+                      {{ 'campaign.ctr' | transloco }}
+                      <span class="sort-icon" *ngIf="sortFieldDay === 'ctr'">
+                        <span class="material-icons">{{ sortDirectionDay === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                      </span>
+                    </th>
+                    <th (click)="sortDayBy('cpc')" class="sortable text-right">
+                      {{ 'campaign.cpc' | transloco }}
+                      <span class="sort-icon" *ngIf="sortFieldDay === 'cpc'">
+                        <span class="material-icons">{{ sortDirectionDay === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                      </span>
+                    </th>
+                    <th (click)="sortDayBy('cost')" class="sortable text-right">
+                      {{ 'campaign.cost' | transloco }}
+                      <span class="sort-icon" *ngIf="sortFieldDay === 'cost'">
+                        <span class="material-icons">{{ sortDirectionDay === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                      </span>
+                    </th>
+                    <th (click)="sortDayBy('conversions')" class="sortable text-right">
+                      {{ 'campaign.conversions' | transloco }}
+                      <span class="sort-icon" *ngIf="sortFieldDay === 'conversions'">
+                        <span class="material-icons">{{ sortDirectionDay === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                      </span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>

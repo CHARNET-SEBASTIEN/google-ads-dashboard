@@ -32,6 +32,14 @@ export class DetailComponent implements OnInit {
   deviceChartData: ChartData[] = [];
   dayOfWeekChartData: ChartData[] = [];
 
+  // Sorting for device
+  sortFieldDevice: keyof DevicePerformance | '' = '';
+  sortDirectionDevice: 'asc' | 'desc' = 'asc';
+
+  // Sorting for day of week
+  sortFieldDay: keyof DayOfWeekPerformance | '' = '';
+  sortDirectionDay: 'asc' | 'desc' = 'asc';
+
   // Sorting for keywords
   sortField: keyof Keyword | '' = '';
   sortDirection: 'asc' | 'desc' = 'asc';
@@ -350,6 +358,68 @@ export class DetailComponent implements OnInit {
 
     const fileName = `day_of_week_${this.campaign?.name || 'campaign'}_${new Date().toISOString().split('T')[0]}.xlsx`;
     XLSX.writeFile(wb, fileName);
+  }
+
+  sortDeviceBy(field: keyof DevicePerformance) {
+    if (this.sortFieldDevice === field) {
+      this.sortDirectionDevice = this.sortDirectionDevice === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortFieldDevice = field;
+      this.sortDirectionDevice = 'asc';
+    }
+    this.applyDeviceSorting();
+  }
+
+  applyDeviceSorting() {
+    if (!this.sortFieldDevice) return;
+
+    this.devicePerformance.sort((a, b) => {
+      const aValue = a[this.sortFieldDevice as keyof DevicePerformance];
+      const bValue = b[this.sortFieldDevice as keyof DevicePerformance];
+
+      if (aValue === null || aValue === undefined) return 1;
+      if (bValue === null || bValue === undefined) return -1;
+
+      let comparison = 0;
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        comparison = aValue.localeCompare(bValue);
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        comparison = aValue - bValue;
+      }
+
+      return this.sortDirectionDevice === 'asc' ? comparison : -comparison;
+    });
+  }
+
+  sortDayBy(field: keyof DayOfWeekPerformance) {
+    if (this.sortFieldDay === field) {
+      this.sortDirectionDay = this.sortDirectionDay === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortFieldDay = field;
+      this.sortDirectionDay = 'asc';
+    }
+    this.applyDaySorting();
+  }
+
+  applyDaySorting() {
+    if (!this.sortFieldDay) return;
+
+    this.dayOfWeekPerformance.sort((a, b) => {
+      const aValue = a[this.sortFieldDay as keyof DayOfWeekPerformance];
+      const bValue = b[this.sortFieldDay as keyof DayOfWeekPerformance];
+
+      if (aValue === null || aValue === undefined) return 1;
+      if (bValue === null || bValue === undefined) return -1;
+
+      let comparison = 0;
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        comparison = aValue.localeCompare(bValue);
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        comparison = aValue - bValue;
+      }
+
+      return this.sortDirectionDay === 'asc' ? comparison : -comparison;
+    });
   }
 
   getStatusKey(status: string): string {
