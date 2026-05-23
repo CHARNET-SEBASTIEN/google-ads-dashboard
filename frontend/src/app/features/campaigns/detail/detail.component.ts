@@ -31,8 +31,8 @@ export class DetailComponent implements OnInit {
   sortDirection: 'asc' | 'desc' = 'asc';
 
   // Sorting for performance
-  sortFieldPerf: keyof Performance | '' = '';
-  sortDirectionPerf: 'asc' | 'desc' = 'asc';
+  sortFieldPerf: keyof Performance | '' = 'date';
+  sortDirectionPerf: 'asc' | 'desc' = 'desc';
 
   // Chart data
   performanceChartData: ChartData[] = [];
@@ -106,6 +106,7 @@ export class DetailComponent implements OnInit {
     this.campaignService.getCampaignPerformance(this.campaignId).subscribe({
       next: (response) => {
         this.performance = response.performance;
+        this.applyPerformanceSorting();
         this.prepareChartData();
       },
       error: (err) => {
