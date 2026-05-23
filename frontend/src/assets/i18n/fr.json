@@ -1,6 +1,7 @@
 {
   "app": {
-    "title": "AdsPilot"
+    "title": "AdsPilot",
+    "subtitle": "Plateforme d'intelligence Google Ads"
   },
   "nav": {
     "home": "Accueil",

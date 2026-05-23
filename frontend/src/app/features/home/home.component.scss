@@ -42,20 +42,24 @@
       border-radius: 20px;
       font-size: 0.875rem;
       font-weight: 500;
+      border: 1px solid transparent;
 
       &.pill-success {
-        background-color: #d1fae5;
-        color: #065f46;
+        background-color: rgba(98, 154, 35, 0.15);
+        color: var(--green);
+        border-color: var(--green);
       }
 
       &.pill-info {
-        background-color: #dbeafe;
-        color: #1e40af;
+        background-color: rgba(59, 130, 246, 0.15);
+        color: var(--blue);
+        border-color: var(--blue);
       }
 
       &.pill-default {
         background-color: var(--hover-color);
         color: var(--text-secondary);
+        border-color: var(--border-color);
       }
     }
   }
