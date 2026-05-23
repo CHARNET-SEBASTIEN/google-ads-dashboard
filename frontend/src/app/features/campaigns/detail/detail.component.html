@@ -23,28 +23,28 @@
       <app-metric-card
         label="{{ 'campaign.impressions' | transloco }}"
         [value]="campaign.impressions || 0"
-        icon="👁️"
+        icon="visibility"
         color="green"
       ></app-metric-card>
 
       <app-metric-card
         label="{{ 'campaign.clicks' | transloco }}"
         [value]="campaign.clicks || 0"
-        icon="👆"
+        icon="touch_app"
         color="blue"
       ></app-metric-card>
 
       <app-metric-card
         label="{{ 'campaign.ctr' | transloco }}"
         [value]="(campaign.ctr || 0) | numberFormat:2"
-        icon="📊"
+        icon="bar_chart"
         color="orange"
       ></app-metric-card>
 
       <app-metric-card
         label="{{ 'campaign.cost' | transloco }}"
         [value]="(campaign.cost || 0) | numberFormat:2"
-        icon="💰"
+        icon="payments"
         color="red"
       ></app-metric-card>
     </div>
@@ -57,28 +57,28 @@
           [class.active]="activeTab === 'overview'"
           class="tab-button"
         >
-          📋 {{ 'nav.overview' | transloco }}
+          <span class="material-icons">description</span> {{ 'nav.overview' | transloco }}
         </button>
         <button
           (click)="setActiveTab('keywords')"
           [class.active]="activeTab === 'keywords'"
           class="tab-button"
         >
-          🔑 {{ 'detail.keywords_section' | transloco }} ({{ keywords.length }})
+          <span class="material-icons">key</span> {{ 'detail.keywords_section' | transloco }} ({{ keywords.length }})
         </button>
         <button
           (click)="setActiveTab('ads')"
           [class.active]="activeTab === 'ads'"
           class="tab-button"
         >
-          📢 {{ 'detail.ads_section' | transloco }} ({{ ads.length }})
+          <span class="material-icons">campaign</span> {{ 'detail.ads_section' | transloco }} ({{ ads.length }})
         </button>
         <button
           (click)="setActiveTab('performance')"
           [class.active]="activeTab === 'performance'"
           class="tab-button"
         >
-          📈 {{ 'detail.performance_section' | transloco }}
+          <span class="material-icons">trending_up</span> {{ 'detail.performance_section' | transloco }}
         </button>
       </div>
 

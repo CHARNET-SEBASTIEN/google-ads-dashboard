@@ -13,28 +13,28 @@
       <app-metric-card
         [label]="'overview.total_campaigns' | transloco"
         [value]="totalCampaigns"
-        icon="📊"
+        icon="bar_chart"
         color="blue"
       ></app-metric-card>
 
       <app-metric-card
         [label]="'overview.total_impressions' | transloco"
         [value]="totalImpressions"
-        icon="👁️"
+        icon="visibility"
         color="green"
       ></app-metric-card>
 
       <app-metric-card
         [label]="'overview.total_clicks' | transloco"
         [value]="totalClicks"
-        icon="👆"
+        icon="touch_app"
         color="orange"
       ></app-metric-card>
 
       <app-metric-card
         [label]="'overview.total_cost' | transloco"
         [value]="totalCost.toFixed(2) + '€'"
-        icon="💰"
+        icon="payments"
         color="red"
       ></app-metric-card>
     </div>
@@ -52,7 +52,7 @@
           class="search-input"
         >
         <button class="btn-search" (click)="onSearch()">
-          🔍
+          <span class="material-icons">search</span>
         </button>
       </div>
 
@@ -69,7 +69,7 @@
       </div>
 
       <button class="btn btn-secondary" (click)="clearFilters()">
-        ✕ {{ 'overview.reset_filters' | transloco }}
+        <span class="material-icons">close</span> {{ 'overview.reset_filters' | transloco }}
       </button>
     </div>
   </section>
@@ -83,7 +83,7 @@
   <!-- Campaigns Table -->
   <section class="campaigns-list" *ngIf="!loading">
     <div *ngIf="filteredCampaigns.length === 0" class="empty-state">
-      <div class="empty-icon">📭</div>
+      <div class="empty-icon"><span class="material-icons">inbox</span></div>
       <h3>{{ 'overview.no_campaigns' | transloco }}</h3>
       <p>{{ 'overview.no_campaigns_desc' | transloco }}</p>
     </div>

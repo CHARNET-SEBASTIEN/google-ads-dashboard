@@ -3,7 +3,9 @@
     <p class="page-subtitle">{{ 'search_terms.subtitle' | transloco }}</p>
     <div class="header-actions">
       <button class="btn btn-secondary" (click)="toggleSuspects()">
-        {{ showOnlySuspects ? ('📋 ' + ('common.all' | transloco)) : '⚠️ Suspects' }}
+        <span class="material-icons" *ngIf="showOnlySuspects">list</span>
+        <span class="material-icons" *ngIf="!showOnlySuspects">warning</span>
+        {{ showOnlySuspects ? ('common.all' | transloco) : 'Suspects' }}
       </button>
       <button class="btn btn-primary" (click)="exportExcel()">
         <span class="material-icons" style="font-size: 1.1rem;">table_chart</span>
@@ -23,7 +25,7 @@
         [disabled]="showOnlySuspects"
       >
       <button class="btn-search" (click)="loadSearchTerms()" [disabled]="showOnlySuspects">
-        🔍
+        <span class="material-icons">search</span>
       </button>
     </div>
   </div>
@@ -89,7 +91,7 @@
         <tr *ngFor="let term of searchTerms" [class.suspect-row]="term.is_suspect">
           <td class="font-bold">
             {{ term.query }}
-            <span *ngIf="term.is_suspect" class="suspect-badge">⚠️ Suspect</span>
+            <span *ngIf="term.is_suspect" class="suspect-badge">Suspect</span>
           </td>
           <td class="text-secondary">{{ term.campaign_name || 'N/A' }}</td>
           <td class="text-right">{{ term.impressions | numberFormat }}</td>
