@@ -8,7 +8,7 @@
     </p>
 
     <div class="status-pills" *ngIf="isAuthenticated">
-      <span class="pill pill-success">✓ {{ 'auth.connected' | transloco }}</span>
+      <span class="pill pill-success"><span class="material-icons" style="font-size: 1rem;">check</span> {{ 'auth.connected' | transloco }}</span>
       <span class="pill pill-info">{{ customerName || 'Account' }}</span>
       <span class="pill pill-default">Données locales</span>
     </div>
