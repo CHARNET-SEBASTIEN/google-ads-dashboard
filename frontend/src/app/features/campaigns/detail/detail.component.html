@@ -243,15 +243,46 @@
 
           <!-- Performance Table -->
           <div class="table-container" style="margin-top: 2rem;">
-            <h3 style="margin-bottom: 1rem;">{{ 'detail.detailed_data' | transloco }}</h3>
+            <div class="performance-header">
+              <h3 style="margin-bottom: 1rem;">{{ 'detail.detailed_data' | transloco }}</h3>
+              <button class="btn btn-primary" (click)="exportPerformanceExcel()">
+                <span class="material-icons">table_chart</span>
+                {{ 'overview.export_excel' | transloco }}
+              </button>
+            </div>
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>{{ 'detail.date' | transloco }}</th>
-                  <th class="text-right">{{ 'campaign.impressions' | transloco }}</th>
-                  <th class="text-right">{{ 'campaign.clicks' | transloco }}</th>
-                  <th class="text-right">{{ 'campaign.cost' | transloco }}</th>
-                  <th class="text-right">{{ 'campaign.conversions' | transloco }}</th>
+                  <th (click)="sortPerformanceBy('date')" class="sortable">
+                    {{ 'detail.date' | transloco }}
+                    <span class="sort-icon" *ngIf="sortFieldPerf === 'date'">
+                      <span class="material-icons">{{ sortDirectionPerf === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                    </span>
+                  </th>
+                  <th (click)="sortPerformanceBy('impressions')" class="sortable text-right">
+                    {{ 'campaign.impressions' | transloco }}
+                    <span class="sort-icon" *ngIf="sortFieldPerf === 'impressions'">
+                      <span class="material-icons">{{ sortDirectionPerf === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                    </span>
+                  </th>
+                  <th (click)="sortPerformanceBy('clicks')" class="sortable text-right">
+                    {{ 'campaign.clicks' | transloco }}
+                    <span class="sort-icon" *ngIf="sortFieldPerf === 'clicks'">
+                      <span class="material-icons">{{ sortDirectionPerf === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                    </span>
+                  </th>
+                  <th (click)="sortPerformanceBy('cost')" class="sortable text-right">
+                    {{ 'campaign.cost' | transloco }}
+                    <span class="sort-icon" *ngIf="sortFieldPerf === 'cost'">
+                      <span class="material-icons">{{ sortDirectionPerf === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                    </span>
+                  </th>
+                  <th (click)="sortPerformanceBy('conversions')" class="sortable text-right">
+                    {{ 'campaign.conversions' | transloco }}
+                    <span class="sort-icon" *ngIf="sortFieldPerf === 'conversions'">
+                      <span class="material-icons">{{ sortDirectionPerf === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+                    </span>
+                  </th>
                 </tr>
               </thead>
               <tbody>

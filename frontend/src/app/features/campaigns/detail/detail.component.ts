@@ -30,6 +30,10 @@ export class DetailComponent implements OnInit {
   sortField: keyof Keyword | '' = '';
   sortDirection: 'asc' | 'desc' = 'asc';
 
+  // Sorting for performance
+  sortFieldPerf: keyof Performance | '' = '';
+  sortDirectionPerf: 'asc' | 'desc' = 'asc';
+
   // Chart data
   performanceChartData: ChartData[] = [];
   performanceChartLayout: ChartLayout = {
@@ -119,6 +123,7 @@ export class DetailComponent implements OnInit {
     const conversions = this.performance.map(p => p.conversions);
     const cost = this.performance.map(p => p.cost);
 
+    // Use brighter colors that work better in dark mode
     this.performanceChartData = [
       {
         x: dates,
@@ -126,8 +131,8 @@ export class DetailComponent implements OnInit {
         type: 'scatter',
         mode: 'lines+markers',
         name: 'Impressions',
-        line: { color: '#3B82F6', width: 2 },
-        marker: { size: 6 }
+        line: { color: '#60A5FA', width: 2 },
+        marker: { size: 6, color: '#60A5FA' }
       },
       {
         x: dates,
@@ -135,8 +140,8 @@ export class DetailComponent implements OnInit {
         type: 'scatter',
         mode: 'lines+markers',
         name: 'Clics',
-        line: { color: '#10B981', width: 2 },
-        marker: { size: 6 }
+        line: { color: '#34D399', width: 2 },
+        marker: { size: 6, color: '#34D399' }
       },
       {
         x: dates,
@@ -144,8 +149,8 @@ export class DetailComponent implements OnInit {
         type: 'scatter',
         mode: 'lines+markers',
         name: 'Conversions',
-        line: { color: '#F59E0B', width: 2 },
-        marker: { size: 6 },
+        line: { color: '#FBBF24', width: 2 },
+        marker: { size: 6, color: '#FBBF24' },
         yaxis: 'y2'
       }
     ];
@@ -155,12 +160,16 @@ export class DetailComponent implements OnInit {
       height: 400,
       showlegend: true,
       yaxis: {
-        title: 'Impressions / Clics'
+        title: 'Impressions / Clics',
+        gridcolor: 'rgba(148, 163, 184, 0.2)',
+        zerolinecolor: 'rgba(148, 163, 184, 0.3)'
       },
       yaxis2: {
         title: 'Conversions',
         overlaying: 'y',
-        side: 'right'
+        side: 'right',
+        gridcolor: 'rgba(148, 163, 184, 0.1)',
+        zerolinecolor: 'rgba(148, 163, 184, 0.3)'
       }
     };
   }
@@ -260,6 +269,63 @@ export class DetailComponent implements OnInit {
     ws['!cols'] = colWidths;
 
     const fileName = `keywords_${this.campaign?.name || 'campaign'}_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+  }
+
+  sortPerformanceBy(field: keyof Performance) {
+    if (this.sortFieldPerf === field) {
+      this.sortDirectionPerf = this.sortDirectionPerf === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortFieldPerf = field;
+      this.sortDirectionPerf = 'asc';
+    }
+    this.applyPerformanceSorting();
+  }
+
+  applyPerformanceSorting() {
+    if (!this.sortFieldPerf) return;
+
+    this.performance.sort((a, b) => {
+      const aValue = a[this.sortFieldPerf as keyof Performance];
+      const bValue = b[this.sortFieldPerf as keyof Performance];
+
+      if (aValue === null || aValue === undefined) return 1;
+      if (bValue === null || bValue === undefined) return -1;
+
+      let comparison = 0;
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        comparison = aValue.localeCompare(bValue);
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        comparison = aValue - bValue;
+      }
+
+      return this.sortDirectionPerf === 'asc' ? comparison : -comparison;
+    });
+  }
+
+  exportPerformanceExcel() {
+    const data = this.performance.map(perf => ({
+      'Date': perf.date || 'N/A',
+      'Impressions': perf.impressions || 0,
+      'Clics': perf.clicks || 0,
+      'Coût (€)': perf.cost ? perf.cost.toFixed(2) : '0.00',
+      'Conversions': perf.conversions ? perf.conversions.toFixed(1) : '0.0'
+    }));
+
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Performance');
+
+    const colWidths = [
+      { wch: 12 }, // Date
+      { wch: 15 }, // Impressions
+      { wch: 12 }, // Clics
+      { wch: 12 }, // Coût
+      { wch: 15 }  // Conversions
+    ];
+    ws['!cols'] = colWidths;
+
+    const fileName = `performance_${this.campaign?.name || 'campaign'}_${new Date().toISOString().split('T')[0]}.xlsx`;
     XLSX.writeFile(wb, fileName);
   }
 }

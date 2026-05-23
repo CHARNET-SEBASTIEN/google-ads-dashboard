@@ -190,6 +190,45 @@
   }
 }
 
+.performance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  h3 {
+    margin: 0;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    .material-icons {
+      font-size: 1.1rem;
+      line-height: 1;
+      vertical-align: middle;
+    }
+
+    &.btn-primary {
+      background-color: var(--green);
+      color: white;
+
+      &:hover {
+        background-color: #527d1e;
+      }
+    }
+  }
+}
+
 .table-container {
   overflow-x: auto;
 
