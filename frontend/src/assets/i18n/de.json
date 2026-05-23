@@ -225,5 +225,9 @@
     "overview_desc": "Liste aller Ihrer Kampagnen mit Metriken",
     "search_terms_desc": "Analyse von Benutzeranfragen",
     "diagnostic_desc": "Automatische Problemerkennung"
+  },
+  "analytics": {
+    "device": "Gerät",
+    "day": "Tag"
   }
 }

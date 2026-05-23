@@ -230,5 +230,9 @@
     "overview_desc": "Liste de toutes vos campagnes avec métriques",
     "search_terms_desc": "Analyse des requêtes utilisateurs",
     "diagnostic_desc": "Détection automatique des problèmes"
+  },
+  "analytics": {
+    "device": "Appareil",
+    "day": "Jour"
   }
 }

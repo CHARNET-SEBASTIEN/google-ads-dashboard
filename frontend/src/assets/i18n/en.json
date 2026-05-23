@@ -225,5 +225,9 @@
     "overview_desc": "List of all your campaigns with metrics",
     "search_terms_desc": "User queries analysis",
     "diagnostic_desc": "Automatic issue detection"
+  },
+  "analytics": {
+    "device": "Device",
+    "day": "Day"
   }
 }
