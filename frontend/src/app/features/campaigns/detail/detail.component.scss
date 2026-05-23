@@ -449,9 +449,17 @@
     margin-bottom: 1.5rem;
 
     h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       font-size: 1.25rem;
       color: var(--text-color);
       margin: 0;
+
+      .section-icon {
+        font-size: 1.5rem;
+        color: var(--green);
+      }
     }
 
     .btn {

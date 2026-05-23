@@ -198,11 +198,13 @@
   <!-- Actions -->
   <section class="actions-section" *ngIf="dataStatus?.data_exists">
     <button class="btn btn-secondary" (click)="loadDataStatus()">
-      🔄 {{ 'common.refresh' | transloco }}
+      <span class="material-icons">refresh</span>
+      {{ 'common.refresh' | transloco }}
     </button>
 
     <button class="btn btn-danger" (click)="clearData()">
-      🗑️ {{ 'config.delete_data' | transloco }}
+      <span class="material-icons">delete</span>
+      {{ 'config.delete_data' | transloco }}
     </button>
   </section>
 </div>

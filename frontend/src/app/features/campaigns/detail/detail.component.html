@@ -326,7 +326,7 @@
         <!-- Section: Performance par Appareil -->
         <div class="analytics-section">
           <div class="section-header">
-            <h3>📱 Performance par Appareil</h3>
+            <h3><span class="material-icons section-icon">devices</span> Performance par Appareil</h3>
             <button class="btn btn-primary" (click)="exportDeviceExcel()" *ngIf="devicePerformance.length > 0">
               <span class="material-icons">table_chart</span>
               {{ 'overview.export_excel' | transloco }}
@@ -420,7 +420,7 @@
         <!-- Section: Performance par Jour de la Semaine -->
         <div class="analytics-section" style="margin-top: 3rem;">
           <div class="section-header">
-            <h3>📅 Performance par Jour de la Semaine</h3>
+            <h3><span class="material-icons section-icon">date_range</span> Performance par Jour de la Semaine</h3>
             <button class="btn btn-primary" (click)="exportDayOfWeekExcel()" *ngIf="dayOfWeekPerformance.length > 0">
               <span class="material-icons">table_chart</span>
               {{ 'overview.export_excel' | transloco }}
