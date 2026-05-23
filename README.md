@@ -132,7 +132,6 @@ npm run build
 │
 ├── .credentials/            # Credentials Google (gitignored)
 ├── data/                    # Données importées (gitignored)
-├── docker-compose.yml       # Orchestration Docker
 └── README.md               # Ce fichier
 ```
 
@@ -255,18 +254,6 @@ GET    /api/search-terms/export  # Export CSV
 ```
 POST   /api/diagnostics/ai-analysis        # Lancer analyse IA
 GET    /api/diagnostics/ai-analysis/cached # Récupérer analyse en cache
-```
-
-## 🐳 Docker
-
-```bash
-# Lancer avec Docker Compose
-docker-compose up -d
-
-# Accéder à l'application
-# Frontend: http://localhost:4200
-# Backend: http://localhost:8000
-# API Docs: http://localhost:8000/docs
 ```
 
 ## 🧪 Tests
