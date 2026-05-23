@@ -10,7 +10,7 @@
 
       <!-- Main view toggle (Rapport / Échéancier) -->
       <button class="btn btn-secondary" (click)="toggleMainView()" [disabled]="!aiAnalysis || loadingAi" *ngIf="aiAnalysis">
-        <span class="material-icons" style="font-size: 1.1rem;">
+        <span class="material-icons" >
           {{ mainView === 'report' ? 'event_note' : 'description' }}
         </span>
         {{ (mainView === 'report' ? 'diagnostic.view_schedule' : 'diagnostic.view_report') | transloco }}
@@ -18,7 +18,7 @@
 
       <!-- Report sub-view toggle (Table / Markdown) - visible only in report view -->
       <button class="btn btn-secondary" (click)="toggleReportView()" [disabled]="!aiAnalysis || loadingAi" *ngIf="aiAnalysis && mainView === 'report'">
-        <span class="material-icons" style="font-size: 1.1rem;">
+        <span class="material-icons" >
           {{ reportView === 'table' ? 'article' : 'table_chart' }}
         </span>
         {{ (reportView === 'table' ? 'diagnostic.view_markdown' : 'diagnostic.view_table') | transloco }}
@@ -26,7 +26,7 @@
 
       <!-- Export Excel - visible only in report table view -->
       <button class="btn btn-secondary" (click)="exportExcel()" [disabled]="!aiAnalysis || loadingAi || recommendations.length === 0" *ngIf="aiAnalysis && mainView === 'report' && reportView === 'table'">
-        <span class="material-icons" style="font-size: 1.1rem;">table_chart</span>
+        <span class="material-icons" >table_chart</span>
         {{ 'overview.export_excel' | transloco }}
       </button>
 
