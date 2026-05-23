@@ -13,7 +13,7 @@ import { ThemeService } from './core/services/theme.service';
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
-  title = 'Google Ads Dashboard';
+  title = 'AdsPilot';
 
   constructor(private themeService: ThemeService) {}
 

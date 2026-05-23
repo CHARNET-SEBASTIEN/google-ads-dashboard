@@ -1,3 +1,3 @@
-"""Google Ads Dashboard Backend API"""
+"""AdsPilot Backend API"""
 
 __version__ = "1.0.0"

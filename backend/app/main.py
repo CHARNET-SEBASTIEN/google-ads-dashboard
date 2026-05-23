@@ -1,6 +1,6 @@
 """
-FastAPI Application - Google Ads Dashboard
-Point d'entrée principal de l'API
+FastAPI Application - AdsPilot
+Main API entry point
 """
 
 from fastapi import FastAPI
@@ -14,14 +14,14 @@ from app.api import auth, campaigns, search_terms, diagnostics, data_import
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifecycle events"""
-    print("🚀 Starting Google Ads Dashboard API...")
+    print("🚀 Starting AdsPilot API...")
     yield
-    print("👋 Shutting down Google Ads Dashboard API...")
+    print("👋 Shutting down AdsPilot API...")
 
 
 app = FastAPI(
-    title="Google Ads Dashboard API",
-    description="API backend pour le dashboard Google Ads",
+    title="AdsPilot API",
+    description="Backend API for AdsPilot - Google Ads Intelligence Platform",
     version="1.0.0",
     lifespan=lifespan,
     docs_url="/api/docs",
@@ -50,7 +50,7 @@ async def root():
     """Health check"""
     return {
         "status": "ok",
-        "message": "Google Ads Dashboard API",
+        "message": "AdsPilot API",
         "version": "1.0.0",
         "docs": "/api/docs"
     }

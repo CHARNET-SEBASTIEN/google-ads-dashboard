@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     """Application settings"""
 
     # Application
-    APP_NAME: str = "Google Ads Dashboard"
+    APP_NAME: str = "AdsPilot"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = True
 

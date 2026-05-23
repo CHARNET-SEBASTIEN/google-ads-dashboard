@@ -1,6 +1,6 @@
-# Google Ads Dashboard - Backend API
+# AdsPilot - Backend API
 
-Backend FastAPI pour le dashboard Google Ads.
+FastAPI backend for AdsPilot Google Ads intelligence platform.
 
 ## Installation
 

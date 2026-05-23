@@ -1,6 +1,6 @@
-# Google Ads Dashboard - Frontend Angular
+# AdsPilot - Frontend Angular
 
-Application Angular 17 moderne pour la gestion et l'analyse des campagnes Google Ads.
+Modern Angular 17 application for managing and analyzing Google Ads campaigns.
 
 ## 🚀 Caractéristiques
 

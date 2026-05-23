@@ -1,6 +1,6 @@
-# 📊 Dashboard Google Ads - Application Full Stack
+# 🚀 AdsPilot - Google Ads Intelligence Platform
 
-Application moderne de gestion et d'analyse de campagnes Google Ads avec architecture full stack **FastAPI** (backend) et **Angular 17** (frontend).
+Modern full-stack application for managing and analyzing Google Ads campaigns with **FastAPI** (backend) and **Angular 17** (frontend).
 
 ## 🎯 Vue d'ensemble
 
@@ -141,7 +141,7 @@ npm run build
 
 ```bash
 # Application
-APP_NAME="Google Ads Dashboard"
+APP_NAME="AdsPilot"
 DEBUG=True
 
 # API
