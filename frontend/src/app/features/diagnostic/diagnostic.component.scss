@@ -40,43 +40,43 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius-md);
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  border: none;
-  font-size: 0.95rem;
+  border: 1px solid var(--border-color);
+  font-size: 0.875rem;
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
   }
 }
 
 .btn-ai {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: var(--green);
   color: white;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  border-color: var(--green);
 
   &:hover:not(:disabled) {
-    background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+    background-color: #527d1e;
+    transform: translateY(-1px);
   }
 
   &:disabled {
-    animation: pulse 1.5s infinite;
+    opacity: 0.6;
   }
 }
 
 .btn-secondary {
-  background: var(--surface-secondary);
-  color: var(--text-primary);
+  background-color: var(--card-color);
+  color: var(--text-color);
+  border-color: var(--border-color);
 
   &:hover:not(:disabled) {
-    background: var(--surface-hover);
+    background-color: var(--hover-color);
+    border-color: var(--green);
   }
 }
 

@@ -13,7 +13,7 @@
     <h2>{{ 'config.data_status' | transloco }}</h2>
 
     <div *ngIf="dataStatus.data_exists" class="status-card status-success">
-      <div class="status-icon">✅</div>
+      <div class="status-icon"><span class="material-icons">check_circle</span></div>
       <div class="status-content">
         <h3>{{ 'config.data_available' | transloco }}</h3>
         <p *ngIf="dataStatus.account_info">
@@ -27,7 +27,7 @@
     </div>
 
     <div *ngIf="!dataStatus.data_exists" class="status-card status-warning">
-      <div class="status-icon">⚠️</div>
+      <div class="status-icon"><span class="material-icons">warning</span></div>
       <div class="status-content">
         <h3>{{ 'config.no_data' | transloco }}</h3>
         <p>{{ 'config.no_data_desc' | transloco }}</p>
@@ -39,28 +39,28 @@
       <app-metric-card
         [label]="'config.campaigns' | transloco"
         [value]="dataStatus.stats.campaigns"
-        icon="📊"
+        icon="bar_chart"
         color="blue"
       ></app-metric-card>
 
       <app-metric-card
         [label]="'config.keywords' | transloco"
         [value]="dataStatus.stats.keywords"
-        icon="🔑"
+        icon="key"
         color="green"
       ></app-metric-card>
 
       <app-metric-card
         [label]="'config.ads' | transloco"
         [value]="dataStatus.stats.ads"
-        icon="📢"
+        icon="campaign"
         color="orange"
       ></app-metric-card>
 
       <app-metric-card
         [label]="'config.search_terms_stat' | transloco"
         [value]="dataStatus.stats.search_terms"
-        icon="🔍"
+        icon="search"
         color="blue"
       ></app-metric-card>
     </div>
@@ -72,13 +72,13 @@
 
     <div class="tabs">
       <input type="radio" id="tab1" name="tabs" checked>
-      <label for="tab1">📤 {{ 'config.import_json' | transloco }}</label>
+      <label for="tab1"><span class="material-icons">upload_file</span> {{ 'config.import_json' | transloco }}</label>
 
       <input type="radio" id="tab2" name="tabs">
-      <label for="tab2">☁️ {{ 'config.import_drive' | transloco }}</label>
+      <label for="tab2"><span class="material-icons">cloud_upload</span> {{ 'config.import_drive' | transloco }}</label>
 
       <input type="radio" id="tab3" name="tabs">
-      <label for="tab3">📖 {{ 'config.guide' | transloco }}</label>
+      <label for="tab3"><span class="material-icons">menu_book</span> {{ 'config.guide' | transloco }}</label>
 
       <!-- Tab 1: JSON Upload -->
       <div class="tab-content">

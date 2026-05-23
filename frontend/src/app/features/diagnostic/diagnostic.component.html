@@ -4,7 +4,7 @@
     <p class="page-subtitle">{{ 'diagnostic.subtitle' | transloco }}</p>
     <div class="header-actions">
       <button class="btn btn-ai" (click)="runAiAnalysis()" [disabled]="loadingAi">
-        <span>{{ loadingAi ? '⏳' : '🔄' }}</span>
+        <span class="material-icons">{{ loadingAi ? 'hourglass_empty' : 'refresh' }}</span>
         {{ loadingAi ? ('diagnostic.loading' | transloco) : ('diagnostic.refresh' | transloco) }}
       </button>
 
@@ -32,7 +32,7 @@
 
       <!-- Download markdown - visible only in report markdown view -->
       <button class="btn btn-secondary" (click)="downloadAiReport()" [disabled]="!aiAnalysis || loadingAi" *ngIf="aiAnalysis && mainView === 'report' && reportView === 'markdown'">
-        <span>📥</span>
+        <span class="material-icons">download</span>
         {{ 'diagnostic.download' | transloco }}
       </button>
     </div>
@@ -47,7 +47,7 @@
 
   <!-- Error State -->
   <div *ngIf="aiError && !loadingAi" class="error-state">
-    <div class="error-icon">⚠️</div>
+    <span class="material-icons error-icon">error_outline</span>
     <h3>{{ 'diagnostic.error_title' | transloco }}</h3>
     <p>{{ aiError }}</p>
     <button class="btn btn-primary" (click)="runAiAnalysis()">
