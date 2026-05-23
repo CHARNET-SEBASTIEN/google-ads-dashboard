@@ -14,7 +14,11 @@ from app.models.campaign import (
     AdListResponse,
     Ad,
     PerformanceResponse,
-    Performance
+    Performance,
+    DevicePerformance,
+    DevicePerformanceResponse,
+    DayOfWeekPerformance,
+    DayOfWeekPerformanceResponse
 )
 from app.services.data_loader_service import data_loader_service
 
@@ -250,3 +254,64 @@ async def get_campaign_performance(
     ]
 
     return PerformanceResponse(performance=performance)
+
+
+@router.get("/{campaign_id}/performance/device", response_model=DevicePerformanceResponse)
+async def get_campaign_performance_by_device(campaign_id: str):
+    """
+    Performance d'une campagne par appareil
+
+    Args:
+        campaign_id: ID de la campagne
+
+    Returns:
+        Performance segmentée par appareil (Desktop, Mobile, Tablet)
+    """
+    device_data = data_loader_service.get_performance_by_device(campaign_id=campaign_id)
+
+    devices = [
+        DevicePerformance(
+            campaign_id=str(d.get('campaignId', '')),
+            campaign_name=d.get('campaignName', ''),
+            device=d.get('device', ''),
+            impressions=d.get('impressions', 0),
+            clicks=d.get('clicks', 0),
+            cost=d.get('cost', 0.0),
+            conversions=d.get('conversions', 0.0),
+            ctr=d.get('ctr', 0.0),
+            cpc=d.get('averageCpc', 0.0)
+        )
+        for d in device_data
+    ]
+
+    return DevicePerformanceResponse(devices=devices)
+
+
+@router.get("/{campaign_id}/performance/day-of-week", response_model=DayOfWeekPerformanceResponse)
+async def get_campaign_performance_by_day_of_week(campaign_id: str):
+    """
+    Performance d'une campagne par jour de la semaine
+
+    Args:
+        campaign_id: ID de la campagne
+
+    Returns:
+        Performance agrégée par jour de la semaine (Lundi-Dimanche)
+    """
+    day_data = data_loader_service.get_performance_by_day_of_week(campaign_id=campaign_id)
+
+    days = [
+        DayOfWeekPerformance(
+            day_of_week=d.get('day_of_week', ''),
+            day_number=d.get('day_number', 0),
+            impressions=d.get('impressions', 0),
+            clicks=d.get('clicks', 0),
+            cost=d.get('cost', 0.0),
+            conversions=d.get('conversions', 0.0),
+            ctr=d.get('ctr', 0.0),
+            cpc=d.get('cpc', 0.0)
+        )
+        for d in day_data
+    ]
+
+    return DayOfWeekPerformanceResponse(days=days)

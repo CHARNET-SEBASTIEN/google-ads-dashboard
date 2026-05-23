@@ -77,3 +77,54 @@ class AdListResponse(BaseModel):
 class PerformanceResponse(BaseModel):
     """Response pour performance"""
     performance: List[Performance]
+
+
+class DevicePerformance(BaseModel):
+    """Performance par appareil"""
+    campaign_id: str
+    campaign_name: str
+    device: str
+    impressions: int
+    clicks: int
+    cost: float
+    conversions: float
+    ctr: float
+    cpc: float
+
+
+class DayOfWeekPerformance(BaseModel):
+    """Performance par jour de semaine"""
+    day_of_week: str
+    day_number: int
+    impressions: int
+    clicks: int
+    cost: float
+    conversions: float
+    ctr: float
+    cpc: float
+
+
+class HourOfDayPerformance(BaseModel):
+    """Performance par heure"""
+    hour: int
+    impressions: int
+    clicks: int
+    cost: float
+    conversions: float
+    ctr: float
+    cpc: float
+
+
+class DevicePerformanceResponse(BaseModel):
+    """Response performance par appareil"""
+    devices: List[DevicePerformance]
+
+
+class DayOfWeekPerformanceResponse(BaseModel):
+    """Response performance par jour"""
+    days: List[DayOfWeekPerformance]
+
+
+class HourOfDayPerformanceResponse(BaseModel):
+    """Response performance par heure"""
+    hours: List[HourOfDayPerformance]

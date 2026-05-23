@@ -305,6 +305,73 @@ class DataLoaderService:
             "search_terms": len(data.get('searchTerms', []))
         }
 
+    def get_performance_by_device(self, campaign_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Récupère les performances par appareil"""
+        data = self.load_data()
+        if not data:
+            return []
+
+        device_perf = data.get('performanceByDevice', [])
+
+        if campaign_id:
+            device_perf = [d for d in device_perf if str(d.get('campaignId')) == campaign_id]
+
+        return device_perf
+
+    def get_performance_by_day_of_week(self, campaign_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Agrège les performances par jour de la semaine"""
+        from datetime import datetime
+        from collections import defaultdict
+
+        performance_data = self.get_performance(campaign_id=campaign_id)
+        if not performance_data:
+            return []
+
+        # Agréger par jour de semaine
+        day_stats = defaultdict(lambda: {
+            'impressions': 0,
+            'clicks': 0,
+            'cost': 0.0,
+            'conversions': 0.0
+        })
+
+        for perf in performance_data:
+            try:
+                date_str = perf.get('date', '')
+                date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+                day_num = date_obj.weekday()  # 0=Lundi, 6=Dimanche
+
+                day_stats[day_num]['impressions'] += perf.get('impressions', 0)
+                day_stats[day_num]['clicks'] += perf.get('clicks', 0)
+                day_stats[day_num]['cost'] += perf.get('cost', 0.0)
+                day_stats[day_num]['conversions'] += perf.get('conversions', 0.0)
+            except:
+                continue
+
+        # Convertir en liste avec noms de jours
+        day_names = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+        result = []
+
+        for day_num in range(7):
+            stats = day_stats[day_num]
+            impressions = stats['impressions']
+            clicks = stats['clicks']
+            cost = stats['cost']
+            conversions = stats['conversions']
+
+            result.append({
+                'day_of_week': day_names[day_num],
+                'day_number': day_num,
+                'impressions': impressions,
+                'clicks': clicks,
+                'cost': cost,
+                'conversions': conversions,
+                'ctr': (clicks / impressions * 100) if impressions > 0 else 0,
+                'cpc': (cost / clicks) if clicks > 0 else 0
+            })
+
+        return result
+
 
 # Instance globale
 data_loader_service = DataLoaderService()
