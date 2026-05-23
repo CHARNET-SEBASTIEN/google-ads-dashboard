@@ -64,4 +64,35 @@ export class CampaignService {
   getCampaignPerformance(id: string, params?: any): Observable<{ performance: Performance[] }> {
     return this.api.get(`campaigns/${id}/performance`, params);
   }
+
+  getCampaignPerformanceByDevice(id: string): Observable<{ devices: DevicePerformance[] }> {
+    return this.api.get(`campaigns/${id}/performance/device`);
+  }
+
+  getCampaignPerformanceByDayOfWeek(id: string): Observable<{ days: DayOfWeekPerformance[] }> {
+    return this.api.get(`campaigns/${id}/performance/day-of-week`);
+  }
+}
+
+export interface DevicePerformance {
+  campaign_id: string;
+  campaign_name: string;
+  device: string;
+  impressions: number;
+  clicks: number;
+  cost: number;
+  conversions: number;
+  ctr: number;
+  cpc: number;
+}
+
+export interface DayOfWeekPerformance {
+  day_of_week: string;
+  day_number: number;
+  impressions: number;
+  clicks: number;
+  cost: number;
+  conversions: number;
+  ctr: number;
+  cpc: number;
 }

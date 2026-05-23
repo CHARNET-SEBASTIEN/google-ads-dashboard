@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
-import { CampaignService, Keyword, Ad, Performance } from '../../../core/services/campaign.service';
+import { CampaignService, Keyword, Ad, Performance, DevicePerformance, DayOfWeekPerformance } from '../../../core/services/campaign.service';
 import { Campaign } from '../../../shared/components/campaign-card/campaign-card.component';
 import { MetricCardComponent } from '../../../shared/components/metric-card/metric-card.component';
 import { ChartComponent, ChartData, ChartLayout } from '../../../shared/components/chart/chart.component';
@@ -23,8 +23,14 @@ export class DetailComponent implements OnInit {
   ads: Ad[] = [];
   performance: Performance[] = [];
 
-  activeTab: 'overview' | 'keywords' | 'ads' | 'performance' = 'overview';
+  activeTab: 'overview' | 'keywords' | 'ads' | 'performance' | 'analytics' = 'overview';
   loading = false;
+
+  // Analytics data
+  devicePerformance: DevicePerformance[] = [];
+  dayOfWeekPerformance: DayOfWeekPerformance[] = [];
+  deviceChartData: ChartData[] = [];
+  dayOfWeekChartData: ChartData[] = [];
 
   // Sorting for keywords
   sortField: keyof Keyword | '' = '';
@@ -200,12 +206,150 @@ export class DetailComponent implements OnInit {
     };
   }
 
-  setActiveTab(tab: 'overview' | 'keywords' | 'ads' | 'performance') {
+  setActiveTab(tab: 'overview' | 'keywords' | 'ads' | 'performance' | 'analytics') {
     this.activeTab = tab;
 
     if (tab === 'performance' && this.performance.length === 0) {
       this.loadPerformance();
     }
+
+    if (tab === 'analytics' && this.devicePerformance.length === 0) {
+      this.loadAnalytics();
+    }
+  }
+
+  loadAnalytics() {
+    if (!this.campaignId) return;
+
+    // Load device performance
+    this.campaignService.getCampaignPerformanceByDevice(this.campaignId).subscribe({
+      next: (response) => {
+        this.devicePerformance = response.devices;
+        this.prepareDeviceChart();
+      },
+      error: (err) => {
+        console.error('Failed to load device performance:', err);
+      }
+    });
+
+    // Load day of week performance
+    this.campaignService.getCampaignPerformanceByDayOfWeek(this.campaignId).subscribe({
+      next: (response) => {
+        this.dayOfWeekPerformance = response.days;
+        this.prepareDayOfWeekChart();
+      },
+      error: (err) => {
+        console.error('Failed to load day of week performance:', err);
+      }
+    });
+  }
+
+  prepareDeviceChart() {
+    if (this.devicePerformance.length === 0) return;
+
+    const devices = this.devicePerformance.map(d => d.device);
+    const impressions = this.devicePerformance.map(d => d.impressions);
+    const clicks = this.devicePerformance.map(d => d.clicks);
+    const conversions = this.devicePerformance.map(d => d.conversions);
+
+    this.deviceChartData = [
+      {
+        x: devices,
+        y: impressions,
+        type: 'bar',
+        name: 'Impressions',
+        marker: { color: '#60A5FA' }
+      },
+      {
+        x: devices,
+        y: clicks,
+        type: 'bar',
+        name: 'Clics',
+        marker: { color: '#34D399' }
+      },
+      {
+        x: devices,
+        y: conversions,
+        type: 'bar',
+        name: 'Conversions',
+        marker: { color: '#FBBF24' },
+        yaxis: 'y2'
+      }
+    ];
+  }
+
+  prepareDayOfWeekChart() {
+    if (this.dayOfWeekPerformance.length === 0) return;
+
+    const days = this.dayOfWeekPerformance.map(d => d.day_of_week);
+    const impressions = this.dayOfWeekPerformance.map(d => d.impressions);
+    const clicks = this.dayOfWeekPerformance.map(d => d.clicks);
+    const ctr = this.dayOfWeekPerformance.map(d => d.ctr);
+
+    this.dayOfWeekChartData = [
+      {
+        x: days,
+        y: impressions,
+        type: 'bar',
+        name: 'Impressions',
+        marker: { color: '#60A5FA' }
+      },
+      {
+        x: days,
+        y: clicks,
+        type: 'bar',
+        name: 'Clics',
+        marker: { color: '#34D399' }
+      },
+      {
+        x: days,
+        y: ctr,
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'CTR (%)',
+        line: { color: '#F97316', width: 3 },
+        marker: { size: 8, color: '#F97316' },
+        yaxis: 'y2'
+      }
+    ];
+  }
+
+  exportDeviceExcel() {
+    const data = this.devicePerformance.map(device => ({
+      'Appareil': device.device,
+      'Impressions': device.impressions,
+      'Clics': device.clicks,
+      'CTR (%)': device.ctr.toFixed(2),
+      'CPC (€)': device.cpc.toFixed(2),
+      'Coût (€)': device.cost.toFixed(2),
+      'Conversions': device.conversions.toFixed(1)
+    }));
+
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Par Appareil');
+
+    const fileName = `device_${this.campaign?.name || 'campaign'}_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+  }
+
+  exportDayOfWeekExcel() {
+    const data = this.dayOfWeekPerformance.map(day => ({
+      'Jour': day.day_of_week,
+      'Impressions': day.impressions,
+      'Clics': day.clicks,
+      'CTR (%)': day.ctr.toFixed(2),
+      'CPC (€)': day.cpc.toFixed(2),
+      'Coût (€)': day.cost.toFixed(2),
+      'Conversions': day.conversions.toFixed(1)
+    }));
+
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Par Jour');
+
+    const fileName = `day_of_week_${this.campaign?.name || 'campaign'}_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, fileName);
   }
 
   getStatusKey(status: string): string {

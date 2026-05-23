@@ -80,6 +80,13 @@
         >
           <span class="material-icons">trending_up</span> {{ 'detail.performance_section' | transloco }}
         </button>
+        <button
+          (click)="setActiveTab('analytics')"
+          [class.active]="activeTab === 'analytics'"
+          class="tab-button"
+        >
+          <span class="material-icons">analytics</span> Analyses
+        </button>
       </div>
 
       <!-- Tab: Overview -->
@@ -311,6 +318,129 @@
             </table>
           </div>
         </div>
+      </div>
+
+      <!-- Tab: Analytics -->
+      <div *ngIf="activeTab === 'analytics'" class="tab-content">
+
+        <!-- Section: Performance par Appareil -->
+        <div class="analytics-section">
+          <div class="section-header">
+            <h3>📱 Performance par Appareil</h3>
+            <button class="btn btn-primary" (click)="exportDeviceExcel()" *ngIf="devicePerformance.length > 0">
+              <span class="material-icons">table_chart</span>
+              {{ 'overview.export_excel' | transloco }}
+            </button>
+          </div>
+
+          <div *ngIf="devicePerformance.length === 0" class="empty-state">
+            <p>Aucune donnée par appareil disponible</p>
+          </div>
+
+          <div *ngIf="devicePerformance.length > 0">
+            <!-- Chart -->
+            <div class="chart-section" style="margin-bottom: 2rem;">
+              <app-chart
+                [data]="deviceChartData"
+                [layout]="{
+                  height: 350,
+                  showlegend: true,
+                  barmode: 'group',
+                  yaxis: { title: 'Impressions / Clics' },
+                  yaxis2: { title: 'Conversions', overlaying: 'y', side: 'right' }
+                }"
+              ></app-chart>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Appareil</th>
+                    <th class="text-right">Impressions</th>
+                    <th class="text-right">Clics</th>
+                    <th class="text-right">CTR (%)</th>
+                    <th class="text-right">CPC (€)</th>
+                    <th class="text-right">Coût (€)</th>
+                    <th class="text-right">Conversions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let device of devicePerformance">
+                    <td class="font-bold">{{ device.device }}</td>
+                    <td class="text-right">{{ device.impressions | numberFormat }}</td>
+                    <td class="text-right">{{ device.clicks | numberFormat }}</td>
+                    <td class="text-right">{{ device.ctr | numberFormat:2 }}%</td>
+                    <td class="text-right">{{ device.cpc | numberFormat:2 }}€</td>
+                    <td class="text-right">{{ device.cost | numberFormat:2 }}€</td>
+                    <td class="text-right">{{ device.conversions | numberFormat:1 }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Performance par Jour de la Semaine -->
+        <div class="analytics-section" style="margin-top: 3rem;">
+          <div class="section-header">
+            <h3>📅 Performance par Jour de la Semaine</h3>
+            <button class="btn btn-primary" (click)="exportDayOfWeekExcel()" *ngIf="dayOfWeekPerformance.length > 0">
+              <span class="material-icons">table_chart</span>
+              {{ 'overview.export_excel' | transloco }}
+            </button>
+          </div>
+
+          <div *ngIf="dayOfWeekPerformance.length === 0" class="empty-state">
+            <p>Aucune donnée par jour disponible</p>
+          </div>
+
+          <div *ngIf="dayOfWeekPerformance.length > 0">
+            <!-- Chart -->
+            <div class="chart-section" style="margin-bottom: 2rem;">
+              <app-chart
+                [data]="dayOfWeekChartData"
+                [layout]="{
+                  height: 350,
+                  showlegend: true,
+                  barmode: 'group',
+                  yaxis: { title: 'Impressions / Clics' },
+                  yaxis2: { title: 'CTR (%)', overlaying: 'y', side: 'right' }
+                }"
+              ></app-chart>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Jour</th>
+                    <th class="text-right">Impressions</th>
+                    <th class="text-right">Clics</th>
+                    <th class="text-right">CTR (%)</th>
+                    <th class="text-right">CPC (€)</th>
+                    <th class="text-right">Coût (€)</th>
+                    <th class="text-right">Conversions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let day of dayOfWeekPerformance">
+                    <td class="font-bold">{{ day.day_of_week }}</td>
+                    <td class="text-right">{{ day.impressions | numberFormat }}</td>
+                    <td class="text-right">{{ day.clicks | numberFormat }}</td>
+                    <td class="text-right">{{ day.ctr | numberFormat:2 }}%</td>
+                    <td class="text-right">{{ day.cpc | numberFormat:2 }}€</td>
+                    <td class="text-right">{{ day.cost | numberFormat:2 }}€</td>
+                    <td class="text-right">{{ day.conversions | numberFormat:1 }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
